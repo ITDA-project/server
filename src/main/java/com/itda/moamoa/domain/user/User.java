@@ -1,0 +1,38 @@
+package com.itda.moamoa.domain.user;
+
+import com.itda.moamoa.domain.baseentity.BaseEntity;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+
+@Entity
+@Getter
+@Table(name="users")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+public class User extends BaseEntity {
+    @Id
+    @GeneratedValue
+    @Column(name = "user_id")
+    private Long id;
+
+    @Column(unique = true) //한 사용자는 한 이메일 사용
+    private String email; //varchar
+
+    private String name; //한 사용자는 동일한 이름을 가질 수 있음(본명)
+
+    private String password;
+
+    @Enumerated(EnumType.STRING)
+    private SnsDiv snsDiv; //naver, kakao
+
+    private String phonenumber;
+
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+
+    private String image; //image url
+}
