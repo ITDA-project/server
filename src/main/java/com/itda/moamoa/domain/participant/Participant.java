@@ -2,16 +2,14 @@ package com.itda.moamoa.domain.participant;
 import com.itda.moamoa.domain.somoim.Somoim;
 import com.itda.moamoa.domain.user.User;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
 @Table(name = "participants")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@Builder
 public class Participant {
     @Id
     @GeneratedValue
