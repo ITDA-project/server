@@ -2,10 +2,7 @@ package com.itda.moamoa.domain.user;
 
 import com.itda.moamoa.domain.baseentity.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 
 @Entity
@@ -13,6 +10,7 @@ import lombok.NoArgsConstructor;
 @Table(name="users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@Builder
 public class User extends BaseEntity {
     @Id
     @GeneratedValue
