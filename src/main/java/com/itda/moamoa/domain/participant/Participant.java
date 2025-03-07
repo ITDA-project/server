@@ -8,7 +8,7 @@ import lombok.*;
 @Getter
 @Table(name = "participants")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 public class Participant {
     @Id
