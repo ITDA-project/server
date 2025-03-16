@@ -1,4 +1,4 @@
-package com.itda.moamoa.domain.participant.entitiy;
+package com.itda.moamoa.domain.participant.entity;
 
 import com.itda.moamoa.domain.somoim.entity.Somoim;
 import com.itda.moamoa.domain.user.entity.User;
@@ -11,7 +11,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
-@ToString(exclude={"user, somoim"})
+@ToString(exclude={"user", "somoim"})
 public class Participant {
     @Id
     @GeneratedValue
