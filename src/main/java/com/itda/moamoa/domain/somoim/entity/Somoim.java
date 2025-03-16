@@ -1,6 +1,6 @@
 package com.itda.moamoa.domain.somoim.entity;
 
-import com.itda.moamoa.domain.participant.entitiy.Participant;
+import com.itda.moamoa.domain.participant.entity.Participant;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
