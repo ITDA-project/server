@@ -44,6 +44,7 @@ public class ErrorResponse {
                 .collect(Collectors.toList());
         
         return ErrorResponse.builder()
+                .status("error")
                 .code(errorCode.getCode())
                 .message(errorCode.getMessage())
                 .errors(fieldErrors)
@@ -52,6 +53,7 @@ public class ErrorResponse {
 
     public static ErrorResponse of(ErrorCode errorCode, String message) {
         return ErrorResponse.builder()
+                .status("error")
                 .code(errorCode.getCode())
                 .message(message)
                 .build();
@@ -60,6 +62,7 @@ public class ErrorResponse {
     // 수동으로 여러 오류 추가
     public static ErrorResponse of(ErrorCode errorCode, List<FieldError> errors) {
         return ErrorResponse.builder()
+                .status("error")
                 .code(errorCode.getCode())
                 .message(errorCode.getMessage())
                 .errors(errors)
