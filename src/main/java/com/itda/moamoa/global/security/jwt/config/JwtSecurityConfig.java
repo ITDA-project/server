@@ -1,5 +1,6 @@
 package com.itda.moamoa.global.security.jwt.config;
 
+import com.itda.moamoa.global.security.jwt.filter.JWTFilter;
 import com.itda.moamoa.global.security.jwt.filter.LoginFilter;
 import com.itda.moamoa.global.security.jwt.util.JWTUtil;
 import org.springframework.context.annotation.Bean;
@@ -57,6 +58,10 @@ public class JwtSecurityConfig {
 
                         //로그인 사용자만
                         .anyRequest().authenticated());
+
+        //JWT 검증 필터 추가 
+        http
+                .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
 
         //로그인 필터 추가
         http
