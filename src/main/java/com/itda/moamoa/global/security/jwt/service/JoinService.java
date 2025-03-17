@@ -29,7 +29,7 @@ public class JoinService {
                 .username(username)
                 //비밀번호 암호화 후 저장
                 .password(bCryptPasswordEncoder.encode(password))
-                .role("ROLE_ADMIN").build();
+                .role("ROLE_ADMIN").build(); //기본 role ADMIN
 
         userRepository.save(user);
         return Boolean.TRUE;

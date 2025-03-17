@@ -59,7 +59,7 @@ public class JwtSecurityConfig {
                         //로그인 사용자만
                         .anyRequest().authenticated());
 
-        //JWT 검증 필터 추가 
+        //JWT 검증 필터 추가
         http
                 .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
 
