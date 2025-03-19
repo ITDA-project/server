@@ -1,5 +1,6 @@
 package com.itda.moamoa.global.security.jwt.config;
 
+import com.itda.moamoa.global.security.jwt.filter.CustomLogoutFilter;
 import com.itda.moamoa.global.security.jwt.filter.JWTFilter;
 import com.itda.moamoa.global.security.jwt.filter.LoginFilter;
 import com.itda.moamoa.global.security.jwt.repository.RefreshRepository;
@@ -14,6 +15,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -72,6 +74,9 @@ public class JwtSecurityConfig {
         //로그인 필터 추가
         http
                 .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshRepository), UsernamePasswordAuthenticationFilter.class);
+
+        http
+                .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshRepository), LogoutFilter.class);
 
         //세션 설정 -stateless로 설정
         http
