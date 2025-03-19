@@ -1,5 +1,7 @@
 package com.itda.moamoa.global.security.jwt.controller;
 
+import com.itda.moamoa.global.security.jwt.entity.Refresh;
+import com.itda.moamoa.global.security.jwt.repository.RefreshRepository;
 import com.itda.moamoa.global.security.jwt.util.JWTUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
@@ -11,13 +13,17 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.Date;
+
 @Controller //service로 분리할 코드 있음
 @ResponseBody
 public class ReissueController {
     private final JWTUtil jwtUtil;
+    private final RefreshRepository refreshRepository;
 
-    public ReissueController(JWTUtil jwtUtil){
+    public ReissueController(JWTUtil jwtUtil, RefreshRepository refreshRepository){
         this.jwtUtil = jwtUtil;
+        this.refreshRepository = refreshRepository;
     }
 
     @PostMapping("/reissue")
@@ -50,6 +56,13 @@ public class ReissueController {
             return new ResponseEntity<>("invalid refresh token", HttpStatus.BAD_REQUEST);
         }
 
+        //db에 저장되어 있는지 확인 -> 유효한 refresh 토큰이 됨
+        Boolean isExist = refreshRepository.existsByRefresh(refresh);
+        if(!isExist){
+            //response body
+            return new ResponseEntity<>("invalid refresh token", HttpStatus.BAD_REQUEST);
+        }
+
         //refresh 토큰에서 access 토큰 생성용 값 얻음
         String username = jwtUtil.getUsername(refresh);
         String role = jwtUtil.getRole(refresh);
@@ -57,6 +70,10 @@ public class ReissueController {
         //access 토큰 생성
         String newAccess = jwtUtil.createJwt("access", username, role, 600000L);
         String newRefresh = jwtUtil.createJwt("refresh", username, role, 86400000L);
+
+        //Refresh 토큰 저장 db에 기존 refresh 토큰 삭제 후 새 refresh 토큰 저장
+        refreshRepository.deleteByRefresh(refresh);
+        addRefresh(username, newRefresh, 86400000L); //새 refresh 넣음
 
         //access 토큰은 헤더 설정
         response.setHeader("access", newAccess);
@@ -68,11 +85,22 @@ public class ReissueController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    //쿠키 생성 메서드 
+    //쿠키 생성 메서드
     private Cookie createCookie(String key, String value){
         Cookie cookie = new Cookie(key, value);
         cookie.setMaxAge(24 * 60 * 60);
         return cookie;
     }
 
+    //refresh 추가 메서드
+    private void addRefresh(String username, String refresh, Long expiredMs){
+        Date date = new Date(System.currentTimeMillis() + expiredMs);
+        Refresh refresh1 = Refresh.builder()
+                .username(username)
+                .refresh(refresh)
+                .expiration(date.toString())
+                .build();
+
+        refreshRepository.save(refresh1);
+    }
 }
