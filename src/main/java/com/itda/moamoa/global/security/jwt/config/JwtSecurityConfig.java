@@ -56,6 +56,9 @@ public class JwtSecurityConfig {
                         //권한 가진 사람
                         .requestMatchers("/admin").hasRole("ADMIN")
 
+                        //access token 만료 -> 로그인 불가하므로
+                        .requestMatchers("/reissue").permitAll()
+
                         //로그인 사용자만
                         .anyRequest().authenticated());
 
