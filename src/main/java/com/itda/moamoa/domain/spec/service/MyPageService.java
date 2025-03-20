@@ -62,5 +62,14 @@ public class MyPageService {
                 .career(updatedSpec != null ? updatedSpec.getCareer() : null)
                 .imageUrl(user.getImage())
                 .build();
+
+        // // Spec과 User 정보를 합쳐서 응답 DTO로 변환하는 소스 객체 생성
+        // ProfileMappingSource source = new ProfileMappingSource(
+        //     updatedSpec != null ? updatedSpec.getCareer() : null,
+        //     user.getImage()
+        // );
+
+        // // ModelMapper를 사용하여 변환
+        // return modelMapper.map(source, ProfileUpdateResponseDTO.class);        
     }
 }
