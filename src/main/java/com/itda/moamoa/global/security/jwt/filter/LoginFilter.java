@@ -16,6 +16,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -31,6 +32,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         this.jwtUtil = jwtUtil;
         this.refreshRepository = refreshRepository;
     }
+
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException{
         String username = obtainUsername(request);
@@ -45,7 +47,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     //로그인 성공 시 실행 (jwt 발급)
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication){
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException {
         /*
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
         String username = customUserDetails.getUsername();
@@ -53,19 +55,22 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         String username = authentication.getName();
 
-        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-        Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
-        GrantedAuthority auth = iterator.next();
-        String role = auth.getAuthority();
+        String role = authentication.getAuthorities().iterator().next().getAuthority(); //시스템 상 권한 1개 admin
 
-        String access = jwtUtil.createJwt("access", username, role, 6000000L);
-        String refresh = jwtUtil.createJwt("refresh", username, role, 864000000L);
+        String access = jwtUtil.createJwt("access", username, role, 6000000L); //10분
+        String refresh = jwtUtil.createJwt("refresh", username, role, 864000000L); //10일
 
+        //생성한 refresh 토큰 db에 저장용
         addRefresh(username, refresh, 86400000L);
 
         //응답 설정
-        response.setHeader("access", access); //response.addHeader("Authorization", "Bearer " + token);
-        response.addCookie(createCookie("refresh", refresh)); //
+        //access 토큰은 헤더로
+        response.setHeader("access", access);
+
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8"); //인코딩
+        response.getWriter().write("{\"refresh_token\": \"" + refresh + "\"}");
+
         response.setStatus(HttpStatus.OK.value()); //응답 코드
 
     }
@@ -83,17 +88,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         refreshRepository.save(refresh1);
     }
 
-    //key, JWT value 로 쿠키를 생성
-    private Cookie createCookie(String key, String value) {
-        Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(24 * 60 * 60); //refresh token과 동일
-
-        //cookie.setSecure(true); //https 통신 시
-        //cookie.setPath("/"); //특정 경로
-
-        cookie.setHttpOnly(true); //js로 접근 x
-        return cookie;
-    }
 
     //로그인 실패
     @Override

@@ -1,5 +1,6 @@
 package com.itda.moamoa.global.security.jwt.filter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itda.moamoa.global.security.jwt.repository.RefreshRepository;
 import com.itda.moamoa.global.security.jwt.util.JWTUtil;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -13,10 +14,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.filter.GenericFilterBean;
 
 import java.io.IOException;
+import java.util.Map;
 
 public class CustomLogoutFilter extends GenericFilterBean {
     private final JWTUtil jwtUtil;
     private final RefreshRepository refreshRepository;
+
+    private final ObjectMapper objectMapper = new ObjectMapper(); // JSON 파싱용
     
     public CustomLogoutFilter(JWTUtil jwtUtil, RefreshRepository refreshRepository){
         this.jwtUtil = jwtUtil;
@@ -48,13 +52,8 @@ public class CustomLogoutFilter extends GenericFilterBean {
         }
 
         //refresh 토큰 가져오기
-        String refresh = null;
-        Cookie[] cookies = request.getCookies();
-        for(Cookie cookie : cookies){
-            if(cookie.getName().equals("refresh")){
-                refresh = cookie.getValue();
-            }
-        }
+        Map<String, String> requestBody = objectMapper.readValue(request.getInputStream(), Map.class);
+        String refresh = requestBody.get("refresh_token");
 
         //refresh 토큰 유효하지 않은 경우
         if(refresh == null){
@@ -82,18 +81,18 @@ public class CustomLogoutFilter extends GenericFilterBean {
         if(!isExist){
             //이미 로그아웃한 상태인 경우
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return;
         }
 
         //로그아웃 진행
         //refresh 토큰 db에서 제거 - reissue 안되도록
         refreshRepository.deleteByRefresh(refresh);
 
-        //refresh 토큰 null로 만들어 저장하기 위한 cookie
-        Cookie cookie = new Cookie("refresh", null);
-        cookie.setMaxAge(0); //시간
-        cookie.setPath("/");
+        //클라이언트에서 refresh 토큰 제거 필요
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write("{\"message\": \"Refresh token removed\"}");
 
-        response.addCookie(cookie);
         response.setStatus(HttpServletResponse.SC_OK);
     }
 }

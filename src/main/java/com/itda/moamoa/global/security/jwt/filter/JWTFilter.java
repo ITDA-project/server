@@ -68,7 +68,7 @@ public class JWTFilter extends OncePerRequestFilter {
         //userEntity 생성해 값 set
         User user = User.builder()
                 .username(username)
-                .password("password") //token에 담기지 않음 -> 임시 비밀번호
+                //비밀번호는 보안상 token에 담기지 않음 -> JWT를 통한 인증 시 비밀번호 안담음 -> 생략
                 .role(role)
                 .build();
 
