@@ -39,4 +39,9 @@ public class User extends BaseEntity {
     private Gender gender;
 
     private String image; //image url
+
+    // 이미지만 업데이트하는 별도 메서드 (setter 대신)
+    public void updateImage(String imageUrl) {
+        this.image = imageUrl;
+    }
 }
