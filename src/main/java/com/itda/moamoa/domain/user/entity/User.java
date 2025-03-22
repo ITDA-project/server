@@ -3,6 +3,7 @@ package com.itda.moamoa.domain.user.entity;
 import com.itda.moamoa.global.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 
 @Entity
@@ -39,4 +40,8 @@ public class User extends BaseEntity {
     private Gender gender;
 
     private String image; //image url
+
+    public void encodingPassword(PasswordEncoder passwordEncoder){
+        this.password = passwordEncoder.encode(password);
+    }
 }
