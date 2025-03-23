@@ -1,4 +1,4 @@
-package com.itda.moamoa.domain.spec.dto;
+package com.itda.moamoa.domain.spec.dto.request;
 
 import lombok.Getter;
 import lombok.Setter;
