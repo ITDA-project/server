@@ -1,14 +1,14 @@
 package com.itda.moamoa.domain.spec.service;
 
-import com.itda.moamoa.domain.spec.dto.ProfileUpdateRequestDTO;
-import com.itda.moamoa.domain.spec.dto.ProfileUpdateResponseDTO;
+import com.itda.moamoa.domain.spec.dto.response.ProfileDTO;
+import com.itda.moamoa.domain.spec.dto.request.ProfileUpdateRequestDTO;
+import com.itda.moamoa.domain.spec.dto.response.ProfileUpdateResponseDTO;
 import com.itda.moamoa.domain.spec.entity.Spec;
 import com.itda.moamoa.domain.spec.repository.SpecRepository;
 import com.itda.moamoa.domain.user.entity.User;
 import com.itda.moamoa.domain.user.repository.UserRepository;
 import com.itda.moamoa.global.exception.CustomException;
 import com.itda.moamoa.global.common.ErrorCode;
-import com.itda.moamoa.domain.spec.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -27,8 +27,8 @@ public class MyPageService {
 
     @Transactional
     public ProfileUpdateResponseDTO updateProfile(
-            Long userId, ProfileUpdateRequestDTO requestDTO, MultipartFile imageFile) {
-        User user = userRepository.findById(userId)
+            String username, ProfileUpdateRequestDTO requestDTO, MultipartFile imageFile) {
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         // 경력 정보 업데이트
@@ -71,5 +71,21 @@ public class MyPageService {
 
         // // ModelMapper를 사용하여 변환
         // return modelMapper.map(source, ProfileUpdateResponseDTO.class);        
+    }
+
+    @Transactional(readOnly = true)
+    public ProfileDTO getProfile(String username) {
+        // 사용자명으로 사용자 조회
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        
+        // 사용자의 Spec 정보 조회
+        Spec spec = specRepository.findByUser(user).orElse(null);
+        
+        return ProfileDTO.builder()
+                .name(user.getName())  // 사용자 이름
+                .profile(user.getImage())  // 프로필 이미지 URL
+                .career(spec != null ? spec.getCareer() : null)  // 경력 정보
+                .build();
     }
 }
