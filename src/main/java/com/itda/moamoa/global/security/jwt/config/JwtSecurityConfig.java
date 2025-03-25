@@ -7,6 +7,7 @@ import com.itda.moamoa.global.security.jwt.repository.RefreshRepository;
 import com.itda.moamoa.global.security.jwt.util.JWTUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -56,8 +57,11 @@ public class JwtSecurityConfig {
         //경로별 인가 작업
         http
                 .authorizeHttpRequests((auth)->auth
-                        .requestMatchers("/login").permitAll()
-                        .requestMatchers("/auth/login","/","/join").permitAll()
+                        .requestMatchers("/login", "/join").permitAll()
+                        .requestMatchers("/auth/login","/", "/auth/signup/**", "/auth").permitAll()
+
+                        .requestMatchers(HttpMethod.GET, "/posts", "/posts/{postId}").permitAll() //GET 요청 허용
+                        .requestMatchers(HttpMethod.POST, "/posts/search/**").permitAll()
 
                         //권한 가진 사람
                         .requestMatchers("/admin").hasRole("ADMIN")

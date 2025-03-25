@@ -58,7 +58,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         String role = authentication.getAuthorities().iterator().next().getAuthority(); //시스템 상 권한 1개 admin
 
-        String access = jwtUtil.createJwt("access", username, role, 6000000L); //10분
+        String access = jwtUtil.createJwt("access", username, role, 36000000L); //1시간
         String refresh = jwtUtil.createJwt("refresh", username, role, 864000000L); //10일
 
         //생성한 refresh 토큰 db에 저장용
