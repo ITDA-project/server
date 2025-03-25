@@ -9,27 +9,30 @@ import lombok.ToString;
 
 import java.time.LocalDateTime;
 
-@Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Getter
-@ToString
+@Entity                                             // Entity
+@Getter                                             // Getter 자동 생성
+@ToString                                           // ToString Override
+@NoArgsConstructor(access = AccessLevel.PROTECTED)  // 기본 생성자 생성
 public class Review {
-    @Id
-    @GeneratedValue
+    @Id                                                 // Primary Key
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // PK 자동 생성
     @Column(name = "review_id")
     private Long id;
 
+    @Column
     private Double star;
 
+    @Column
     private String sentence;
 
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.TIMESTAMP)   // 날짜 및 시간 저장
     private LocalDateTime createdAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY)  // Review:User = n:1
+    @JoinColumn(name = "user_id")       // Foreign Key
     private User user;
 
+    // 생성자
     public Review(Double star, String sentence, User user) {
         this.star = star;
         this.sentence = sentence;

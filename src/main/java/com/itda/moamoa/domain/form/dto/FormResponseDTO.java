@@ -4,13 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Getter             // Getter 자동 생성 Annotation
-@NoArgsConstructor  // 기본 생성자 생성 Annotation
-@AllArgsConstructor // 일반 생성자 생성 Annotation
+@Getter             // Getter 자동 생성
+@NoArgsConstructor  // 기본 생성자 생성
+@AllArgsConstructor // 모든 필드 생성자 생성
 
 public class FormResponseDTO {
-    private long formId;
+    private long form_id;
     private String content;
-    private Long postId;
-    private Long userId;
+    private Long post;
+    private Long user;
 }

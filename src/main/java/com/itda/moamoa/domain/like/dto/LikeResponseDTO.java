@@ -4,11 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Getter                 // Getter 생성 Annotation
-@NoArgsConstructor      // 기본 생성자 생성 Annotation
-@AllArgsConstructor     // 일반 생성자 생성 Annotation
+@Getter                 // Getter 생성
+@NoArgsConstructor      // 기본 생성자 생성
+@AllArgsConstructor     // 모든 필드 생성자 생성
 public class LikeResponseDTO {
     private long like_id;
-    private long user_id;
-    private long post_id;
+    private long user;
+    private long post;
 }

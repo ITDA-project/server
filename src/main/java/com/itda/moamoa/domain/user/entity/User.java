@@ -5,33 +5,38 @@ import jakarta.persistence.*;
 import lombok.*;
 
 
-@Entity
-@Getter
+@Entity                 // Entity
+@Getter                 // Getter 자동 생성
+@Builder                // Builder 제공
+@ToString               // ToString Override
 @Table(name="users")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Builder
-@ToString
+@NoArgsConstructor(access = AccessLevel.PROTECTED)  // 기본 생성자 생성
+@AllArgsConstructor(access = AccessLevel.PRIVATE)   // 모든 필드 생성자 생성
+
 public class User extends BaseEntity {
-    @Id
-    @GeneratedValue
+    @Id                                                     // Primary Key
+    @GeneratedValue(strategy = GenerationType.IDENTITY)     // PK 자동 생성
     @Column(name = "user_id")
     private Long id;
 
-    @Column(unique = true) //한 사용자는 한 이메일 사용
-    private String email; //varchar
+    @Column(unique = true)  // User Only One e-mail
+    private String email;   // varchar
 
-    private String name; //한 사용자는 동일한 이름을 가질 수 있음(본명)
+    @Column(unique = false) // 중복 가능
+    private String name;
 
+    @Column
     private String password;
 
-    @Enumerated(EnumType.STRING)
-    private SnsDiv snsDiv; //naver, kakao
+    @Enumerated(EnumType.STRING)    // Enum Type
+    private SnsDiv snsDiv;
 
+    @Column
     private String phonenumber;
 
-    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.STRING)    // Enum Type
     private Gender gender;
 
-    private String image; //image url
+    @Column
+    private String image;           //image url
 }

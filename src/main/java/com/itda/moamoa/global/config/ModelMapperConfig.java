@@ -6,19 +6,18 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.modelmapper.config.Configuration.AccessLevel;
 
-//DTO와 Entity 간 변환을 위한 modelmapper
-@Configuration
+//DTO와 Entity 간 변환 자동화 modelmapper
+@Configuration    // 설정 Calss - @Bean 메서드 자동 실행
 public class ModelMapperConfig {
-
-    @Bean
+    @Bean        // 의존성 주입을 통해 어디서든 사용 가능
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
 
         modelMapper
                 .getConfiguration()
-                .setFieldMatchingEnabled(true) // 필드 매칭 활성화
-                .setFieldAccessLevel(AccessLevel.PRIVATE) // private 필드 접근 허용
-                .setMatchingStrategy(MatchingStrategies.STRICT); // 엄격한 매칭 전략 사용. 다른 선택지 LOOSE
+                .setFieldMatchingEnabled(true)                      // 필드 매칭 활성화 - Setter 불필요
+                .setFieldAccessLevel(AccessLevel.PRIVATE)           // private 필드 접근 허용
+                .setMatchingStrategy(MatchingStrategies.STRICT);    // 필드명이 완벽히 일치해야 Mapping
 
         return modelMapper;
     }

@@ -6,7 +6,7 @@ import com.itda.moamoa.domain.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository                                                             // Repository Annotation
-public interface LikeRepository extends JpaRepository<Like, Long> {     // JPA Annotation 상속 -> CRUD, Pagging, JAP 지원
-    boolean existsById(User userId, Post postId);    // if (userId != null && postId != null)
+@Repository                                                             // Repository
+public interface LikeRepository extends JpaRepository<Like, Long> {     // JPA 상속 -> CRUD, Pagging, JAP 지원
+    boolean existsByUserAndPost(User user, Post post);      // if (userId != null && postId != null)
 }
