@@ -1,11 +1,9 @@
 package com.itda.moamoa.global.security.jwt.filter;
 
-import com.itda.moamoa.global.security.jwt.dto.CustomUserDetails;
 import com.itda.moamoa.global.security.jwt.entity.Refresh;
 import com.itda.moamoa.global.security.jwt.repository.RefreshRepository;
 import com.itda.moamoa.global.security.jwt.util.JWTUtil;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
@@ -28,9 +26,12 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private RefreshRepository refreshRepository;
 
     public LoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil, RefreshRepository refreshRepository){
+
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         this.refreshRepository = refreshRepository;
+        setFilterProcessesUrl("/auth/login");
+
     }
 
     @Override

@@ -56,7 +56,8 @@ public class JwtSecurityConfig {
         //경로별 인가 작업
         http
                 .authorizeHttpRequests((auth)->auth
-                        .requestMatchers("/login","/","/join").permitAll()
+                        .requestMatchers("/login").permitAll()
+                        .requestMatchers("/auth/login","/","/join").permitAll()
 
                         //권한 가진 사람
                         .requestMatchers("/admin").hasRole("ADMIN")
