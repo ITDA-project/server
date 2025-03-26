@@ -20,9 +20,17 @@ public class SignUpController {
     private final PasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
 
+    //나중에 삭제
     @GetMapping("/auth/signup/email")
     public String getSingUpEmail() {
         return "auth/signup/email";
+    }
+
+    //회원가입 테스트용 메서드, 나중에 삭제
+    @GetMapping("/auth/login")
+    @ResponseBody
+    public ResponseEntity<String> testSignUp(){
+        return ResponseEntity.ok("ok");
     }
 
     /**
@@ -40,7 +48,7 @@ public class SignUpController {
         user.encodingPassword(passwordEncoder);
         userService.createUser(user);
         //성공 시 로그인 화면으로 이동
-        return "redirect:/auth/login";
+        return "redirect:/api/auth/login";
     }
 
 

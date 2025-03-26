@@ -16,9 +16,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(auth-> auth.requestMatchers("/css/**","/images/**","/js/**","/facivon.*","/*/icon-*").permitAll()
-                .requestMatchers("/auth/signup/email").permitAll())
+                .requestMatchers("/api/auth/signup/email","/api/auth/login","/error").permitAll())
                 .rememberMe(remember ->remember.disable())
-                .csrf(csrf->csrf.disable());
+                .csrf(csrf->csrf.disable())
+                .formLogin(login->login.disable());
         return http.build();
 
     }
