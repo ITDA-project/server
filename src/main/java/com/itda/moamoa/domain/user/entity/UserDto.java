@@ -28,4 +28,9 @@ public class UserDto {
     private String phonenumber;
 
     private Gender gender;
+
+    public void createAuthenticate(){
+        this.role = "ROLE_USER";
+        this.username = this.email;
+    }
 }

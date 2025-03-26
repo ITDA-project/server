@@ -16,8 +16,18 @@ public class UserService {
         userRepository.save(user);
     }
 
+    /*탈퇴한 이메일이라면 다시 사용 가능하게 false 반환*/
     public Boolean checkEmail(String email){
-        return userRepository.existsByEmail(email);
+        Boolean exist = userRepository.existsByEmail(email);
+        if(exist) { //존재한다면?
+            if (!userRepository.findDeleteFlagByEmail(email).getDeleteFlag()) { //delete 가 false 라면 사용할 수 없음
+                return false;
+            }
+            //존재하지만 탈퇴한 유저일 경우
+            return true;
+        }
+        //존재하지 않는 이메일
+        return true;
     }
 
     /*soft delete 실행*/
