@@ -45,12 +45,10 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     }
 
     //로그인 성공 시 실행 (jwt 발급)
+    /*
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException {
-        /*
-        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-        String username = customUserDetails.getUsername();
-         */
+
 
         String username = authentication.getName();
 
@@ -60,7 +58,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String refresh = jwtUtil.createJwt("refresh", username, role, 864000000L); //10일
 
         //생성한 refresh 토큰 db에 저장용
-        addRefresh(username, refresh, 86400000L);
+        addRefresh(username, refresh, 864000000L);
+
 
         //응답 설정
         //access 토큰은 헤더로
@@ -73,20 +72,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         response.setStatus(HttpStatus.OK.value()); //응답 코드
 
     }
-
-    private void addRefresh(String username, String refresh, Long expiredMs){
-        //만료일자
-        Date date = new Date(System.currentTimeMillis() + expiredMs);
-
-        Refresh refresh1 = Refresh.builder()
-                .username(username)
-                .refresh(refresh)
-                .expiration(date.toString())
-                .build();
-
-        refreshRepository.save(refresh1);
-    }
-
+*/
 
     //로그인 실패
     @Override
