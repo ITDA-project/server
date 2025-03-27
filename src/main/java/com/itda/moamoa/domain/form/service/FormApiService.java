@@ -32,7 +32,8 @@ public class FormApiService {
                 .orElseThrow(() -> new IllegalArgumentException("아직 신청폼이 제출되지 않았습니다."));
 
         // 2. 예외처리 3. 권한이 없는 사용자(Not Host)의 신청폼 전체 조회 요청
-        // username이 Host와 동일한 지 파악
+        if (!post.getUser().equals(username))                 // 신청자 조회를 요청한 사용자 != 작성자 Token
+            throw new IllegalStateException("신청서를 열람할 권한이 없습니다.");
 
         // 3. 조회된 신청폼 전체 반환
         return formRepository.findAll();
@@ -43,14 +44,14 @@ public class FormApiService {
         // 1. User / Post 조회
         User user = userRepository.findByUsername(username)        // 예외처리 1. 회원이 아닌 사용자의 신청폼 전체 조회 요청
                 .orElseThrow(() -> new IllegalArgumentException("권한이 없는 사용자입니다."));
-        Post post = postRepository.findById(postId)             // 예외처리 2. 존재하지 않는 게시글의 신청폼 조회 요청
+        Post post = postRepository.findById(postId)                // 예외처리 2. 존재하지 않는 게시글의 신청폼 조회 요청
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
 
-        // 예외처리 3. 권한이 없는 사용자(Not host)의 신청폼 조회 요청
+        // 2. 예외처리 3. 권한이 없는 사용자(Not host)의 신청폼 조회 요청
+        if (!post.getUser().equals(username))                 // 신청자 조회를 요청한 사용자 != 작성자 Token
+            throw new IllegalStateException("신청서를 열람할 권한이 없습니다.");
 
-        // 예외처리 4. 인증이 만료된 사용자의 신청폼 조회 요청
-
-        // 5. 조회된 신청폼 반환
+        // 3. 조회된 신청폼 반환
         return formRepository.findById(formId)      // 예외처리 6. 존재하지 않는 신청품 조회
                 .orElseThrow(() -> new IllegalArgumentException("해당 신청폼이 존재하지 않습니다."));
     }
