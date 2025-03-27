@@ -24,4 +24,12 @@ public class RefreshService {
 
         refreshRepository.save(refresh1);
     }
+
+    public Boolean existsByRefresh(String refresh) {
+        return refreshRepository.existsByRefresh(refresh);
+    }
+
+    public void deleteByRefresh(String refresh) {
+        refreshRepository.deleteByRefresh(refresh);
+    }
 }

@@ -65,7 +65,7 @@ public class JWTFilter extends OncePerRequestFilter {
         String username = jwtUtil.getUsername(accessToken);
         String role = jwtUtil.getRole(accessToken);
 
-        //userEntity 생성해 값 set
+        //user 생성해 값 set
         User user = User.builder()
                 .username(username)
                 //비밀번호는 보안상 token에 담기지 않음 -> JWT를 통한 인증 시 비밀번호 안담음 -> 생략

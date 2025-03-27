@@ -4,6 +4,7 @@ import com.itda.moamoa.global.security.jwt.filter.CustomLogoutFilter;
 import com.itda.moamoa.global.security.jwt.filter.JWTFilter;
 import com.itda.moamoa.global.security.jwt.filter.LoginFilter;
 import com.itda.moamoa.global.security.jwt.repository.RefreshRepository;
+import com.itda.moamoa.global.security.jwt.service.RefreshService;
 import com.itda.moamoa.global.security.jwt.util.JWTUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,12 +26,12 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
 public class JwtSecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
-    private final RefreshRepository refreshRepository;
+    private final RefreshService refreshService;
 
-    public JwtSecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil, RefreshRepository refreshRepository){
+    public JwtSecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil, RefreshService refreshService){
         this.authenticationConfiguration = authenticationConfiguration;
         this.jwtUtil = jwtUtil;
-        this.refreshRepository = refreshRepository;
+        this.refreshService = refreshService;
     }
 
     @Bean
@@ -81,10 +82,10 @@ public class JwtSecurityConfig {
 
         //로그인 필터 추가
         http
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshRepository), UsernamePasswordAuthenticationFilter.class);
+                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshService), UsernamePasswordAuthenticationFilter.class);
 
         http
-                .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshRepository), LogoutFilter.class);
+                .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshService), LogoutFilter.class);
 
         //세션 설정 -stateless로 설정
         http

@@ -2,6 +2,7 @@ package com.itda.moamoa.global.security.jwt.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itda.moamoa.global.security.jwt.repository.RefreshRepository;
+import com.itda.moamoa.global.security.jwt.service.RefreshService;
 import com.itda.moamoa.global.security.jwt.util.JWTUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
@@ -18,13 +19,13 @@ import java.util.Map;
 
 public class CustomLogoutFilter extends GenericFilterBean {
     private final JWTUtil jwtUtil;
-    private final RefreshRepository refreshRepository;
+    private final RefreshService refreshService;
 
     private final ObjectMapper objectMapper = new ObjectMapper(); // JSON 파싱용
     
-    public CustomLogoutFilter(JWTUtil jwtUtil, RefreshRepository refreshRepository){
+    public CustomLogoutFilter(JWTUtil jwtUtil, RefreshService refreshService){
         this.jwtUtil = jwtUtil;
-        this.refreshRepository = refreshRepository;
+        this.refreshService = refreshService;
     }
     
     @Override
@@ -77,7 +78,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         }
 
         //db에 해당 토큰이 저장되어있는지 확인
-        Boolean isExist = refreshRepository.existsByRefresh(refresh);
+        Boolean isExist = refreshService.existsByRefresh(refresh);
         if(!isExist){
             //이미 로그아웃한 상태인 경우
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -86,7 +87,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
 
         //로그아웃 진행
         //refresh 토큰 db에서 제거 - reissue 안되도록
-        refreshRepository.deleteByRefresh(refresh);
+        refreshService.deleteByRefresh(refresh);
 
         //클라이언트에서 refresh 토큰 제거 필요
         response.setContentType("application/json");
