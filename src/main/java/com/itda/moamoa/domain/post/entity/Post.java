@@ -42,11 +42,20 @@ public class Post extends BaseEntity{
     @Column(nullable = false)
     private LocalDate dueDate;
 
+    @Column(nullable = false)
+    private String warranty;
+
+    @Column(nullable = false)
+    private LocalDate ActivityStartDate;
+
+    @Column
+    private LocalDate ActivityEndDate;
+
     @Builder.Default                    // Builder Pattern 적용 시 기본값 = 0
     private Integer likesCount = 0;
 
-    @Builder.Default                    // Byilder Pattern 적용 시, 기본값 = 0
-    private Integer commentsCount = 0;
+    @Builder.Default                    // Builder Pattern 적용 시, 기본값 = 0
+    private Integer participantCount = 0;
 
 
     // Setter

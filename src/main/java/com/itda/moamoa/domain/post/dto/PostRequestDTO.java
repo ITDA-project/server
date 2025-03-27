@@ -17,6 +17,8 @@ public class PostRequestDTO {
     private String title;
     private String content;
     private Category category;
+    private Integer likesCount;
+    private Integer participantCount;
     private Integer membersMax;
     private String location;
     private LocalDate dueDate;

@@ -35,9 +35,6 @@ public class Form {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @CreatedDate                    // Entity 생성 시간
-    private LocalDateTime createdAt;
-
     // Setter
     public void setUser(User user) { this.user = user; }
 
