@@ -50,23 +50,26 @@ public class Post extends BaseEntity{
 
 
     // Setter
-    public void setTitle(String title) {
+    public void setUser(User user) { this.user = user; }
+
+    // Update
+    public void changeTitle(String title) {
         this.title = title;
     }
 
-    public void setContent(String content) {
+    public void changeContent(String content) {
         this.content = content;
     }
 
-    public void setCategory(Category category) {
+    public void changeCategory(Category category) {
         this.category = category;
     }
 
-    public void setMembersMax(Integer membersMax) {
+    public void changeMembersMax(Integer membersMax) {
         this.membersMax = membersMax;
     }
 
-    public void setLocation(String location) {
+    public void changeLocation(String location) {
         this.location = location;
     }
 }

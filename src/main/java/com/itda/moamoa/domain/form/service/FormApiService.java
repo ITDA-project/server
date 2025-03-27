@@ -12,7 +12,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
@@ -25,54 +24,54 @@ public class FormApiService {
     private final ModelMapper modelMapper;
 
     // 해당 게시글에 제출된 신청폼 전체 조회
-    public List<Form> getAllForms(long postid, FormRequestDTO requestDto) {
+    public List<Form> getAllForms(long postId, String username, FormRequestDTO requestDto) {
         // 1. User / Post 조회
-        User user = userRepository.findById(requestDto.getUser())   // 예외처리 1. 회원이 아닌 사용자의 신청폼 전체 조회 요청
+        User user = userRepository.findByUsername(username)        // 예외처리 1. 회원이 아닌 사용자의 신청폼 전체 조회 요청
                 .orElseThrow(() -> new IllegalArgumentException("권한이 없는 사용자입니다."));
-        Post post = postRepository.findById(postid)                 // 예외처리 2. 아직 신청서가 제출되지 않은 게시글의 신청폼 전체 조회 요청
+        Post post = postRepository.findById(postId)             // 예외처리 2. 아직 신청서가 제출되지 않은 게시글의 신청폼 전체 조회 요청
                 .orElseThrow(() -> new IllegalArgumentException("아직 신청폼이 제출되지 않았습니다."));
 
-        // 3. 권한이 없는 사용자(Not Host)의 신청폼 전체 조회 요청
+        // 2. 예외처리 3. 권한이 없는 사용자(Not Host)의 신청폼 전체 조회 요청
+        // username이 Host와 동일한 지 파악
 
-
-        // 4. 조회된 신청폼 전체 반환
+        // 3. 조회된 신청폼 전체 반환
         return formRepository.findAll();
     }
 
     // 해당 게시글에 제출된 신청폼 개별 조회
-    public Form getFormById(long postid, long formid, FormRequestDTO requestDto) {
+    public Form getFormById(long postId, long formId, String username, FormRequestDTO requestDto) {
         // 1. User / Post 조회
-        User user = userRepository.findById(requestDto.getUser())   // 예외처리 1. 회원이 아닌 사용자의 게시글 신청폼 조회 요청
-                .orElseThrow(() -> new IllegalArgumentException("신청폼 열람 권한이 존재하지 않습니다."));
-        Post post = postRepository.findById(postid)                 // 예외처리 2. 존재하지 않는 게시글의 신청폼 조회 요청
+        User user = userRepository.findByUsername(username)        // 예외처리 1. 회원이 아닌 사용자의 신청폼 전체 조회 요청
+                .orElseThrow(() -> new IllegalArgumentException("권한이 없는 사용자입니다."));
+        Post post = postRepository.findById(postId)             // 예외처리 2. 존재하지 않는 게시글의 신청폼 조회 요청
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
 
-        // 예외처리 3. 권한이 없는 사용자의 신청폼 조회 요청
+        // 예외처리 3. 권한이 없는 사용자(Not host)의 신청폼 조회 요청
 
         // 예외처리 4. 인증이 만료된 사용자의 신청폼 조회 요청
 
-
         // 5. 조회된 신청폼 반환
-        return formRepository.findById(formid)      // 예외처리 6. 존재하지 않는 신청품 조회
+        return formRepository.findById(formId)      // 예외처리 6. 존재하지 않는 신청품 조회
                 .orElseThrow(() -> new IllegalArgumentException("해당 신청폼이 존재하지 않습니다."));
     }
 
     // 신청폼 생성
-    @Transactional     // Transation
-    public FormResponseDTO create(FormRequestDTO requestDto){
+    @Transactional     // Transaction
+    public FormResponseDTO create(String username, long postId, FormRequestDTO requestDto){
         // 1. User / Post 조회
-        User user = userRepository.findById(requestDto.getUser())   // 예외처리 1. 존재하지 않는 사용자의 신청폼 생성 요청
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
-        Post post = postRepository.findById(requestDto.getPost())   // 예외처리 2. 존재하지 않는 게시글에 신청폼 생성 요청
+        User user = userRepository.findByUsername(username)        // 예외처리 1. 회원이 아닌 사용자의 신청폼 전체 조회 요청
+                .orElseThrow(() -> new IllegalArgumentException("권한이 없는 사용자입니다."));
+        Post post = postRepository.findById(postId)             // 예외처리 2. 존재하지 않는 게시글에 신청폼 생성 요청
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시물입니다."));
 
-        // 2. 신청폼 내용 누락 확인
+        // 2. 예외처리 3. 신청폼 내용 누락된 경우
         if (requestDto.getContent() == null)
-            throw new IllegalStateException("신청폼 양식이 채워지지 않았습니다."); // 예외처리 3. 신청폼 내용이 누락된 경우
+            throw new IllegalStateException("신청폼 양식이 채워지지 않았습니다.");
 
-        // 3. 신청폼 중복 확인
+        // 3. 예외처리 4. 해당 게시글에 신청폼을 이미 제출한 경우
+        // Username token 사용
         if (formRepository.existsByUserAndPost(user, post))
-            throw new IllegalStateException("이미 신청폼을 제출하셨습니다.");    // 예외처리 4. 신청품을 이미 제출한 경우
+            throw new IllegalStateException("이미 신청폼을 제출하셨습니다.");
 
         // 4. 신청폼 Entity 생성 - ModelMapper 적용
         Form form = modelMapper.map(requestDto, Form.class);

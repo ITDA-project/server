@@ -9,8 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor // 모든 필드 생성자 생성
 
 public class FormResponseDTO {
-    private long form_id;
     private String content;
-    private Long post;
-    private Long user;
 }

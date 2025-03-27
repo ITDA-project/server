@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository                                                             // Repository
 public interface FormRepository extends JpaRepository<Form, Long> {     // JPA 상속 -> CRUD, Pagging, JAP 지원
-    boolean existsByUserAndPost(User user, Post post);    // if (userId != null && postId != null)
-}
+    boolean existsByUserAndPost(User user, Post post);                  // JPA Query 자동 생성
+}                                                                       // if (userId != null && postId != null)

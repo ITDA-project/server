@@ -25,8 +25,14 @@ public class LikeApiService {
 
     // 좋아요 수 조회
     // 그냥 카운트 해서 숫자만 반환
-//    public Like getLike(long postid, LIkeRequestDTO requestDto) {
-//    }
+    public Like getAllLike(long postId) {
+        // 1. Post 조회
+        Post post = postRepository.findById(postId)     // 예외처리 1. 존재하지 않는 게시물에 좋아요 조회 요청
+                .orElseThrow(() -> new IllegalArgumentException("존재하즤 않는 게시물입니다."));
+
+        // 2. 조회한 좋아요 수 반환
+        return null;
+    }
 
     // 좋아요 생성
     @Transactional                                                              // Transaction

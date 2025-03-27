@@ -10,12 +10,5 @@ import lombok.Setter;
 @NoArgsConstructor  // 기본 생성자 생성
 @AllArgsConstructor // 모든 필드 생성자 생성
 public class FormRequestDTO {
-    private long form_id;
     private String content;
-    private Long post;
-    private Long user;
-
-    public void setPostId(long postId) {    // postId 한정 Setter
-        this.post = postId;
-    }
 }
