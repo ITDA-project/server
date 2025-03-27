@@ -2,7 +2,9 @@ package com.itda.moamoa.domain.user.service;
 
 import com.itda.moamoa.domain.user.entity.User;
 import com.itda.moamoa.domain.user.repository.UserRepository;
+import com.itda.moamoa.global.email.PasswordDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,8 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public void createUser(User user){
+        user.encodingPassword(passwordEncoder);
         userRepository.save(user);
     }
 
@@ -34,5 +38,11 @@ public class UserService {
     public void deleteUser(User user){
         user.softDelete();
         userRepository.save(user);
+    }
+
+    /*비밀번호 찾기에서 사용*/
+    public void changePassword(PasswordDto passwordDto) {
+        User user = userRepository.findByUsername(passwordDto.getEmail());
+        user.encodingPassword(passwordEncoder, passwordDto.getPassword());
     }
 }

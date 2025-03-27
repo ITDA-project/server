@@ -44,4 +44,5 @@ public class User extends BaseEntity {
     public void encodingPassword(PasswordEncoder passwordEncoder){
         this.password = passwordEncoder.encode(password);
     }
+    public void encodingPassword(PasswordEncoder passwordEncoder,String password){this.password = passwordEncoder.encode(password);}
 }

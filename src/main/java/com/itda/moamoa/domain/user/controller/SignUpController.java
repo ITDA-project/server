@@ -21,7 +21,6 @@ import java.net.URI;
 @RequiredArgsConstructor
 public class SignUpController {
     private final UserService userService;
-    private final PasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
 
     //회원가입 테스트용 메서드, 나중에 삭제
@@ -42,7 +41,6 @@ public class SignUpController {
         userDto.createAuthenticate();
 
         User user = modelMapper.map(userDto,User.class);
-        user.encodingPassword(passwordEncoder);
         userService.createUser(user);
         //성공 시 로그인 화면으로 이동
         HttpHeaders headers = new HttpHeaders();
