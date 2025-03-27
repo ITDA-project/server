@@ -29,9 +29,6 @@ public class PostApiService {
         return postRepository.findAll();
     }
 
-    // 게시글 조건 조회
-
-
     // 게시글 개별 조회
     public Post getPostById(long postId, String username){
         // 1. User / Post 조회
@@ -103,13 +100,17 @@ public class PostApiService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
 
         // 3. 작성자 검증
-        if (!post.getUser().equals(user))                 // 게시글 작성한 사용자 != 게시글 삭제를 요청한 사용자
+        if (!post.getUser().equals(user)) {
             throw new IllegalStateException("게시글을 삭제할 권한이 없습니다.");
+        }
 
-        // 4. 게시글 삭제 - 실제 DB에서 삭제되지 않음
-        post.softDelete();
+        // 4. 게시글 삭제
+        // DB delete flag = false 변경 -> 나중에 false만 조회
+
 
         // 5. 응답 DTO 반환
-        return modelMapper.map(post, PostResponseDTO.class);
+
+
+        return null;
     }
 }

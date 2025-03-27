@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Getter                         // getter 자동 생성
 @Setter                         // Setter 자동 생성
@@ -18,10 +17,7 @@ public class PostResponseDTO {
     private String title;
     private String content;
     private Category category;
-    private Integer likesCount;
-    private Integer participantCount;
     private Integer membersMax;
     private String location;
     private LocalDate dueDate;
-    private LocalDateTime createdAt;
 }

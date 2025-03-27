@@ -21,8 +21,9 @@ import java.util.List;
 @RequestMapping("/api/posts")
 public class PostApiController {
     private final PostApiService postApiService;
+    // 권한 없는 사용자도 게시글 조회 가능
 
-    // 게시글 전체 조회
+    // 게시글 전체 조회 -> 목록 조회
     @GetMapping
     public ResponseEntity<ApiResponse<Post>> getAllPosts(@AuthenticationPrincipal String username){
         // 1. 신청폼 조회를 Service 위임
@@ -40,11 +41,6 @@ public class PostApiController {
                 .status(HttpStatus.OK)
                 .body(gotPosts);    // 상태 코드 200 반환
     }
-
-    // 게시글 카테고리 조회 - 목록 (최신 모임 / 주간 인기)
-
-
-    // 게시글 검색 조회 - 목록
 
     // 게시글 개별 조회
     @GetMapping("/{postId}")
@@ -65,7 +61,6 @@ public class PostApiController {
     }
 
     // 게시글 생성 요청
-    // 참여자 목록 자동 생성
     @PostMapping              // Token username 사용, URL 내 변수 사용, HTTP Body 내 변수 사용
     public ResponseEntity<ApiResponse<PostResponseDTO>> create(@AuthenticationPrincipal String username, @RequestBody PostRequestDTO requestDto) {
         // 1. 게시글 생성을 Service 위임

@@ -15,15 +15,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController              // REST API Controller
-@RequiredArgsConstructor        // 필수 필드(final, @NonNull) 생성자 -> 의존성 주입 대체
-@RequestMapping("/api/posts/{postId}/form")
+@RestController             // REST API Controller
+@RequiredArgsConstructor    // 필수 필드(final, @NonNull) 생성자 -> 의존성 주입 대체
 public class FormApiController {
     private final FormApiService formApiService;
 
     // 해당 게시글에 제출된 신청폼 전체 조회
-    // post - 제목, user - name, image
-    @GetMapping                                         // URL 내 변수 사용, Token 내 Username(e-mail), HTTP Body 변수 사용
+    @GetMapping("/api/posts/{postId}/form")         // URL 내 변수 사용, Token 내 Username(e-mail), HTTP Body 변수 사용
     public ResponseEntity<ApiResponse<Form>> getAllForms(@PathVariable long postId, @AuthenticationPrincipal String username, @RequestBody FormRequestDTO requestDto){
         // 1. 신청폼 조회를 Service 위임
         List<Form> got = formApiService.getAllForms(postId, username, requestDto);
@@ -42,8 +40,7 @@ public class FormApiController {
     }
 
     // 해당 게시글에 제출된 신청폼 개별 조회
-    // user - name, image
-    @GetMapping("/{formId}")         // URL 내 변수 사용, Token 내 Username(e-mail), HTTP Body 변수 사용
+    @GetMapping("/api/posts/{postId}/form/{formId}")         // URL 내 변수 사용, Token 내 Username(e-mail), HTTP Body 변수 사용
     public ResponseEntity<ApiResponse<Form>> getFormById(@PathVariable long postId, @PathVariable long formId, @AuthenticationPrincipal String username, @RequestBody FormRequestDTO requestDto){
         // 1. 신청폼 조회를 Service 위임
         Form got = formApiService.getFormById(postId, formId, username, requestDto);
@@ -61,8 +58,7 @@ public class FormApiController {
     }
 
     // 신청폼 생성
-    // 참여자 생성
-    @PostMapping                          // URL 내 변수 사용, HTTP Body 내 변수 사용, Token 받아 사용
+    @PostMapping("/api/posts/{postId}/form")     // URL 내 변수 사용, HTTP Body 내 변수 사용, Token 받아 사용
 public ResponseEntity<ApiResponse<FormResponseDTO>> create(@AuthenticationPrincipal String username, @PathVariable long post, @RequestBody FormRequestDTO requestDto){
         // 1. 신청폼 생성을 Service 위임
         FormResponseDTO created = formApiService.create(username, post, requestDto);
