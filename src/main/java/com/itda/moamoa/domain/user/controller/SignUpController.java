@@ -7,12 +7,16 @@ import com.itda.moamoa.global.common.ApiResponse;
 import com.itda.moamoa.global.common.SuccessCode;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
+import java.net.URI;
+
+@RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
 public class SignUpController {
@@ -20,15 +24,8 @@ public class SignUpController {
     private final PasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
 
-    //나중에 삭제
-    @GetMapping("/auth/signup/email")
-    public String getSingUpEmail() {
-        return "auth/signup/email";
-    }
-
     //회원가입 테스트용 메서드, 나중에 삭제
     @GetMapping("/auth/login")
-    @ResponseBody
     public ResponseEntity<String> testSignUp(){
         return ResponseEntity.ok("ok");
     }
@@ -40,7 +37,7 @@ public class SignUpController {
      * soft delete 되었던 유저라면 deleteFlag 도 수정됨(추후 다시 논의)
      */
     @PostMapping("/auth/signup/email")
-    public String signUpEmail(@RequestBody UserDto userDto){
+    public ResponseEntity<Object> signUpEmail(@RequestBody UserDto userDto){
         //username, role 설정
         userDto.createAuthenticate();
 
@@ -48,7 +45,9 @@ public class SignUpController {
         user.encodingPassword(passwordEncoder);
         userService.createUser(user);
         //성공 시 로그인 화면으로 이동
-        return "redirect:/api/auth/login";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(URI.create("http://localhost:8080/api/auth/login"));
+        return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
     }
 
 
@@ -59,11 +58,13 @@ public class SignUpController {
 
         //2. username, 임의의 비밀번호 설정
 
-        //3. DB에 저장
+        //3. 이미 소셜로 회원가입한 사용자는 JWT token 만 만들어서 반환
 
-        //4. JWT(access token,refresh token) 를 만들어서 클라이언트에 반환
+        //4. DB에 저장
 
-        //5. 로그인으로 리다이렉트?
+        //5. JWT(access token,refresh token) 를 만들어서 클라이언트에 반환
+
+        //6. 메인 화면으로 리다이렉트? 사용자가 로그인 전에 봤던 곳으로 리다이렉트?
         return "redirect:/";
     }
 
@@ -71,7 +72,6 @@ public class SignUpController {
      * 이메일 중복확인 메서드
      */
     @PostMapping("/auth/signup/email/checkemail")
-    @ResponseBody
     public ResponseEntity<ApiResponse<Boolean>> checkEmail(String email) {
 
         Boolean check = userService.checkEmail(email);
