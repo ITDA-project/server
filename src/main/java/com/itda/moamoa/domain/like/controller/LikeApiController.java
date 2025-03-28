@@ -1,9 +1,7 @@
 package com.itda.moamoa.domain.like.controller;
 
-import com.itda.moamoa.domain.form.dto.FormResponseDTO;
 import com.itda.moamoa.domain.like.dto.LIkeRequestDTO;
 import com.itda.moamoa.domain.like.dto.LikeResponseDTO;
-import com.itda.moamoa.domain.like.entity.Like;
 import com.itda.moamoa.domain.like.service.LikeApiService;
 import com.itda.moamoa.global.common.ApiResponse;
 import com.itda.moamoa.global.common.SuccessCode;
@@ -12,64 +10,54 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RestController                 // REST API Controller
-@RequiredArgsConstructor        // 필수 필드 생성자
+@RestController
+@RequiredArgsConstructor
 public class LikeApiController {
     private final LikeApiService likeApiService;
 
     // 해당 게시글의 전체 좋아요 수 조회 요청
-    @GetMapping("/posts/{postId}/likes")
-    public ResponseEntity<ApiResponse<Like>> getAllLike(@PathVariable long postId, @RequestBody LIkeRequestDTO requestDto){
-        // 1. 좋아요 조회를 Service 위임
-        Like got = likeApiService.getAllLike(postId);
+    @GetMapping("/api/posts/{postId}/likes")
+    public ResponseEntity<ApiResponse<Integer>> getLikeCount(@PathVariable long postId, @RequestBody LIkeRequestDTO requestDto){
+        Integer likeCount = likeApiService.getLikeCount(postId);
 
-        // 2. ApiResponse 생성
-        ApiResponse<Like> gotLike = ApiResponse.success(
+        ApiResponse<Integer> gotLike = ApiResponse.success(
                 SuccessCode.OK,
                 "해당 게시글의 좋아요가 성공적으로 조회되었습니다.",
-                got);
+                likeCount);
 
-        // 3. JSON 응답 반환
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(gotLike);
+                .status(HttpStatus.CREATED).
+                body(gotLike);
     }
 
 
     // 좋아요 생성 요청
-    @PostMapping("/api/posts/{postId}/likes")       // URL 변수 사용, HTTP Body 변수 사용
-    public ResponseEntity<ApiResponse<LikeResponseDTO>> create(@PathVariable long postId, @RequestBody LIkeRequestDTO requestDto){
-        // 1. Post_id 중복 방지 -> RequestDTO Post id = URL Post id
-        requestDto.setPostId(postId);
+    @PostMapping("/api/posts/{postId}/likes")
+    public ResponseEntity<ApiResponse<LikeResponseDTO>> create(@RequestBody String username,@PathVariable long postId, @RequestBody LIkeRequestDTO requestDto){
+        LikeResponseDTO created = likeApiService.create(username, postId, requestDto);
 
-        // 2. 좋아요 생성을 Service에 위임
-        LikeResponseDTO created = likeApiService.create(requestDto);
-
-        // 3. ApiResponse 생성
         ApiResponse<LikeResponseDTO> createdLike = ApiResponse.success(
                 SuccessCode.CREATED,
                 "해당 게시글을에 좋아요를 누르셨습니다.",
                 created);
 
-        // 4. JSON 응답 반환
         return ResponseEntity
                 .status(HttpStatus.CREATED).
-                body(createdLike);   // 상태 코드 201 반환
+                body(createdLike);
     }
 
-    // 좋아요 삭제 요청
-//    @DeleteMapping("/likes/{likeId} ")
-//    public ResponseEntity<LikeResponseDTO> delete(@PathVariable long likeId, @RequestBody LIkeRequestDTO requestDto){
-//        // 1. 좋아요 삭제를 Service에 위임
-//        LikeResponseDTO deleted = likeApiService.delete(requestDto);
-//        // 2. ApiResponse 생성
-//        ApiResponse<LikeResponseDTO> createdLike = ApiResponse.success(
-//            SuccessCode.CREATED,
-//            "해당 게시글을에 좋아요를 누르셨습니다.",
-//            created);
-//        // 3. 생성된 ResponseDTO 반환
-//        return ResponseEntity
-//                .status(HttpStatus.OK).
-//                body(deletedLike);   // 상태 코드 201 반환
-//    }
+    // 해당 게시글 좋아요 삭제 요청
+    @DeleteMapping("/likes/{likeId} ")
+    public ResponseEntity<ApiResponse<LikeResponseDTO>> delete(@RequestBody String username, @PathVariable long likeId, @RequestBody LIkeRequestDTO requestDto){
+        LikeResponseDTO deleted = likeApiService.delete(username, likeId, requestDto);
+
+        ApiResponse<LikeResponseDTO> deletedLike = ApiResponse.success(
+            SuccessCode.OK,
+            "해당 게시글에 좋아요를 취소하셨습니다.",
+            deleted);
+
+        return ResponseEntity
+                .status(HttpStatus.OK).
+                body(deletedLike);
+    }
 }

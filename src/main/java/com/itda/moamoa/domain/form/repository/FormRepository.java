@@ -6,7 +6,10 @@ import com.itda.moamoa.domain.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository                                                             // Repository
-public interface FormRepository extends JpaRepository<Form, Long> {     // JPA 상속 -> CRUD, Pagging, JAP 지원
-    boolean existsByUserAndPost(User user, Post post);                  // JPA Query 자동 생성
-}                                                                       // if (userId != null && postId != null)
+import java.util.Arrays;
+
+@Repository
+public interface FormRepository extends JpaRepository<Form, Long> {
+    boolean existsByUserAndPost(User user, Post post);
+    Arrays findByPost(Post post);
+}

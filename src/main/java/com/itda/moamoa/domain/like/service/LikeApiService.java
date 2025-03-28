@@ -15,8 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
-@Service                    // Service
-@RequiredArgsConstructor    // 필수 필드 생성자
+@Service
+@RequiredArgsConstructor
 public class LikeApiService {
     private final LikeRepository likeRepository;
     private final UserRepository userRepository;
@@ -24,51 +24,45 @@ public class LikeApiService {
     private final ModelMapper modelMapper;
 
     // 좋아요 수 조회
-    // 그냥 카운트 해서 숫자만 반환
-    public Like getAllLike(long postId) {
-        // 1. Post 조회
-        Post post = postRepository.findById(postId)     // 예외처리 1. 존재하지 않는 게시물에 좋아요 조회 요청
-                .orElseThrow(() -> new IllegalArgumentException("존재하즤 않는 게시물입니다."));
+    public Integer getLikeCount(long postId) {
+        Post post = postRepository.findById(postId).orElse(null);
 
-        // 2. 조회한 좋아요 수 반환
-        return null;
+        return post.getLikesCount();
     }
 
     // 좋아요 생성
-    @Transactional                                                              // Transaction
-    public LikeResponseDTO create(LIkeRequestDTO requestDto){
-        // 1. User / Post 조회
-        User user = userRepository.findById(requestDto.getUser())      // 예외처리 1. 존재하지 않는 사용자의 좋아요 생성 요청
+    @Transactional
+    public LikeResponseDTO create(String username, long postId, LIkeRequestDTO requestDto){
+        User user = userRepository.findByUsername(username)      // 예외처리 1. 존재하지 않는 사용자의 좋아요 생성 요청
                 .orElseThrow(()-> new IllegalArgumentException("존재하지 않는 사용자입니다."));
-        Post post = postRepository.findById(requestDto.getPost())      // 예외처리 2. 존재하지 않는 게시물에 좋아요 생성 요청
+        Post post = postRepository.findById(postId)             // 예외처리 2. 존재하지 않는 게시물에 좋아요 생성 요청
                 .orElseThrow(()-> new IllegalArgumentException("존재하지 않는 게시물입니다."));
-
-        // 2. 좋아요 중복 확인
-        if (likeRepository.existsByUserAndPost(user, post)) {
+        if (likeRepository.existsByUserAndPost(user, post)) {   // 예외처리 3. 이미 해당 게시물에 좋아요를 누른 경우
             throw new IllegalStateException("이미 좋아요를 누른 게시물입니다.");
         }
 
-        // 3. RequestDTO -> 좋아요 Entity 변환 - ModelMapper 적용
         Like like = modelMapper.map(requestDto, Like.class);
         like.setUser(user);     // 연관 관계
         like.setPost(post);
 
-        // 4. DB 저장
         Like createdLike = likeRepository.save(like);
+        post.plusLikeCount();
 
-        // 5. LikeResponseDTO 생성 및 반환 - ModelMapper 적용
         return modelMapper.map(createdLike, LikeResponseDTO.class);
     }
 
     // 좋아요 삭제
-//    @Transactional      // Transaction Annotation
-//    public LikeResponseDTO delete(LIkeRequestDTO requestDto) {
-//        // 1. User / Post 조회
-//
-//        // 2. Like Entity 불러오기
-//        Like deletedLike = likeRepository.findById(requestDto.getLike_id()).orElseThrow("")
-//
-//        // 3. 좋아요 삭제
-//        likeRepository.delete();
-//    }
+    @Transactional
+    public LikeResponseDTO delete(String username, long likeId, LIkeRequestDTO requestDto) {
+        User uesr = userRepository.findByUsername(username)     // 예외처리 1. 권한이 없는 사용자의 좋아요 삭제 요청
+                .orElseThrow(() -> new IllegalArgumentException("좋아요를 삭제할 권한이 없습니다."));
+        Like like = likeRepository.findById(likeId)             // 예외처리 2. 해당 게시글에 좋아요를 누르지 않은 경우
+                .orElseThrow(() -> new IllegalArgumentException("해당 게시글에 좋아요를 누르지 않으셨습니다."));
+        Post post = like.getPost();
+
+        likeRepository.delete(like);
+        post.minusLikeCount();
+
+        return modelMapper.map(like, LikeResponseDTO.class);
+    }
 }

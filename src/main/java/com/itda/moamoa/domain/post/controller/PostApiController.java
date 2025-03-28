@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController             // RestController
-@RequiredArgsConstructor        // 필수 필드 생성자
+@RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/posts")
 public class PostApiController {
     private final PostApiService postApiService;
@@ -25,97 +25,80 @@ public class PostApiController {
     // 게시글 전체 조회
     @GetMapping
     public ResponseEntity<ApiResponse<Post>> getAllPosts(@AuthenticationPrincipal String username){
-        // 1. 신청폼 조회를 Service 위임
         List<Post> got = postApiService.getAllPosts(username);
 
-        // 2. API Response 생성
         ApiResponse<Post> gotPosts = ApiResponse.successList(
                 SuccessCode.OK,
                 "신청폼이 정상적으로 조회 되었습니다.",
                 got,
                 got.size());
 
-        // 3. JSON 응답 반환
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(gotPosts);    // 상태 코드 200 반환
+                .body(gotPosts);
     }
 
     // 게시글 카테고리 조회 - 목록 (최신 모임 / 주간 인기)
-
 
     // 게시글 검색 조회 - 목록
 
     // 게시글 개별 조회
     @GetMapping("/{postId}")
     public ResponseEntity<ApiResponse<Post>> getPostById(@PathVariable long postId, @AuthenticationPrincipal String username){
-        // 1. 신청폼 조회를 Service 위임
         Post got = postApiService.getPostById(postId, username);
 
-        // 2. API Response 생성
         ApiResponse<Post> gotPost = ApiResponse.success(
                 SuccessCode.OK,
                 ".",
                 got);
 
-        // 3. JSON 응답 반환
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(gotPost);     // 상태 코드 200 반환
+                .body(gotPost);
     }
 
     // 게시글 생성 요청
-    // 참여자 목록 자동 생성
-    @PostMapping              // Token username 사용, URL 내 변수 사용, HTTP Body 내 변수 사용
+    @PostMapping
     public ResponseEntity<ApiResponse<PostResponseDTO>> create(@AuthenticationPrincipal String username, @RequestBody PostRequestDTO requestDto) {
-        // 1. 게시글 생성을 Service 위임
         PostResponseDTO created = postApiService.create(username, requestDto);
 
-        // 2. ApiResponse 생성
         ApiResponse<PostResponseDTO> createdPost = ApiResponse.success(
                 SuccessCode.CREATED,
                 "게시글을 성공적으로 등록되셨습니다.",
                 created);
 
-        // 4. JSON 응답 반환
         return ResponseEntity
                 .status(HttpStatus.CREATED).
-                body(createdPost);          // 상태 코드 201 전송
+                body(createdPost);
     }
 
     // 게시글 수정 요청
-    @PatchMapping("/{postId}")              // Token 내 username 사용, URL 내 변수 사용, HTTP Body 내 변수 사용
+    @PatchMapping("/{postId}")
     public ResponseEntity<ApiResponse<PostResponseDTO>> update(@AuthenticationPrincipal String username, @PathVariable long postId, @RequestBody PostRequestDTO requestDto) {
-        // 1. 게시글 생성을 Service 위임
         PostResponseDTO updated = postApiService.update(username, postId, requestDto);
 
-        // 2. ApiResponse 생성
         ApiResponse<PostResponseDTO> updatedPost = ApiResponse.success(
                 SuccessCode.OK,
                 "게시글이 성공적으로 수정되셨습니다.",
                 updated);
 
-        // 3. JSON 응답 반환
         return ResponseEntity
                 .status(HttpStatus.OK).
-                body(updatedPost);          // 상태 코드 200 전송
+                body(updatedPost);
     }
 
     // 게시글 삭제 요청
-    @DeleteMapping("/api/posts/{postId}")           // Token 내 username 사용, URL 내 변수 사용, HTTP Body 내 변수 사용
+    @DeleteMapping("/{postId}")
     public ResponseEntity<ApiResponse<PostResponseDTO>> delete(@AuthenticationPrincipal String username, @PathVariable long postId, @RequestBody PostRequestDTO requestDto) {
-        // 1. 게시글 생성을 Service 위임
         PostResponseDTO deleted = postApiService.delete(username, postId, requestDto);
 
-        // 2. ApiResponse 생성
         ApiResponse<PostResponseDTO> deletedPost = ApiResponse.success(
                 SuccessCode.OK,
                 "게시글이 성공적으로 삭제되셨습니다.",
                 deleted);
 
-        // 4. JSON 응답 반환
         return ResponseEntity
                 .status(HttpStatus.OK).
-                body(deletedPost);          // 상태 코드 200 전송
+                body(deletedPost);
     }
 }

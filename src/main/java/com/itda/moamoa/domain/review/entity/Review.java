@@ -9,13 +9,13 @@ import lombok.ToString;
 
 import java.time.LocalDateTime;
 
-@Entity                                             // Entity
-@Getter                                             // Getter 자동 생성
-@ToString                                           // ToString Override
-@NoArgsConstructor(access = AccessLevel.PROTECTED)  // 기본 생성자 생성
+@Entity
+@Getter
+@ToString
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Review {
-    @Id                                                 // Primary Key
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // PK 자동 생성
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "review_id")
     private Long id;
 
@@ -25,14 +25,13 @@ public class Review {
     @Column
     private String sentence;
 
-    @Temporal(TemporalType.TIMESTAMP)   // 날짜 및 시간 저장
+    @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)  // Review:User = n:1
-    @JoinColumn(name = "user_id")       // Foreign Key
+    @JoinColumn(name = "user_id")
     private User user;
 
-    // 생성자
     public Review(Double star, String sentence, User user) {
         this.star = star;
         this.sentence = sentence;

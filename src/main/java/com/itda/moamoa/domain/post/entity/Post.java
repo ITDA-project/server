@@ -81,4 +81,9 @@ public class Post extends BaseEntity{
     public void changeLocation(String location) {
         this.location = location;
     }
+
+    // function
+    public void plusLikeCount() {   this.likesCount += 1; }
+
+    public void minusLikeCount() {  this.likesCount -= 1; }
 }

@@ -9,16 +9,16 @@ import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 
-@Entity                 // Entity
-@Getter                 // Getter 생성
-@Builder                // Builder Patter 제공
+@Entity
+@Getter
+@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "likes")
 public class Like {
-    @Id                                                     // Primary Key
-    @GeneratedValue(strategy = GenerationType.IDENTITY)     // PK 자동 생성
-    @Column(name = "like_id", updatable = false)            // 변경 불가능
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "like_id", updatable = false)
     private long like_id;
 
     @ManyToOne(fetch = FetchType.LAZY)                      // Like:Post = n:1
@@ -31,7 +31,7 @@ public class Like {
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false) 
-    private LocalDateTime createdAt;     // 생성 날짜 자동 기입
+    private LocalDateTime createdAt;
 
     // setter
     public void setUser(User user) { this.user = user; }

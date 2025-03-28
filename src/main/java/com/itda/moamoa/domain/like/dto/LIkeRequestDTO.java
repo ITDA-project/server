@@ -4,9 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Getter                         // getter 자동 생성
-@NoArgsConstructor              // 기본 생성자 생성
-@AllArgsConstructor             // 모든 필드 생성자 생성
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class LIkeRequestDTO {
     private long like_id;
     private long user;
