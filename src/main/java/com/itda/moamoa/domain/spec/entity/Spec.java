@@ -7,14 +7,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity                                             // Entity
-@Getter                                             // Getter자동 생성
-@NoArgsConstructor(access = AccessLevel.PROTECTED)  // 기본 생성자 생성
+@Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Table(name = "spec")
 public class Spec {
-    @Id                                                     // Primary Key
-    @GeneratedValue(strategy = GenerationType.IDENTITY)     // PK 자동 생성
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "spec_id")
     private long spec_id;
 

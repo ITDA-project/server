@@ -17,5 +17,4 @@ public class FormResponseDTO {
 
     private String userName;
     private String userImage;
-    private String postTitle;
 }

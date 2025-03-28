@@ -1,5 +1,6 @@
 package com.itda.moamoa.domain.form.service;
 
+import com.itda.moamoa.domain.form.dto.FormListResponseDTO;
 import com.itda.moamoa.domain.form.dto.FormRequestDTO;
 import com.itda.moamoa.domain.form.dto.FormResponseDTO;
 import com.itda.moamoa.domain.form.entity.Form;
@@ -24,8 +25,7 @@ public class FormApiService {
     private final ModelMapper modelMapper;
 
     // 해당 게시글에 제출된 신청폼 전체 조회
-    // Post title, User name image 반환
-    public List<Form> getAllForms(long postId, String username, FormRequestDTO requestDto) {
+    public List<FormListResponseDTO> getAllForms(long postId, String username, FormRequestDTO requestDto) {
         User user = userRepository.findByUsername(username)      // 예외처리 1. 회원이 아닌 사용자의 신청서 전체 조회 요청
                 .orElseThrow(() -> new IllegalArgumentException("권한이 없는 사용자입니다."));
         Post post = postRepository.findById(postId)             // 예외처리 2. 아직 신청서가 제출되지 않은 게시글의 신청서 전체 조회 요청
@@ -33,13 +33,13 @@ public class FormApiService {
         if (!post.getUser().equals(username))                   // 예외처리 3. 게시글 작성자가 아닌 회원의 신청서 조회 요청
             throw new IllegalStateException("신청서를 열람할 권한이 없습니다.");
 
-
+        // FormListResponseDTO 반환
         return List.of();
     }
 
     // 해당 게시글에 제출된 신청폼 개별 조회
     // User name image 반환
-    public Form getFormById(long postId, long formId, String username, FormRequestDTO requestDto) {
+    public FormResponseDTO getFormById(long postId, long formId, String username, FormRequestDTO requestDto) {
         User user = userRepository.findByUsername(username)     // 예외처리 1. 회원이 아닌 사용자의 신청서 전체 조회 요청
                 .orElseThrow(() -> new IllegalArgumentException("권한이 없는 사용자입니다."));
         Post post = postRepository.findById(postId)            // 예외처리 2. 존재하지 않는 게시글의 신청서 조회 요청
@@ -48,8 +48,10 @@ public class FormApiService {
         if (!post.getUser().equals(username))                   // 예외처리 3. 권한이 없는 사용자(Not host)의 신청폼 조회 요청
             throw new IllegalStateException("신청서를 열람할 권한이 없습니다.");
 
-        return formRepository.findById(formId)                  // 예외처리 4. 존재하지 않는 신청품 조회
-                .orElseThrow(() -> new IllegalArgumentException("해당 신청폼이 존재하지 않습니다."));
+        // 수정 필요 -> FormResponseDTO 반환
+        // return formRepository.findById(formId)                  // 예외처리 4. 존재하지 않는 신청품 조회
+        //        .orElseThrow(() -> new IllegalArgumentException("해당 신청폼이 존재하지 않습니다."));
+        return null;
     }
 
     // 신청폼 생성

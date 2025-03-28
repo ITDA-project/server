@@ -5,17 +5,17 @@ import jakarta.persistence.*;
 import lombok.*;
 
 
-@Entity                 // Entity
-@Getter                 // Getter 자동 생성
-@Builder                // Builder 제공
-@ToString               // ToString Override
+@Entity
+@Getter
+@Builder
+@ToString
 @Table(name="users")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)  // 기본 생성자 생성
-@AllArgsConstructor(access = AccessLevel.PRIVATE)   // 모든 필드 생성자 생성
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 
 public class User extends BaseEntity {
-    @Id                                                     // Primary Key
-    @GeneratedValue(strategy = GenerationType.IDENTITY)     // PK 자동 생성
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long id;
 
@@ -28,13 +28,13 @@ public class User extends BaseEntity {
     @Column
     private String password;
 
-    @Enumerated(EnumType.STRING)    // Enum Type
+    @Enumerated(EnumType.STRING)
     private SnsDiv snsDiv;
 
     @Column
     private String phonenumber;
 
-    @Enumerated(EnumType.STRING)    // Enum Type
+    @Enumerated(EnumType.STRING)
     private Gender gender;
 
     @Column
