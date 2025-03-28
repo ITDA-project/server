@@ -8,8 +8,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -19,6 +21,8 @@ public class MailService {
     private final JavaMailSender javaMailSender;
     private final String senderEmail;
 
+    //메모리 저장소가 아닌, DB에 이메일,인증번호,만료시간을 넣어서 체크할 수 있음
+    //현재는 {이메일:인증번호} Map 으로 메모리 저장소 사용
     private final Map<String,Integer> otpNumbers = new ConcurrentHashMap<>();
 
     @Autowired
@@ -31,6 +35,7 @@ public class MailService {
         return ((int)(Math.random() * 90000)) + 100000;
     }
 
+    @Async
     public void sendMail(String mail){
         int number = createNumber();
         MimeMessage message = javaMailSender.createMimeMessage();
@@ -52,7 +57,7 @@ public class MailService {
         }
     }
 
-    public int getOtpNumber(String email){
+    private int getOtpNumber(String email){
         return otpNumbers.getOrDefault(email, -1);
     }
 
