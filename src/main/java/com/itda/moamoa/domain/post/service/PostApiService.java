@@ -129,16 +129,16 @@ public class PostApiService {
         List<Post> posts;
         if ("likesCount".equals(sort)) {
             if (category != null) {
-                posts = postRepository.findByPostIdLessThanAndCategoryOrderByLikesCountDescCreatedAtDesc(cursor, category, pageRequest);
+                posts = postRepository.findByPostIdLessThanAndCategoryAndDeleteFlagFalseOrderByLikesCountDescCreatedAtDesc(cursor, category, pageRequest);
             } else {
-                posts = postRepository.findByPostIdLessThanOrderByLikesCountDescCreatedAtDesc(cursor, pageRequest);
+                posts = postRepository.findByPostIdLessThanAndDeleteFlagFalseOrderByLikesCountDescCreatedAtDesc(cursor, pageRequest);
             }
         } else {
             // 기본은 최신순
             if (category != null) {
-                posts = postRepository.findByPostIdLessThanAndCategoryOrderByCreatedAtDesc(cursor, category, pageRequest);
+                posts = postRepository.findByPostIdLessThanAndCategoryAndDeleteFlagFalseOrderByCreatedAtDesc(cursor, category, pageRequest);
             } else {
-                posts = postRepository.findByPostIdLessThanOrderByCreatedAtDesc(cursor, pageRequest);
+                posts = postRepository.findByPostIdLessThanAndDeleteFlagFalseOrderByCreatedAtDesc(cursor, pageRequest);
             }
         }
         
