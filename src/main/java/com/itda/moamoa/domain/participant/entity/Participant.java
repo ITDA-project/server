@@ -11,6 +11,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @ToString(exclude={"user, somoim"})
+@Table(name = "participants")
 public class Participant {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
