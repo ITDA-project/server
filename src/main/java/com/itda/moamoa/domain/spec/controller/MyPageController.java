@@ -39,10 +39,18 @@ public class MyPageController {
     @PatchMapping(value = "/edit", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<ApiResponse<ProfileUpdateResponseDTO>> updateProfile(
             @AuthenticationPrincipal UserDetails userDetails,
-            @RequestPart(value = "career", required = false) ProfileUpdateRequestDTO requestDTO,
+            @RequestPart(value = "career", required = false) String career,
             @RequestPart(value = "image", required = false) MultipartFile image) {
 
         String username = userDetails.getUsername();
+        
+        // String career를 ProfileUpdateRequestDTO로 변환
+        ProfileUpdateRequestDTO requestDTO = null;
+        if (career != null && !career.isEmpty()) {
+            requestDTO = new ProfileUpdateRequestDTO();
+            requestDTO.setCareer(career);
+        }
+        
         ProfileUpdateResponseDTO responseDTO = myPageService.updateProfile(username, requestDTO, image);
 
         ApiResponse<ProfileUpdateResponseDTO> response = ApiResponse.success(

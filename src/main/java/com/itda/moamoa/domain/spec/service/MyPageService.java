@@ -10,6 +10,7 @@ import com.itda.moamoa.domain.user.repository.UserRepository;
 import com.itda.moamoa.global.exception.CustomException;
 import com.itda.moamoa.global.common.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +20,7 @@ import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MyPageService {
     private final UserRepository userRepository;
     private final SpecRepository specRepository;
@@ -32,13 +34,24 @@ public class MyPageService {
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         // 경력 정보 업데이트
-        if (requestDTO != null && requestDTO.getCareer() != null) {
+        if (requestDTO != null) {
+            log.info("요청 DTO 존재: career={}", requestDTO.getCareer());
+            
             // 기존 Spec이 있는지 확인
             Spec spec = specRepository.findByUser(user)
-                    .map(existingSpec -> existingSpec.updateCareer(requestDTO.getCareer()))
-                    .orElseGet(() -> Spec.create(user, requestDTO.getCareer()));
+                    .map(existingSpec -> {
+                        log.info("기존 Spec 찾음: specId={}, 기존 career={}", existingSpec.getId(), existingSpec.getCareer());
+                        return existingSpec.updateCareer(requestDTO.getCareer());
+                    })
+                    .orElseGet(() -> {
+                        log.info("새 Spec 생성: career={}", requestDTO.getCareer());
+                        return Spec.create(user, requestDTO.getCareer() != null ? requestDTO.getCareer() : "");
+                    });
             
             specRepository.save(spec);
+            log.info("Spec 저장 완료: specId={}", spec.getId());
+        } else {
+            log.info("요청 DTO가 null입니다.");
         }
 
         // 이미지 업로드 및 저장
@@ -57,20 +70,12 @@ public class MyPageService {
 
         // 응답 DTO 생성
         Spec updatedSpec = specRepository.findByUser(user).orElse(null);
+        log.info("응답 DTO 생성: spec 존재={}, career={}", updatedSpec != null, updatedSpec != null ? updatedSpec.getCareer() : "null");
 
         return ProfileUpdateResponseDTO.builder()
                 .career(updatedSpec != null ? updatedSpec.getCareer() : null)
                 .imageUrl(user.getImage())
-                .build();
-
-        // // Spec과 User 정보를 합쳐서 응답 DTO로 변환하는 소스 객체 생성
-        // ProfileMappingSource source = new ProfileMappingSource(
-        //     updatedSpec != null ? updatedSpec.getCareer() : null,
-        //     user.getImage()
-        // );
-
-        // // ModelMapper를 사용하여 변환
-        // return modelMapper.map(source, ProfileUpdateResponseDTO.class);        
+                .build();      
     }
 
     @Transactional(readOnly = true)
