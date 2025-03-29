@@ -35,17 +35,9 @@ public class ReviewService {
     
     @Transactional
     public ReviewResponseDTO createReview(ReviewRequestDTO requestDTO, String username) {
-        // 로그 추가
-        log.info("targetUserId: {}", requestDTO.getTargetUserId());
-        log.info("star: {}", requestDTO.getStar());
-        log.info("sentence: {}", requestDTO.getSentence());
-        log.info("username: {}", username);
-        
         // 리뷰를 작성하는 사용자 조회
         User currentUser = userRepository.findByUsername(username)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-        
-        log.info("currentUser ID: {}", currentUser.getId());
         
         // 리뷰 대상 사용자 조회
         User targetUser = userRepository.findById(requestDTO.getTargetUserId())

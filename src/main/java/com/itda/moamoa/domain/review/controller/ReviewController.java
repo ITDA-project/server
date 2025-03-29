@@ -27,11 +27,6 @@ public class ReviewController {
             @RequestBody ReviewRequestDTO requestDTO,
             @AuthenticationPrincipal UserDetails userDetails) {
         
-        log.info("리뷰 생성 요청 - 대상 사용자 ID: {}", requestDTO.getTargetUserId());
-        log.info("리뷰 생성 요청 - 별점: {}", requestDTO.getStar());
-        log.info("리뷰 생성 요청 - 내용: {}", requestDTO.getSentence());
-        log.info("리뷰 생성 요청 - 요청자: {}", userDetails.getUsername());
-        
         ReviewResponseDTO responseDTO = reviewService.createReview(requestDTO, userDetails.getUsername());
         
         ApiResponse<ReviewResponseDTO> response = ApiResponse.success(
