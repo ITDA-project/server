@@ -45,6 +45,8 @@ public class PostApiService {
     // 게시글 생성
     @Transactional      // Transaction
     public PostResponseDTO create(String username, PostRequestDTO requestDto) {
+        System.out.println("서비스에서 받은 username: " + username); // 디버깅 로그 추가
+        
         // 1. User 조회
         User user = userRepository.findByUsername(username)  // 예외처리 1. 존재하지 않는 사용자의 게시물 생성 요청
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));

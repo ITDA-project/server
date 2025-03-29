@@ -6,6 +6,7 @@ import com.itda.moamoa.domain.post.entity.Post;
 import com.itda.moamoa.domain.post.service.PostApiService;
 import com.itda.moamoa.global.common.ApiResponse;
 import com.itda.moamoa.global.common.SuccessCode;
+import com.itda.moamoa.global.security.jwt.dto.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,12 +22,13 @@ public class PostApiController {
 
     // 게시글 전체 조회
     @GetMapping
-    public ResponseEntity<ApiResponse<Post>> getAllPosts(@AuthenticationPrincipal String username){
+    public ResponseEntity<ApiResponse<Post>> getAllPosts(@AuthenticationPrincipal CustomUserDetails userDetails){
+        String username = userDetails != null ? userDetails.getUsername() : null;
         List<Post> got = postApiService.getAllPosts(username);
 
         ApiResponse<Post> gotPosts = ApiResponse.successList(
                 SuccessCode.OK,
-                "신청폼이 정상적으로 조회 되었습니다.",
+                "게시글이 정상적으로 조회 되었습니다.",
                 got,
                 got.size());
 
@@ -41,7 +43,8 @@ public class PostApiController {
 
     // 게시글 개별 조회
     @GetMapping("/{postId}")
-    public ResponseEntity<ApiResponse<Post>> getPostById(@PathVariable long postId, @AuthenticationPrincipal String username){
+    public ResponseEntity<ApiResponse<Post>> getPostById(@PathVariable long postId, @AuthenticationPrincipal CustomUserDetails userDetails){
+        String username = userDetails != null ? userDetails.getUsername() : null;
         Post got = postApiService.getPostById(postId, username);
 
         ApiResponse<Post> gotPost = ApiResponse.success(
@@ -56,7 +59,10 @@ public class PostApiController {
 
     // 게시글 생성 요청
     @PostMapping
-    public ResponseEntity<ApiResponse<PostResponseDTO>> create(@AuthenticationPrincipal String username, @RequestBody PostRequestDTO requestDto) {
+    public ResponseEntity<ApiResponse<PostResponseDTO>> create(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody PostRequestDTO requestDto) {
+        String username = userDetails != null ? userDetails.getUsername() : null;
+        System.out.println("컨트롤러에서 받은 username: " + username); // 디버깅 로그 추가
+        
         PostResponseDTO created = postApiService.create(username, requestDto);
 
         ApiResponse<PostResponseDTO> createdPost = ApiResponse.success(
@@ -71,7 +77,8 @@ public class PostApiController {
 
     // 게시글 수정 요청
     @PatchMapping("/{postId}")
-    public ResponseEntity<ApiResponse<PostResponseDTO>> update(@AuthenticationPrincipal String username, @PathVariable long postId, @RequestBody PostRequestDTO requestDto) {
+    public ResponseEntity<ApiResponse<PostResponseDTO>> update(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable long postId, @RequestBody PostRequestDTO requestDto) {
+        String username = userDetails != null ? userDetails.getUsername() : null;
         PostResponseDTO updated = postApiService.update(username, postId, requestDto);
 
         ApiResponse<PostResponseDTO> updatedPost = ApiResponse.success(
@@ -86,7 +93,8 @@ public class PostApiController {
 
     // 게시글 삭제 요청
     @DeleteMapping("/{postId}")
-    public ResponseEntity<ApiResponse<PostResponseDTO>> delete(@AuthenticationPrincipal String username, @PathVariable long postId, @RequestBody PostRequestDTO requestDto) {
+    public ResponseEntity<ApiResponse<PostResponseDTO>> delete(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable long postId, @RequestBody PostRequestDTO requestDto) {
+        String username = userDetails != null ? userDetails.getUsername() : null;
         PostResponseDTO deleted = postApiService.delete(username, postId, requestDto);
 
         ApiResponse<PostResponseDTO> deletedPost = ApiResponse.success(

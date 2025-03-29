@@ -60,7 +60,7 @@ public class JwtSecurityConfig {
                         .requestMatchers("/login", "/join").permitAll()
                         .requestMatchers("/auth/login","/", "/auth/signup/**", "/auth").permitAll()
 
-                        .requestMatchers(HttpMethod.GET, "/posts", "/posts/{postId}").permitAll() //GET 요청 허용
+                        .requestMatchers(HttpMethod.GET, "/api/posts", "/api/posts/{postId}").permitAll() //GET 요청 허용
                         .requestMatchers(HttpMethod.POST, "/posts/search/**").permitAll()
 
                         //권한 가진 사람
