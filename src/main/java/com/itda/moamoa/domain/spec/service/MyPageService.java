@@ -35,23 +35,12 @@ public class MyPageService {
 
         // 경력 정보 업데이트
         if (requestDTO != null) {
-            log.info("요청 DTO 존재: career={}", requestDTO.getCareer());
-            
             // 기존 Spec이 있는지 확인
             Spec spec = specRepository.findByUser(user)
-                    .map(existingSpec -> {
-                        log.info("기존 Spec 찾음: specId={}, 기존 career={}", existingSpec.getId(), existingSpec.getCareer());
-                        return existingSpec.updateCareer(requestDTO.getCareer());
-                    })
-                    .orElseGet(() -> {
-                        log.info("새 Spec 생성: career={}", requestDTO.getCareer());
-                        return Spec.create(user, requestDTO.getCareer() != null ? requestDTO.getCareer() : "");
-                    });
+                    .map(existingSpec -> existingSpec.updateCareer(requestDTO.getCareer()))
+                    .orElseGet(() -> Spec.create(user, requestDTO.getCareer() != null ? requestDTO.getCareer() : ""));
             
             specRepository.save(spec);
-            log.info("Spec 저장 완료: specId={}", spec.getId());
-        } else {
-            log.info("요청 DTO가 null입니다.");
         }
 
         // 이미지 업로드 및 저장
@@ -70,7 +59,6 @@ public class MyPageService {
 
         // 응답 DTO 생성
         Spec updatedSpec = specRepository.findByUser(user).orElse(null);
-        log.info("응답 DTO 생성: spec 존재={}, career={}", updatedSpec != null, updatedSpec != null ? updatedSpec.getCareer() : "null");
 
         return ProfileUpdateResponseDTO.builder()
                 .career(updatedSpec != null ? updatedSpec.getCareer() : null)
