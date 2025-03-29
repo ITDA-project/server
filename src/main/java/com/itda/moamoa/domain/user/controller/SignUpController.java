@@ -1,20 +1,25 @@
 package com.itda.moamoa.domain.user.controller;
 
+import com.itda.moamoa.domain.user.entity.dto.SocialUserDto;
 import com.itda.moamoa.domain.user.entity.User;
-import com.itda.moamoa.domain.user.entity.UserDto;
+import com.itda.moamoa.domain.user.entity.dto.UserDto;
 import com.itda.moamoa.domain.user.service.UserService;
 import com.itda.moamoa.global.common.ApiResponse;
 import com.itda.moamoa.global.common.SuccessCode;
+import com.itda.moamoa.global.security.jwt.util.JWTUtil;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -22,6 +27,7 @@ import java.net.URI;
 public class SignUpController {
     private final UserService userService;
     private final ModelMapper modelMapper;
+    private final JWTUtil jwtUtil;
 
     //회원가입 테스트용 메서드, 나중에 삭제
     @GetMapping("/auth/login")
@@ -50,20 +56,29 @@ public class SignUpController {
 
 
     @PostMapping("/auth/signup/{social}")
-    public String singUpSocial(){
-        //1.이미 등록된 이메일인지 확인 (카카오는 이메일이 아닌 username 으로 확인?)
-        //1-1. 이미 등록되었다면 오류 오류 난 다음엔 어떻게 할 것인지?
+    public ResponseEntity<?> singUpSocial(@RequestBody SocialUserDto socialUserDto, @PathVariable String social, HttpServletResponse response) throws IOException {
+        //1. username, 임의의 비밀번호 설정
+        socialUserDto.changeToUserForm(social);
+        User user = modelMapper.map(socialUserDto, User.class);
 
-        //2. username, 임의의 비밀번호 설정
+        //2. access, refresh token 생성
+        String access = jwtUtil.createJwt("access", user.getUsername(), user.getRole(), 36000000L); //1시간
+        String refresh = jwtUtil.createJwt("refresh", user.getUsername(), user.getRole(), 864000000L); //10일
 
-        //3. 이미 소셜로 회원가입한 사용자는 JWT token 만 만들어서 반환
+        //3. User,Refresh Token DB에 저장
+        userService.createSocialUser(user,refresh);
+        //4. JWT(access token,refresh token) 를 클라이언트에 반환
+        response.setHeader("Authorization", "Bearer " + access);
 
-        //4. DB에 저장
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8"); //인코딩
+        response.getWriter().write("{\"refresh_token\": \"" + refresh + "\"}");
 
-        //5. JWT(access token,refresh token) 를 만들어서 클라이언트에 반환
+        //5. 메인 화면으로 리다이렉트
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setLocation(URI.create("http://localhost:8080/api/home"));
 
-        //6. 메인 화면으로 리다이렉트? 사용자가 로그인 전에 봤던 곳으로 리다이렉트?
-        return "redirect:/";
+        return new ResponseEntity<>(httpHeaders,HttpStatus.MOVED_PERMANENTLY);
     }
 
     /**

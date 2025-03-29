@@ -1,5 +1,7 @@
-package com.itda.moamoa.domain.user.entity;
+package com.itda.moamoa.domain.user.entity.dto;
 
+import com.itda.moamoa.domain.user.entity.Gender;
+import com.itda.moamoa.domain.user.entity.SnsDiv;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Getter
 public class UserDto {
-    private Long id;
+//    private Long id;
 
     private String email; //varchar
 

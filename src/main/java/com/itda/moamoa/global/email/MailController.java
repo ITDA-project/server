@@ -1,8 +1,6 @@
 package com.itda.moamoa.global.email;
 
 import com.itda.moamoa.domain.user.service.UserService;
-import com.itda.moamoa.global.common.ApiResponse;
-import com.itda.moamoa.global.common.SuccessCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

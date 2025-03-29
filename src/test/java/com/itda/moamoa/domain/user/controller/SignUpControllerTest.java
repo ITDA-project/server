@@ -2,19 +2,15 @@ package com.itda.moamoa.domain.user.controller;
 
 import com.itda.moamoa.domain.user.entity.Gender;
 import com.itda.moamoa.domain.user.entity.User;
-import com.itda.moamoa.domain.user.entity.UserDto;
+import com.itda.moamoa.domain.user.entity.dto.UserDto;
 import com.itda.moamoa.domain.user.repository.UserRepository;
 import com.itda.moamoa.domain.user.service.UserService;
 import jakarta.persistence.EntityManager;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 
