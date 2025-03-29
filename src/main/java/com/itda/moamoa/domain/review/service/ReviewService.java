@@ -15,6 +15,7 @@ import com.itda.moamoa.domain.user.repository.UserRepository;
 import com.itda.moamoa.global.exception.CustomException;
 import com.itda.moamoa.global.common.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ReviewService {
@@ -33,9 +35,17 @@ public class ReviewService {
     
     @Transactional
     public ReviewResponseDTO createReview(ReviewRequestDTO requestDTO, String username) {
+        // 로그 추가
+        log.info("targetUserId: {}", requestDTO.getTargetUserId());
+        log.info("star: {}", requestDTO.getStar());
+        log.info("sentence: {}", requestDTO.getSentence());
+        log.info("username: {}", username);
+        
         // 리뷰를 작성하는 사용자 조회
         User currentUser = userRepository.findByUsername(username)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        
+        log.info("currentUser ID: {}", currentUser.getId());
         
         // 리뷰 대상 사용자 조회
         User targetUser = userRepository.findById(requestDTO.getTargetUserId())

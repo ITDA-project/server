@@ -6,6 +6,7 @@ import com.itda.moamoa.domain.review.service.ReviewService;
 import com.itda.moamoa.global.common.ApiResponse;
 import com.itda.moamoa.global.common.SuccessCode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/review")
 @RequiredArgsConstructor
@@ -24,6 +26,11 @@ public class ReviewController {
     public ResponseEntity<ApiResponse<ReviewResponseDTO>> createReview(
             @RequestBody ReviewRequestDTO requestDTO,
             @AuthenticationPrincipal UserDetails userDetails) {
+        
+        log.info("리뷰 생성 요청 - 대상 사용자 ID: {}", requestDTO.getTargetUserId());
+        log.info("리뷰 생성 요청 - 별점: {}", requestDTO.getStar());
+        log.info("리뷰 생성 요청 - 내용: {}", requestDTO.getSentence());
+        log.info("리뷰 생성 요청 - 요청자: {}", userDetails.getUsername());
         
         ReviewResponseDTO responseDTO = reviewService.createReview(requestDTO, userDetails.getUsername());
         
