@@ -1,6 +1,6 @@
 package com.itda.moamoa.domain.form.controller;
 
-import com.itda.moamoa.domain.form.dto.FormListResponseDTO;
+//import com.itda.moamoa.domain.form.dto.FormListResponseDTO;
 import com.itda.moamoa.domain.form.dto.FormRequestDTO;
 import com.itda.moamoa.domain.form.dto.FormResponseDTO;
 import com.itda.moamoa.domain.form.service.FormApiService;
@@ -20,20 +20,20 @@ public class FormApiController {
     private final FormApiService formApiService;
 
     // 해당 게시글에 제출된 신청폼 전체 조회
-    @GetMapping
-    public ResponseEntity<ApiResponse<FormListResponseDTO>> getAllForms(@PathVariable long postId, @AuthenticationPrincipal String username, @RequestBody FormRequestDTO requestDto){
-        List<FormListResponseDTO> got = formApiService.getAllForms(postId, username, requestDto);
-
-        ApiResponse<FormListResponseDTO> gotForms = ApiResponse.successList(
-                SuccessCode.OK,
-                "해당 게시글에 제출된 신청폼이 정상적으로 조회 되었습니다.",
-                got,
-                got.size());
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(gotForms);
-    }
+//    @GetMapping
+//    public ResponseEntity<ApiResponse<FormListResponseDTO>> getAllForms(@PathVariable long postId, @AuthenticationPrincipal String username, @RequestBody FormRequestDTO requestDto){
+//        List<FormListResponseDTO> got = formApiService.getAllForms(postId, username, requestDto);
+//
+//        ApiResponse<FormListResponseDTO> gotForms = ApiResponse.successList(
+//                SuccessCode.OK,
+//                "해당 게시글에 제출된 신청폼이 정상적으로 조회 되었습니다.",
+//                got,
+//                got.size());
+//
+//        return ResponseEntity
+//                .status(HttpStatus.OK)
+//                .body(gotForms);
+//    }
 
     // 해당 게시글에 제출된 신청폼 개별 조회
     @GetMapping("/{formId}")

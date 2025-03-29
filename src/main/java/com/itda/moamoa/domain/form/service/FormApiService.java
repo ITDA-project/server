@@ -1,6 +1,6 @@
 package com.itda.moamoa.domain.form.service;
 
-import com.itda.moamoa.domain.form.dto.FormListResponseDTO;
+//import com.itda.moamoa.domain.form.dto.FormListResponseDTO;
 import com.itda.moamoa.domain.form.dto.FormRequestDTO;
 import com.itda.moamoa.domain.form.dto.FormResponseDTO;
 import com.itda.moamoa.domain.form.entity.Form;
@@ -25,18 +25,18 @@ public class FormApiService {
     private final ModelMapper modelMapper;
 
     // 해당 게시글에 제출된 신청폼 전체 조회
-    public List<FormListResponseDTO> getAllForms(long postId, String username, FormRequestDTO requestDto) {
-        User user = userRepository.findByUsername(username)      // 예외처리 1. 회원이 아닌 사용자의 신청서 전체 조회 요청
-                .orElseThrow(() -> new IllegalArgumentException("권한이 없는 사용자입니다."));
-        Post post = postRepository.findById(postId)             // 예외처리 2. 아직 신청서가 제출되지 않은 게시글의 신청서 전체 조회 요청
-                .orElseThrow(() -> new IllegalArgumentException("아직 신청폼이 제출되지 않았습니다."));
-        if (!post.getUser().equals(username))                   // 예외처리 3. 게시글 작성자가 아닌 회원의 신청서 조회 요청
-            throw new IllegalStateException("신청서를 열람할 권한이 없습니다.");
-
-        List<Form> forms = formRepository.findAll();
-
-        return Collections.singletonList(modelMapper.map(forms, FormListResponseDTO.class));
-    }
+//    public List<FormListResponseDTO> getAllForms(long postId, String username, FormRequestDTO requestDto) {
+//        User user = userRepository.findByUsername(username)      // 예외처리 1. 회원이 아닌 사용자의 신청서 전체 조회 요청
+//                .orElseThrow(() -> new IllegalArgumentException("권한이 없는 사용자입니다."));
+//        Post post = postRepository.findById(postId)             // 예외처리 2. 아직 신청서가 제출되지 않은 게시글의 신청서 전체 조회 요청
+//                .orElseThrow(() -> new IllegalArgumentException("아직 신청폼이 제출되지 않았습니다."));
+//        if (!post.getUser().equals(username))                   // 예외처리 3. 게시글 작성자가 아닌 회원의 신청서 조회 요청
+//            throw new IllegalStateException("신청서를 열람할 권한이 없습니다.");
+//
+//        List<Form> forms = formRepository.findAll();
+//
+//        return Collections.singletonList(modelMapper.map(forms, FormListResponseDTO.class));
+//    }
 
     // 해당 게시글에 제출된 신청폼 개별 조회
     // User name image 반환
