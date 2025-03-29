@@ -4,14 +4,13 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-
 import java.util.List;
 
-@Getter                                     // Getter 자동 생성
-@Setter                                     // Setter 자동 생성
-@Builder                                    // Builder Pattern 제공
-@JsonInclude(JsonInclude.Include.NON_NULL)  // JSON 직렬화에서 null 필드 제외
-public class ApiResponse<T> {   // Data Type 자유
+@Getter
+@Setter
+@Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class ApiResponse<T> {
     private String status;
     private int code;
     private String message;

@@ -1,7 +1,5 @@
 package com.itda.moamoa.domain.post.service;
 
-import com.itda.moamoa.domain.form.dto.FormRequestDTO;
-import com.itda.moamoa.domain.form.entity.Form;
 import com.itda.moamoa.domain.post.dto.PostRequestDTO;
 import com.itda.moamoa.domain.post.dto.PostResponseDTO;
 import com.itda.moamoa.domain.post.entity.Post;
@@ -12,12 +10,11 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 
-@Service                    // Service
-@RequiredArgsConstructor    // 필수 필드 생성자
+@Service
+@RequiredArgsConstructor
 public class PostApiService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;

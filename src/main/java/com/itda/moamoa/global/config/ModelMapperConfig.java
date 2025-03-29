@@ -7,9 +7,9 @@ import org.springframework.context.annotation.Configuration;
 import org.modelmapper.config.Configuration.AccessLevel;
 
 //DTO와 Entity 간 변환 자동화 modelmapper
-@Configuration    // 설정 Calss - @Bean 메서드 자동 실행
+@Configuration
 public class ModelMapperConfig {
-    @Bean        // 의존성 주입을 통해 어디서든 사용 가능
+    @Bean
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
 

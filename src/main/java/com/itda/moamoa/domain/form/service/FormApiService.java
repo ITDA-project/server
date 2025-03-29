@@ -13,7 +13,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -33,8 +33,9 @@ public class FormApiService {
         if (!post.getUser().equals(username))                   // 예외처리 3. 게시글 작성자가 아닌 회원의 신청서 조회 요청
             throw new IllegalStateException("신청서를 열람할 권한이 없습니다.");
 
-        // FormListResponseDTO 반환
-        return List.of();
+        List<Form> forms = formRepository.findAll();
+
+        return Collections.singletonList(modelMapper.map(forms, FormListResponseDTO.class));
     }
 
     // 해당 게시글에 제출된 신청폼 개별 조회
@@ -48,10 +49,10 @@ public class FormApiService {
         if (!post.getUser().equals(username))                   // 예외처리 3. 권한이 없는 사용자(Not host)의 신청폼 조회 요청
             throw new IllegalStateException("신청서를 열람할 권한이 없습니다.");
 
-        // 수정 필요 -> FormResponseDTO 반환
-        // return formRepository.findById(formId)                  // 예외처리 4. 존재하지 않는 신청품 조회
-        //        .orElseThrow(() -> new IllegalArgumentException("해당 신청폼이 존재하지 않습니다."));
-        return null;
+        Form form = formRepository.findById(formId)             // 예외처리 4. 존재하지 않는 신청폼 조회
+                .orElseThrow(() -> new IllegalArgumentException("해당 신청폼이 존재하지 않습니다."));
+
+        return modelMapper.map(form, FormResponseDTO.class);
     }
 
     // 신청폼 생성
@@ -73,6 +74,8 @@ public class FormApiService {
 
         Form createdForm = formRepository.save(form);
 
-        return modelMapper.map(createdForm, FormResponseDTO.class);
+        return FormResponseDTO.builder()
+                .content(createdForm.getContent())
+                .build();
     }
 }

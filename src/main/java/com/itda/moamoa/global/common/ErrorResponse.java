@@ -1,20 +1,17 @@
 package com.itda.moamoa.global.common;
 
-import com.itda.moamoa.global.common.ErrorCode;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.Builder;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.validation.BindingResult;
 
-@Getter                                     // Getter 자동 생성
-@Setter                                     // Setter 자동 생성
-@Builder                                    // Builder 제공
+@Getter
+@Setter
+@Builder
 public class ErrorResponse {
     private final String status;
     private final int code;
@@ -22,11 +19,11 @@ public class ErrorResponse {
     private List<FieldError> errors;
 
 
-    @Getter                 // Getter 자동 생성
-    @AllArgsConstructor     // 생성자 생성
-    @NoArgsConstructor      // 기본 생성자 생성
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class FieldError {
-        private String field;       // 문제가 발생한 필드
+        private String field;
         private String message;
     }
 

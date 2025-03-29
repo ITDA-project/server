@@ -5,14 +5,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Getter                         // getter 자동 생성
-@Setter                         // Setter 자동 생성
-@NoArgsConstructor              // 기본 생성자 생성
-@AllArgsConstructor             // 모든 필드 생성자 생성
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 
 public class PostResponseDTO {
     private String title;

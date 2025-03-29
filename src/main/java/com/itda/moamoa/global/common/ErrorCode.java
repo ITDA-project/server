@@ -4,8 +4,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
-@Getter                     // Getter 제공
-@RequiredArgsConstructor    // 필수 필드 생성자
+@Getter
+@RequiredArgsConstructor
 public enum ErrorCode {
     BAD_REQUEST(HttpStatus.BAD_REQUEST, 400, "잘못된 요청입니다."),
     INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, 400, "유효하지 않은 입력값입니다."),

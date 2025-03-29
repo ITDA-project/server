@@ -4,9 +4,6 @@ import com.itda.moamoa.domain.post.entity.Post;
 import com.itda.moamoa.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Entity
 @Getter

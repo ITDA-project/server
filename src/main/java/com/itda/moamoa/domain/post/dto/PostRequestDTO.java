@@ -8,10 +8,10 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 
-@Getter                         // getter 자동 생성
-@Setter                         // Setter 자동 생성
-@NoArgsConstructor              // 기본 생성자 생성
-@AllArgsConstructor             // 모든 필드 생성자 생성
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 
 public class PostRequestDTO {
     private String title;

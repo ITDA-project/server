@@ -4,7 +4,6 @@ import com.itda.moamoa.global.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
-
 @Entity
 @Getter
 @Builder

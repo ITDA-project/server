@@ -2,11 +2,9 @@ package com.itda.moamoa.domain.like.entity;
 
 import com.itda.moamoa.domain.user.entity.User;
 import com.itda.moamoa.domain.post.entity.Post;
-
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
-
 import java.time.LocalDateTime;
 
 @Entity

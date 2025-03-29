@@ -1,7 +1,5 @@
 package com.itda.moamoa.domain.post.controller;
 
-import com.itda.moamoa.domain.form.dto.FormRequestDTO;
-import com.itda.moamoa.domain.form.entity.Form;
 import com.itda.moamoa.domain.post.dto.PostRequestDTO;
 import com.itda.moamoa.domain.post.dto.PostResponseDTO;
 import com.itda.moamoa.domain.post.entity.Post;
@@ -13,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
