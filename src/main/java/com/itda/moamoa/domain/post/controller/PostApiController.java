@@ -22,11 +22,11 @@ public class PostApiController {
 
     // 게시글 전체 조회
     @GetMapping
-    public ResponseEntity<ApiResponse<Post>> getAllPosts(@AuthenticationPrincipal CustomUserDetails userDetails){
+    public ResponseEntity<ApiResponse<PostResponseDTO>> getAllPosts(@AuthenticationPrincipal CustomUserDetails userDetails){
         String username = userDetails != null ? userDetails.getUsername() : null;
-        List<Post> got = postApiService.getAllPosts(username);
+        List<PostResponseDTO> got = postApiService.getAllPosts(username);
 
-        ApiResponse<Post> gotPosts = ApiResponse.successList(
+        ApiResponse<PostResponseDTO> gotPosts = ApiResponse.successList(
                 SuccessCode.OK,
                 "게시글이 정상적으로 조회 되었습니다.",
                 got,
@@ -43,13 +43,12 @@ public class PostApiController {
 
     // 게시글 개별 조회
     @GetMapping("/{postId}")
-    public ResponseEntity<ApiResponse<Post>> getPostById(@PathVariable long postId, @AuthenticationPrincipal CustomUserDetails userDetails){
-        String username = userDetails != null ? userDetails.getUsername() : null;
-        Post got = postApiService.getPostById(postId, username);
+    public ResponseEntity<ApiResponse<PostResponseDTO>> getPostById(@PathVariable long postId){
+        PostResponseDTO got = postApiService.getPostById(postId);
 
-        ApiResponse<Post> gotPost = ApiResponse.success(
+        ApiResponse<PostResponseDTO> gotPost = ApiResponse.success(
                 SuccessCode.OK,
-                ".",
+                "게시글이 정상적으로 조회되었습니다.",
                 got);
 
         return ResponseEntity
@@ -58,52 +57,53 @@ public class PostApiController {
     }
 
     // 게시글 생성 요청
-    @PostMapping
-    public ResponseEntity<ApiResponse<PostResponseDTO>> create(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody PostRequestDTO requestDto) {
-        String username = userDetails != null ? userDetails.getUsername() : null;
-        System.out.println("컨트롤러에서 받은 username: " + username); // 디버깅 로그 추가
+    @PostMapping("/create")
+    public ResponseEntity<ApiResponse<Object>> create(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody PostRequestDTO requestDto) {
+        String username = userDetails.getUsername();
         
-        PostResponseDTO created = postApiService.create(username, requestDto);
+        Long postId = postApiService.create(username, requestDto);
 
-        ApiResponse<PostResponseDTO> createdPost = ApiResponse.success(
+        ApiResponse<Object> createdResponse = ApiResponse.success(
                 SuccessCode.CREATED,
-                "게시글을 성공적으로 등록되셨습니다.",
-                created);
+                "게시글을 성공적으로 등록하였습니다.",
+                null);
 
         return ResponseEntity
-                .status(HttpStatus.CREATED).
-                body(createdPost);
+                .status(HttpStatus.CREATED)
+                .header("Location", "/api/posts/" + postId)
+                .body(createdResponse);
     }
 
     // 게시글 수정 요청
     @PatchMapping("/{postId}")
-    public ResponseEntity<ApiResponse<PostResponseDTO>> update(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable long postId, @RequestBody PostRequestDTO requestDto) {
+    public ResponseEntity<ApiResponse<Object>> update(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable long postId, @RequestBody PostRequestDTO requestDto) {
         String username = userDetails != null ? userDetails.getUsername() : null;
-        PostResponseDTO updated = postApiService.update(username, postId, requestDto);
+        Long updatedPostId = postApiService.update(username, postId, requestDto);
 
-        ApiResponse<PostResponseDTO> updatedPost = ApiResponse.success(
+        ApiResponse<Object> updatedResponse = ApiResponse.success(
                 SuccessCode.OK,
-                "게시글이 성공적으로 수정되셨습니다.",
-                updated);
+                "게시글이 성공적으로 수정되었습니다.",
+                null);
 
         return ResponseEntity
-                .status(HttpStatus.OK).
-                body(updatedPost);
+                .status(HttpStatus.OK)
+                .header("Location", "/api/posts/" + updatedPostId)
+                .body(updatedResponse);
     }
 
     // 게시글 삭제 요청
     @DeleteMapping("/{postId}")
-    public ResponseEntity<ApiResponse<PostResponseDTO>> delete(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable long postId, @RequestBody PostRequestDTO requestDto) {
+    public ResponseEntity<ApiResponse<Object>> delete(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable long postId, @RequestBody PostRequestDTO requestDto) {
         String username = userDetails != null ? userDetails.getUsername() : null;
-        PostResponseDTO deleted = postApiService.delete(username, postId, requestDto);
+        Long deletedPostId = postApiService.delete(username, postId, requestDto);
 
-        ApiResponse<PostResponseDTO> deletedPost = ApiResponse.success(
+        ApiResponse<Object> deletedResponse = ApiResponse.success(
                 SuccessCode.OK,
-                "게시글이 성공적으로 삭제되셨습니다.",
-                deleted);
+                "게시글이 성공적으로 삭제되었습니다.",
+                null);
 
         return ResponseEntity
-                .status(HttpStatus.OK).
-                body(deletedPost);
+                .status(HttpStatus.OK)
+                .body(deletedResponse);
     }
 }

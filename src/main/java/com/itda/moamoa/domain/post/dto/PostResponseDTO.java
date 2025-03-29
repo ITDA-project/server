@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 
 public class PostResponseDTO {
+    private Long id; //postId
     private String title;
     private String content;
     private Category category;
@@ -22,5 +23,10 @@ public class PostResponseDTO {
     private Integer membersMax;
     private String location;
     private LocalDate dueDate;
-    private LocalDateTime createdAt;
+    private String warranty;
+    private LocalDate ActivityStartDate;
+    private LocalDate ActivityEndDate;
+    private LocalDateTime createdAt; //모집 시작 날짜도 얘로 활용
+    //작성자 id
+
 }

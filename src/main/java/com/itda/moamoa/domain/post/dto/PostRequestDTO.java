@@ -17,9 +17,11 @@ public class PostRequestDTO {
     private String title;
     private String content;
     private Category category;
-    private Integer likesCount;
-    private Integer participantCount;
     private Integer membersMax;
     private String location;
     private LocalDate dueDate;
+    private String warranty;
+    private LocalDate ActivityStartDate;
+    private LocalDate ActivityEndDate;
+    //likesCount, participantsCOunt 제외
 }
