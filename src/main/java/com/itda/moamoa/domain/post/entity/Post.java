@@ -26,7 +26,8 @@ public class Post extends BaseEntity{
     @Column(nullable = false)
     private String title;
 
-    @Column(columnDefinition = "LONGTEXT", nullable = false)
+    @Lob
+    @Column(nullable = false)
     private String content;
 
     @Enumerated(EnumType.STRING)
@@ -41,10 +42,10 @@ public class Post extends BaseEntity{
     @Column(nullable = false)
     private LocalDate dueDate;
 
-    @Column(nullable = false)
+    //@Column(nullable = false)
     private String warranty;
 
-    @Column(nullable = false)
+    //@Column(nullable = false)
     private LocalDate ActivityStartDate;
 
     @Column

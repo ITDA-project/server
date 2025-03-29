@@ -22,6 +22,7 @@ public class Spec {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "career", columnDefinition = "LONGTEXT", nullable = false)
+    @Lob
+    @Column(name = "career", nullable = false)
     private String career;
 }
