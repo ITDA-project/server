@@ -17,7 +17,7 @@ public class Post extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_id")
-    private long post_id;
+    private long postId;
 
     @ManyToOne(fetch = FetchType.LAZY)      // Post:User = n:1
     @JoinColumn(name = "user_id")
@@ -79,4 +79,5 @@ public class Post extends BaseEntity{
 
     public void plusLikeCount() {   this.likesCount += 1; }
     public void minusLikeCount() {  this.likesCount -= 1; }
+    
 }

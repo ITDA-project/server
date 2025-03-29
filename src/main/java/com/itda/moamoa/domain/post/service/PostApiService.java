@@ -1,7 +1,9 @@
 package com.itda.moamoa.domain.post.service;
 
+import com.itda.moamoa.domain.post.dto.PostListResponseDTO;
 import com.itda.moamoa.domain.post.dto.PostRequestDTO;
 import com.itda.moamoa.domain.post.dto.PostResponseDTO;
+import com.itda.moamoa.domain.post.entity.Category;
 import com.itda.moamoa.domain.post.entity.Post;
 import com.itda.moamoa.domain.post.repository.PostRepository;
 import com.itda.moamoa.domain.user.entity.User;
@@ -9,11 +11,10 @@ import com.itda.moamoa.domain.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import jakarta.annotation.PostConstruct;
-
-
 
 @Service
 @RequiredArgsConstructor
@@ -25,19 +26,11 @@ public class PostApiService {
     @PostConstruct
     public void setupMapper() { //response에 postId 받아오도록
         modelMapper.createTypeMap(Post.class, PostResponseDTO.class)
-                .addMapping(Post::getPost_id, PostResponseDTO::setId);
+                .addMapping(Post::getPostId, PostResponseDTO::setId);
     }
 
     // 게시글 전체 조회
-    public List<PostResponseDTO> getAllPosts(String username) {
-        // 1. 모든 게시글 조회
-        List<Post> posts = postRepository.findAll();
-        
-        // 2. PostResponseDTO 리스트로 변환
-        return posts.stream()
-                .map(post -> modelMapper.map(post, PostResponseDTO.class))
-                .toList();
-    }
+
 
     // 게시글 조건 조회
 
@@ -69,7 +62,7 @@ public class PostApiService {
         Post createdPost = postRepository.save(post);
 
         // 4. Post ID 반환
-        return createdPost.getPost_id();
+        return createdPost.getPostId();
     }
 
     // 게시글 수정
@@ -96,7 +89,7 @@ public class PostApiService {
         post.changeLocation(requestDto.getLocation());
 
         // 5. 수정된 게시글 ID 반환
-        return post.getPost_id();
+        return post.getPostId();
     }
 
 
@@ -119,6 +112,82 @@ public class PostApiService {
         post.softDelete();
 
         // 5. 삭제된 게시글 ID 반환
-        return post.getPost_id();
+        return post.getPostId();
+    }
+
+    // 커서 기반 페이지네이션 - 글 목록 조회
+    public List<PostListResponseDTO> getPostsByCursor(Long cursor, Category category, String sort, int size) {
+        // 초기 요청인 경우 가장 큰 ID 값 설정
+        if (cursor == null || cursor <= 0) {
+            cursor = Long.MAX_VALUE;
+        }
+        
+        // 페이지 사이즈 설정
+        PageRequest pageRequest = PageRequest.of(0, size);
+        
+        // 정렬 기준과 카테고리에 따라 다른 메서드 호출
+        List<Post> posts;
+        if ("likesCount".equals(sort)) {
+            if (category != null) {
+                posts = postRepository.findByPostIdLessThanAndCategoryOrderByLikesCountDescCreatedAtDesc(cursor, category, pageRequest);
+            } else {
+                posts = postRepository.findByPostIdLessThanOrderByLikesCountDescCreatedAtDesc(cursor, pageRequest);
+            }
+        } else {
+            // 기본은 최신순
+            if (category != null) {
+                posts = postRepository.findByPostIdLessThanAndCategoryOrderByCreatedAtDesc(cursor, category, pageRequest);
+            } else {
+                posts = postRepository.findByPostIdLessThanOrderByCreatedAtDesc(cursor, pageRequest);
+            }
+        }
+        
+        // PostListResponseDTO로 변환
+        return posts.stream()
+                .map(this::convertToListDTO)
+                .toList();
+    }
+    
+    // 내가 작성한 글 목록 조회
+    public List<PostListResponseDTO> getPostsByUserId(Long userId, Long cursor, int size) {
+        if (cursor == null || cursor <= 0) {
+            cursor = Long.MAX_VALUE;
+        }
+        
+        PageRequest pageRequest = PageRequest.of(0, size);
+        List<Post> posts = postRepository.findByUserIdAndPostIdLessThanOrderByCreatedAtDesc(userId, cursor, pageRequest);
+        
+        return posts.stream()
+                .map(this::convertToListDTO)
+                .toList();
+    }
+    
+    // 내가 좋아요한 글 목록 조회
+    public List<PostListResponseDTO> getLikedPostsByUserId(Long userId, Long cursor, int size) {
+        // TODO: 좋아요 기능 구현 후 활성화
+        return List.of(); // 임시로 빈 목록 반환
+        
+        /*
+        if (cursor == null || cursor <= 0) {
+            cursor = Long.MAX_VALUE;
+        }
+        
+        PageRequest pageRequest = PageRequest.of(0, size);
+        List<Post> posts = postRepository.findByLikesUserIdAndPostIdLessThanOrderByCreatedAtDesc(userId, cursor, pageRequest);
+        
+        return posts.stream()
+                .map(this::convertToListDTO)
+                .toList();
+        */
+    }
+    
+    // Post 엔티티를 PostListResponseDTO로 변환하는 헬퍼 메소드
+    private PostListResponseDTO convertToListDTO(Post post) {
+        return new PostListResponseDTO(
+            post.getPostId(),
+            post.getTitle(),
+            post.getLikesCount(),
+            post.getCreatedAt()
+        );
     }
 }
