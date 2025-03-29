@@ -102,9 +102,9 @@ public class PostApiController {
 
     // 게시글 삭제 요청
     @DeleteMapping("/{postId}")
-    public ResponseEntity<ApiResponse<Object>> delete(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable long postId, @RequestBody PostRequestDTO requestDto) {
+    public ResponseEntity<ApiResponse<Object>> delete(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable long postId) {
         String username = userDetails != null ? userDetails.getUsername() : null;
-        Long deletedPostId = postApiService.delete(username, postId, requestDto);
+        Long deletedPostId = postApiService.delete(username, postId);
 
         ApiResponse<Object> deletedResponse = ApiResponse.success(
                 SuccessCode.OK,

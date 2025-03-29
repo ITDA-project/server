@@ -95,7 +95,7 @@ public class PostApiService {
 
     // 게시글 삭제
     @Transactional
-    public Long delete(String username, long postId, PostRequestDTO requestDto){
+    public Long delete(String username, long postId){
         // 1. User 조회
         User user = userRepository.findByUsername(username)  // 예외처리 1. 존재하지 않는 사용자의 게시물 생성 요청
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
