@@ -21,7 +21,7 @@ public class PostRequestDTO {
     private String location;
     private LocalDate dueDate;
     private String warranty;
-    private LocalDate ActivityStartDate;
-    private LocalDate ActivityEndDate;
+    private LocalDate activityStartDate;
+    private LocalDate activityEndDate;
     //likesCount, participantsCOunt 제외
 }

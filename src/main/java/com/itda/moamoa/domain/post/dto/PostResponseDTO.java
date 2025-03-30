@@ -24,8 +24,8 @@ public class PostResponseDTO {
     private String location;
     private LocalDate dueDate;
     private String warranty;
-    private LocalDate ActivityStartDate;
-    private LocalDate ActivityEndDate;
+    private LocalDate activityStartDate;
+    private LocalDate activityEndDate;
     private LocalDateTime createdAt; //모집 시작 날짜도 얘로 활용
     //작성자 id
 

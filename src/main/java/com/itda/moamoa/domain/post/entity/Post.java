@@ -46,10 +46,10 @@ public class Post extends BaseEntity{
     private String warranty;
 
     //@Column(nullable = false)
-    private LocalDate ActivityStartDate;
+    private LocalDate activityStartDate;
 
     @Column
-    private LocalDate ActivityEndDate;
+    private LocalDate activityEndDate;
 
     @Builder.Default
     private Integer likesCount = 0;
