@@ -123,6 +123,10 @@ public class FormApiService {
                 
         Post post = postRepository.findById(postId)             // 예외처리 2. 삭제된 게시글의 신청서 수락 요청
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시물입니다."));
+
+        if (!post.getUser().getUsername().equals(username))     // 예외처리 3. 권한이 없는 사용자(Not host)의 신청서 수락 요청
+            throw new IllegalStateException("신청서를 수락할 권한이 없습니다.");
+
         Form form = formRepository.findById(formId)             // 예외처리 3. 존재하지 않는 신청서를 수락 요청
                 .orElseThrow(() -> new IllegalArgumentException("신청폼이 존재하지 않습니다."));
 
@@ -158,6 +162,10 @@ public class FormApiService {
                 
         Post post = postRepository.findById(postId)             // 예외처리 2. 삭제된 게시글의 신청서 거절 요청
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시물입니다."));
+
+        if (!post.getUser().getUsername().equals(username))     // 예외처리 3. 권한이 없는 사용자(Not host)의 신청서 거절 요청
+            throw new IllegalStateException("신청서를 거절할 권한이 없습니다.");
+
         Form form = formRepository.findById(formId)             // 예외처리 3. 존재하지 않는 신청서를 거절 요청
                 .orElseThrow(() -> new IllegalArgumentException("신청폼이 존재하지 않습니다."));
 
