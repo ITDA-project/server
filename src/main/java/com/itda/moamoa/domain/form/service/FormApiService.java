@@ -122,12 +122,18 @@ public class FormApiService {
         Form form = formRepository.findById(formId)             // 예외처리 3. 존재하지 않는 신청서를 수락 요청
                 .orElseThrow(() -> new IllegalArgumentException("신청폼이 존재하지 않습니다."));
 
-        Participant participant = participantRepository.findByUserUsernameAndPost(username, post);
-
         form.updateFormStatus(FormStatus.ACCEPT);
-
-        participant.updateRole(Role.PARTICIPANT);
-        participant.updateParticipantStatus(ParticipantStatus.ENTER);
+        
+        // 폼 작성자를 participant로 추가
+        User formCreator = form.getUser();
+        Participant formCreatorParticipant = Participant.builder()
+                .user(formCreator)
+                .post(post)
+                .role(Role.PARTICIPANT)
+                .participantStatus(ParticipantStatus.ENTER)
+                .build();
+        
+        participantRepository.save(formCreatorParticipant);
     }
 
     // 신청서 거절
