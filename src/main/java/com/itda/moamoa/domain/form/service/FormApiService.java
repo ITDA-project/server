@@ -51,8 +51,8 @@ public class FormApiService {
         // 페이지 사이즈 설정
         PageRequest pageRequest = PageRequest.of(0, size);
         
-        // 커서 기반으로 id가 작은 순서대로 폼 목록 조회
-        List<Form> forms = formRepository.findByPostAndFormIdLessThanOrderByFormIdDesc(post, cursor, pageRequest);
+        // 커서 기반으로 id가 작은 순서대로 폼 목록 조회 (FormStatus.APPLY인 것만)
+        List<Form> forms = formRepository.findByPostAndFormStatusAndFormIdLessThanOrderByFormIdDesc(post, FormStatus.APPLY, cursor, pageRequest);
         
         // FormItemDTO 리스트로 변환
         List<FormItemDTO> formItemDTOs = forms.stream()
