@@ -31,4 +31,8 @@ public class Participant {
 
     @Enumerated(EnumType.STRING)
     private ParticipantStatus participantStatus;
+
+    public void updateRole(Role role) { this.role = role; }
+
+    public void updateParticipantStatus(ParticipantStatus participantStatus) {  this.participantStatus = participantStatus; }
 }

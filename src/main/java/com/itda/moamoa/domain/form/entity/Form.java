@@ -32,8 +32,7 @@ public class Form {
     @JoinColumn(name = "user_id")
     private User user;
 
-    // Setter
     public void setUser(User user) { this.user = user; }
-
     public void setPost(Post post) { this.post = post; }
+    public void updateFormStatus(FormStatus formStatus) {   this.formStatus = formStatus; }
 }

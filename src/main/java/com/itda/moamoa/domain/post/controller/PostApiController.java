@@ -5,6 +5,7 @@ import com.itda.moamoa.domain.post.dto.PostResponseDTO;
 import com.itda.moamoa.domain.post.dto.PostListResponseDTO;
 import com.itda.moamoa.domain.post.entity.Category;
 import com.itda.moamoa.domain.post.service.PostApiService;
+import com.itda.moamoa.domain.user.entity.User;
 import com.itda.moamoa.domain.user.repository.UserRepository;
 import com.itda.moamoa.global.common.ApiResponse;
 import com.itda.moamoa.global.common.SuccessCode;
@@ -63,7 +64,10 @@ public class PostApiController {
 
     // 게시글 생성 요청
     @PostMapping("/create")
-    public ResponseEntity<ApiResponse<Object>> create(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody PostRequestDTO requestDto) {
+    public ResponseEntity<ApiResponse<Object>> create(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestBody PostRequestDTO requestDto) {
+
         if (userDetails == null) {
             throw new IllegalArgumentException("로그인이 필요합니다.");
         }
@@ -85,7 +89,11 @@ public class PostApiController {
 
     // 게시글 수정 요청
     @PatchMapping("/{postId}")
-    public ResponseEntity<ApiResponse<Object>> update(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable long postId, @RequestBody PostRequestDTO requestDto) {
+    public ResponseEntity<ApiResponse<Object>> update(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable long postId,
+            @RequestBody PostRequestDTO requestDto) {
+
         String username = userDetails != null ? userDetails.getUsername() : null;
         Long updatedPostId = postApiService.update(username, postId, requestDto);
 
@@ -102,7 +110,10 @@ public class PostApiController {
 
     // 게시글 삭제 요청
     @DeleteMapping("/{postId}")
-    public ResponseEntity<ApiResponse<Object>> delete(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable long postId) {
+    public ResponseEntity<ApiResponse<Object>> delete(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable long postId) {
+
         String username = userDetails != null ? userDetails.getUsername() : null;
         Long deletedPostId = postApiService.delete(username, postId);
 
@@ -116,54 +127,54 @@ public class PostApiController {
                 .body(deletedResponse);
     }
 
-//    // 내가 쓴 글 목록 조회
-//    @GetMapping("/my")
-//    public ResponseEntity<ApiResponse<PostListResponseDTO>> getMyPosts(
-//            @AuthenticationPrincipal CustomUserDetails userDetails,
-//            @RequestParam(required = false) Long cursor,
-//            @RequestParam(defaultValue = "10") int size) {
-//
-//        if (userDetails == null) {
-//            throw new IllegalArgumentException("로그인이 필요합니다.");
-//        }
-//
-//        User user = userRepository.findByUsername(userDetails.getUsername())
-//                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
-//
-//        List<PostListResponseDTO> posts = postApiService.getPostsByUserId(user.getId(), cursor, size);
-//
-//        ApiResponse<PostListResponseDTO> response = ApiResponse.successList(
-//                SuccessCode.OK,
-//                "내가 작성한 게시글 목록이 정상적으로 조회되었습니다.",
-//                posts,
-//                posts.size());
-//
-//        return ResponseEntity.ok(response);
-//    }
-//
-//    // 내가 좋아요한 글 목록 조회
-//    @GetMapping("/liked")
-//    public ResponseEntity<ApiResponse<PostListResponseDTO>> getLikedPosts(
-//            @AuthenticationPrincipal CustomUserDetails userDetails,
-//            @RequestParam(required = false) Long cursor,
-//            @RequestParam(defaultValue = "10") int size) {
-//
-//        if (userDetails == null) {
-//            throw new IllegalArgumentException("로그인이 필요합니다.");
-//        }
-//
-//        User user = userRepository.findByUsername(userDetails.getUsername())
-//                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
-//
-//        // TODO: 좋아요 기능 구현 후 테스트
-//        List<PostListResponseDTO> posts = postApiService.getLikedPostsByUserId(user.getId(), cursor, size);
-//
-//        ApiResponse<PostListResponseDTO> response = ApiResponse.successList(
-//                SuccessCode.OK,
-//                "내가 좋아요한 게시글 목록이 정상적으로 조회되었습니다.",
-//                posts,
-//                posts.size());
-//
-//        return ResponseEntity.ok(response);
-//    }
+    // 내가 쓴 글 목록 조회
+    @GetMapping("/my")
+    public ResponseEntity<ApiResponse<PostListResponseDTO>> getMyPosts(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestParam(required = false) Long cursor,
+            @RequestParam(defaultValue = "10") int size) {
+
+        if (userDetails == null) {
+            throw new IllegalArgumentException("로그인이 필요합니다.");
+        }
+
+        User user = userRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
+        List<PostListResponseDTO> posts = postApiService.getPostsByUserId(user.getId(), cursor, size);
+
+        ApiResponse<PostListResponseDTO> response = ApiResponse.successList(
+                SuccessCode.OK,
+                "내가 작성한 게시글 목록이 정상적으로 조회되었습니다.",
+                posts,
+                posts.size());
+
+        return ResponseEntity.ok(response);
+    }
+
+   // 내가 좋아요한 글 목록 조회
+    @GetMapping("/liked")
+    public ResponseEntity<ApiResponse<PostListResponseDTO>> getLikedPosts(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestParam(required = false) Long cursor,
+            @RequestParam(defaultValue = "10") int size) {
+
+        if (userDetails == null) {
+            throw new IllegalArgumentException("로그인이 필요합니다.");
+        }
+
+        User user = userRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
+        // TODO: 좋아요 기능 구현 후 테스트
+        List<PostListResponseDTO> posts = postApiService.getLikedPostsByUserId(user.getId(), cursor, size);
+
+        ApiResponse<PostListResponseDTO> response = ApiResponse.successList(
+                SuccessCode.OK,
+                "내가 좋아요한 게시글 목록이 정상적으로 조회되었습니다.",
+                posts,
+                posts.size());
+
+        return ResponseEntity.ok(response);
+    }
 }

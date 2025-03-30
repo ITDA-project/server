@@ -2,17 +2,14 @@ package com.itda.moamoa.domain.somoim.entity;
 
 import com.itda.moamoa.domain.participant.entity.Participant;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
 @ToString
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class Somoim {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
