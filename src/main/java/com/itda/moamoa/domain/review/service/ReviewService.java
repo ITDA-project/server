@@ -78,6 +78,10 @@ public class ReviewService {
         
         Review savedReview = reviewRepository.save(review);
         
+        // 대상 사용자의 평균 별점 업데이트
+        targetUser.addReview(requestDTO.getStar());
+        userRepository.save(targetUser);
+        
         return ReviewResponseDTO.from(savedReview);
     }
     
