@@ -2,7 +2,7 @@ package com.itda.moamoa.domain.review.service;
 
 import com.itda.moamoa.domain.participant.entity.Participant;
 import com.itda.moamoa.domain.participant.entity.ParticipantStatus;
-import com.itda.moamoa.domain.participant.repository.ParticipantRepositroy;
+import com.itda.moamoa.domain.participant.repository.ParticipantRepository;
 import com.itda.moamoa.domain.review.dto.request.ReviewRequestDTO;
 import com.itda.moamoa.domain.review.dto.response.ReviewResponseDTO;
 import com.itda.moamoa.domain.review.entity.Review;
@@ -30,7 +30,7 @@ public class ReviewService {
     
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
-    private final ParticipantRepositroy participantRepositroy;
+    private final ParticipantRepository participantRepository;
     private final SomoimRepository somoimRepository;
     
     @Transactional
@@ -59,7 +59,7 @@ public class ReviewService {
 //        }
 //
 //        // 대상 사용자가 동일한 소모임에 참여했는지 확인
-//        boolean hasParticipatedTogether = participantRepositroy.existsByUserIdAndSomoimIn(
+//        boolean hasParticipatedTogether = participantRepository.existsByUserIdAndSomoimIn(
 //                targetUser.getId(),
 //                reviewSomoims
 //        );

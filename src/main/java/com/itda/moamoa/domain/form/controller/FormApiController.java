@@ -25,8 +25,7 @@ public class FormApiController {
     @GetMapping
     public ResponseEntity<ApiResponse<FormListResponseDTO>> getAllForms(
             @PathVariable long postId,
-            @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestBody FormRequestDTO requestDto){
+            @AuthenticationPrincipal CustomUserDetails userDetails){
 
         // if (userDetails == null) {
         //     throw new IllegalArgumentException("로그인이 필요합니다.");
@@ -34,7 +33,7 @@ public class FormApiController {
         
         String username = userDetails.getUsername();
         
-        List<FormListResponseDTO> got = formApiService.getAllForms(postId, username, requestDto);
+        List<FormListResponseDTO> got = formApiService.getAllForms(postId, username);
 
         ApiResponse<FormListResponseDTO> gotForms = ApiResponse.successList(
                 SuccessCode.OK,
@@ -76,6 +75,9 @@ public class FormApiController {
             @PathVariable long postId,
             @RequestBody FormRequestDTO requestDto){
 
+        // if (userDetails == null) {
+        //     throw new IllegalArgumentException("로그인이 필요합니다.");
+        // }
         
         String username = userDetails.getUsername();
         
