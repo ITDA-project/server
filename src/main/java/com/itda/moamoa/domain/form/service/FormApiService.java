@@ -28,16 +28,6 @@ public class FormApiService {
     private final UserRepository userRepository;
     private final ParticipantRepository participantRepository;
 
-    // 해당 게시글에 제출된 신청폼 전체 조회
-//     public List<FormListResponseDTO> getAllForms(long postId, String username) {
-//         User user = userRepository.findByUsername(username)      // 예외처리 1. 회원이 아닌 사용자의 신청서 전체 조회 요청
-//                 .orElseThrow(() -> new IllegalArgumentException("권한이 없는 사용자입니다."));
-//         Post post = postRepository.findById(postId)             // 예외처리 2. 아직 신청서가 제출되지 않은 게시글의 신청서 전체 조회 요청
-//                 .orElseThrow(() -> new IllegalArgumentException("아직 신청폼이 제출되지 않았습니다."));
-//         if (!post.getUser().getUsername().equals(username))     // 예외처리 3. 게시글 작성자가 아닌 회원의 신청서 조회 요청
-//             throw new IllegalStateException("신청서를 열람할 권한이 없습니다.");
-
-
     // 커서 기반 페이지네이션으로 폼 목록 조회
     public FormListResponseDTO getFormsByCursor(long postId, Long cursor, int size, String username) {
         // 사용자 권한 검증

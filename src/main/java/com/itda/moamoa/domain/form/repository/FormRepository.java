@@ -11,6 +11,5 @@ import java.util.List;
 @Repository
 public interface FormRepository extends JpaRepository<Form, Long> {
     boolean existsByUserAndPost(User user, Post post);
-    List<Form> findByPost(Post post);
     List<Form> findByPostAndFormIdLessThanOrderByFormIdDesc(Post post, Long cursor, Pageable pageable);
 }
