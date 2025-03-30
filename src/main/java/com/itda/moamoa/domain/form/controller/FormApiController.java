@@ -52,13 +52,12 @@ public class FormApiController {
     public ResponseEntity<ApiResponse<FormResponseDTO>> getFormById(
             @PathVariable long postId,
             @PathVariable long formId,
-            @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestBody FormRequestDTO requestDto){
+            @AuthenticationPrincipal CustomUserDetails userDetails){
 
         
         String username = userDetails.getUsername();
         
-        FormResponseDTO got = formApiService.getFormById(postId, formId, username, requestDto);
+        FormResponseDTO got = formApiService.getFormById(postId, formId, username);
 
         ApiResponse<FormResponseDTO> gotForm = ApiResponse.success(
                 SuccessCode.OK,
