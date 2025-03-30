@@ -124,11 +124,16 @@ public class FormApiService {
 
         form.updateFormStatus(FormStatus.ACCEPT);
         
-        // 폼 작성자를 participant로 추가
+        // organizer의 participant 정보에서 somoim 정보 가져오기
+        Participant organizerParticipant = participantRepository.findByPostAndRole(post, Role.ORGANIZER)
+                .orElseThrow(() -> new IllegalArgumentException("게시글 작성자 정보를 찾을 수 없습니다."));
+        
+        // 폼 작성자를 participant로 추가 (somoim 정보 포함)
         User formCreator = form.getUser();
         Participant formCreatorParticipant = Participant.builder()
                 .user(formCreator)
                 .post(post)
+                .somoim(organizerParticipant.getSomoim())  // organizer의 somoim 정보 사용
                 .role(Role.PARTICIPANT)
                 .participantStatus(ParticipantStatus.ENTER)
                 .build();
