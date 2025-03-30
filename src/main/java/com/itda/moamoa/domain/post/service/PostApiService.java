@@ -54,6 +54,7 @@ public class PostApiService {
         Participant participant = Participant.builder()
                 .user(user)
                 .somoim(somoim)
+                .post(createdPost)
                 .role(Role.ORGANIZER)
                 .participantStatus(ParticipantStatus.ENTER)
                 .build();
