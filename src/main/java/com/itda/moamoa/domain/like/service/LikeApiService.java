@@ -1,7 +1,5 @@
 package com.itda.moamoa.domain.like.service;
 
-import com.itda.moamoa.domain.like.dto.LIkeRequestDTO;
-import com.itda.moamoa.domain.like.dto.LikeResponseDTO;
 import com.itda.moamoa.domain.like.entity.Like;
 import com.itda.moamoa.domain.like.repository.LikeRepository;
 import com.itda.moamoa.domain.post.entity.Post;
@@ -20,7 +18,6 @@ public class LikeApiService {
     private final LikeRepository likeRepository;
     private final UserRepository userRepository;
     private final PostRepository postRepository;
-    private final ModelMapper modelMapper;
 
     // 좋아요 생성
     @Transactional
@@ -45,7 +42,7 @@ public class LikeApiService {
 
     // 좋아요 삭제
     @Transactional
-    public Like delete(String username, long postId) {
+    public void delete(String username, long postId) {
         User user = userRepository.findByUsername(username)         // 예외처리 1. 권한이 없는 사용자의 좋아요 삭제 요청
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
         Post post = postRepository.findById(postId)                 // 예외처리 2. 삭제된 게시물의 좋아요 삭제 요청
@@ -55,7 +52,5 @@ public class LikeApiService {
 
         likeRepository.delete(like);
         post.minusLikeCount();
-
-        return like;
     }
 }
