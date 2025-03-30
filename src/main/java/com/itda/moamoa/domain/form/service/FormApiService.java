@@ -115,8 +115,10 @@ public class FormApiService {
     // 신청서 수락
     @Transactional
     public void acceptForm(long postId, long formId, String username) {
-        User user = userRepository.findByUsername(username)      // 예외처리 1. 작성자가 아닌 회원의 신청서 수락 요청
+        // 예외처리 1. 존재하지 않는 사용자의 신청서 수락 요청 확인
+        userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("권한이 없는 사용자입니다."));
+                
         Post post = postRepository.findById(postId)             // 예외처리 2. 삭제된 게시글의 신청서 수락 요청
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시물입니다."));
         Form form = formRepository.findById(formId)             // 예외처리 3. 존재하지 않는 신청서를 수락 요청
@@ -144,8 +146,10 @@ public class FormApiService {
     // 신청서 거절
     @Transactional
     public void refuseForm(long postId, long formId, String username) {
-        User user = userRepository.findByUsername(username)      // 예외처리 1. 작성자가 아닌 회원의 신청서 거절 요청
+        // 예외처리 1. 존재하지 않는 사용자의 신청서 거절 요청 확인
+        userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("권한이 없는 사용자입니다."));
+                
         Post post = postRepository.findById(postId)             // 예외처리 2. 삭제된 게시글의 신청서 거절 요청
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시물입니다."));
         Form form = formRepository.findById(formId)             // 예외처리 3. 존재하지 않는 신청서를 거절 요청
