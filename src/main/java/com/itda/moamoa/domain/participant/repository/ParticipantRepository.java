@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ParticipantRepository extends JpaRepository<Participant, Long> {
-    Participant findByUsernameAndPost(String username, Post post);
+    Participant findByUserUsernameAndPost(String username, Post post); //user 객체 안의 username
 }
