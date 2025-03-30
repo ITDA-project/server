@@ -22,16 +22,9 @@ public class LikeApiService {
     private final PostRepository postRepository;
     private final ModelMapper modelMapper;
 
-    // 좋아요 수 조회
-    public Integer getLikeCount(long postId) {
-        Post post = postRepository.findById(postId).orElse(null);
-
-        return post.getLikesCount();
-    }
-
     // 좋아요 생성
     @Transactional
-    public LikeResponseDTO create(String username, long postId, LIkeRequestDTO requestDto){
+    public Like create(String username, long postId){
         User user = userRepository.findByUsername(username)      // 예외처리 1. 존재하지 않는 사용자의 좋아요 생성 요청
                 .orElseThrow(()-> new IllegalArgumentException("존재하지 않는 사용자입니다."));
         Post post = postRepository.findById(postId)             // 예외처리 2. 존재하지 않는 게시물에 좋아요 생성 요청
@@ -40,28 +33,29 @@ public class LikeApiService {
             throw new IllegalStateException("이미 좋아요를 누른 게시물입니다.");
         }
 
-        Like like = modelMapper.map(requestDto, Like.class);
-        like.setUser(user);     // 연관 관계
-        like.setPost(post);
-
+        Like like = Like.builder()
+                .user(user)
+                .post(post)
+                .build();
         Like createdLike = likeRepository.save(like);
         post.plusLikeCount();
 
-        return modelMapper.map(createdLike, LikeResponseDTO.class);
+        return createdLike;
     }
 
     // 좋아요 삭제
     @Transactional
-    public LikeResponseDTO delete(String username, long likeId, LIkeRequestDTO requestDto) {
-        User uesr = userRepository.findByUsername(username)     // 예외처리 1. 권한이 없는 사용자의 좋아요 삭제 요청
-                .orElseThrow(() -> new IllegalArgumentException("좋아요를 삭제할 권한이 없습니다."));
-        Like like = likeRepository.findById(likeId)             // 예외처리 2. 해당 게시글에 좋아요를 누르지 않은 경우
-                .orElseThrow(() -> new IllegalArgumentException("해당 게시글에 좋아요를 누르지 않으셨습니다."));
-        Post post = like.getPost();
+    public Like delete(String username, long postId) {
+        User user = userRepository.findByUsername(username)         // 예외처리 1. 권한이 없는 사용자의 좋아요 삭제 요청
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+        Post post = postRepository.findById(postId)                 // 예외처리 2. 삭제된 게시물의 좋아요 삭제 요청
+                .orElseThrow(() -> new IllegalArgumentException("게시물이 존재하지 않습니다."));
+        Like like = likeRepository.findByUserAndPost(user, post)   // 예외처리 3.
+                .orElseThrow(() -> new IllegalStateException("해당 게시물에 좋아요를 누르지 않으셨습니다."));
 
         likeRepository.delete(like);
         post.minusLikeCount();
 
-        return modelMapper.map(like, LikeResponseDTO.class);
+        return like;
     }
 }
