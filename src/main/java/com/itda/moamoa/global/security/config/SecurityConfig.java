@@ -15,6 +15,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
@@ -40,10 +42,9 @@ public class JwtSecurityConfig {
     }
     //비밀번호 인코딩
     @Bean
-    public BCryptPasswordEncoder bCryptPasswordEncoder(){
-        return new BCryptPasswordEncoder();
+    public PasswordEncoder passwordEncoder() {
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         //csrf disable - session의 경우 필수 방어 필요, jwt는 stateless
@@ -60,8 +61,8 @@ public class JwtSecurityConfig {
         //경로별 인가 작업
         http
                 .authorizeHttpRequests((auth)->auth
-                        .requestMatchers("/login", "/join").permitAll()
-                        .requestMatchers("/auth/login","/", "/auth/signup/**", "/auth").permitAll()
+                        .requestMatchers( "/join","/", "auth").permitAll()
+                        .requestMatchers("/auth/login", "/api/auth/login","/api/auth/signup/**", "/error","/api/auth/password/find").permitAll()
 
                         .requestMatchers(HttpMethod.GET, "/posts", "/posts/{postId}").permitAll() //GET 요청 허용
                         .requestMatchers(HttpMethod.POST, "/posts/search/**").permitAll()

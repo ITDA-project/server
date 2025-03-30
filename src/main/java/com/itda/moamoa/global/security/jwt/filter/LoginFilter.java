@@ -77,7 +77,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         //응답 설정
         //access 토큰은 헤더로
-        response.setHeader("access", access);
+        response.setHeader("Authorization", "Bearer " + access);
 
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8"); //인코딩
