@@ -52,7 +52,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
             return authenticationManager.authenticate(authToken);
         } catch (IOException e) {
-            throw new AuthenticationException("failed to parse login reqeust body") {
+            throw new AuthenticationException("failed to parse login request body") {
             };
         }
     }
@@ -77,7 +77,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         //응답 설정
         //access 토큰은 헤더로
-        response.setHeader("Authorization", "Bearer " + access);
+        response.setHeader("access", access);
 
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8"); //인코딩
