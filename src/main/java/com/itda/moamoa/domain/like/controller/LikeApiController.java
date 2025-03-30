@@ -1,8 +1,5 @@
 package com.itda.moamoa.domain.like.controller;
 
-import com.itda.moamoa.domain.like.dto.LIkeRequestDTO;
-import com.itda.moamoa.domain.like.dto.LikeResponseDTO;
-import com.itda.moamoa.domain.like.entity.Like;
 import com.itda.moamoa.domain.like.service.LikeApiService;
 import com.itda.moamoa.global.common.ApiResponse;
 import com.itda.moamoa.global.common.SuccessCode;
