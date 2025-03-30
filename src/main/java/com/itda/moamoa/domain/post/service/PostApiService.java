@@ -44,6 +44,8 @@ public class PostApiService {
 
         Post post = modelMapper.map(requestDto, Post.class);
         post.setUser(user);     // 연관 관계
+        // 게시글 작성자(organizer)도 참가자로 계산하여 초기값 1 설정
+        post.incrementParticipantCount();
         Post createdPost = postRepository.save(post);
 
         // 채팅방에서 사용

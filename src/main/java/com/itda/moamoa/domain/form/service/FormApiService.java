@@ -143,6 +143,10 @@ public class FormApiService {
                 .build();
         
         participantRepository.save(formCreatorParticipant);
+        
+        // 참가자 수 증가
+        post.incrementParticipantCount();
+        postRepository.save(post);
     }
 
     // 신청서 거절

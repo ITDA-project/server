@@ -80,4 +80,5 @@ public class Post extends BaseEntity{
     public void plusLikeCount() {   this.likesCount += 1; }
     public void minusLikeCount() {  this.likesCount -= 1; }
     
+    public void incrementParticipantCount() { this.participantCount += 1; }
 }
