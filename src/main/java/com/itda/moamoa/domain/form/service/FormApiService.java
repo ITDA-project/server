@@ -31,7 +31,7 @@ public class FormApiService {
     // 커서 기반 페이지네이션으로 폼 목록 조회
     public FormListResponseDTO getFormsByCursor(long postId, Long cursor, int size, String username) {
         // 사용자 권한 검증
-        User user = userRepository.findByUsername(username)
+        userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("권한이 없는 사용자입니다."));
         
         // 게시글 조회
@@ -72,8 +72,10 @@ public class FormApiService {
 
     // 해당 게시글에 제출된 신청폼 개별 조회
     public FormResponseDTO getFormById(long postId, long formId, String username) {
-        User user = userRepository.findByUsername(username)     // 예외처리 1. 회원이 아닌 사용자의 신청서 전체 조회 요청
+        // 예외처리 1. 존재하지 않는 사용자의 신청서 조회 요청 확인
+        userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("권한이 없는 사용자입니다."));
+                
         Post post = postRepository.findById(postId)            // 예외처리 2. 존재하지 않는 게시글의 신청서 조회 요청
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
 
