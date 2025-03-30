@@ -21,30 +21,54 @@ import java.util.List;
 public class FormApiController {
     private final FormApiService formApiService;
 
-    // 해당 게시글에 제출된 신청폼 전체 조회
-    @GetMapping
-    public ResponseEntity<ApiResponse<FormListResponseDTO>> getAllForms(
+    // 커서 기반 폼 목록 조회
+    @GetMapping("/list")
+    public ResponseEntity<ApiResponse<FormListResponseDTO>> getFormList(
             @PathVariable long postId,
-            @AuthenticationPrincipal CustomUserDetails userDetails){
-
-        // if (userDetails == null) {
-        //     throw new IllegalArgumentException("로그인이 필요합니다.");
-        // }
+            @RequestParam(required = false) Long cursor,
+            @RequestParam(defaultValue = "10") int size,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        
+        if (userDetails == null) {
+            throw new IllegalArgumentException("로그인이 필요합니다.");
+        }
         
         String username = userDetails.getUsername();
         
-        List<FormListResponseDTO> got = formApiService.getAllForms(postId, username);
-
-        ApiResponse<FormListResponseDTO> gotForms = ApiResponse.successList(
+        FormListResponseDTO forms = formApiService.getFormsByCursor(postId, cursor, size, username);
+        
+        ApiResponse<FormListResponseDTO> response = ApiResponse.success(
                 SuccessCode.OK,
-                "해당 게시글에 제출된 신청폼이 정상적으로 조회 되었습니다.",
-                got,
-                got.size());
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(gotForms);
+                "폼 목록이 정상적으로 조회되었습니다.",
+                forms);
+                
+        return ResponseEntity.ok(response);
     }
+
+//     // 해당 게시글에 제출된 신청폼 전체 조회
+//     @GetMapping
+//     public ResponseEntity<ApiResponse<FormListResponseDTO>> getAllForms(
+//             @PathVariable long postId,
+//             @AuthenticationPrincipal CustomUserDetails userDetails){
+
+//         // if (userDetails == null) {
+//         //     throw new IllegalArgumentException("로그인이 필요합니다.");
+//         // }
+        
+//         String username = userDetails.getUsername();
+        
+//         List<FormListResponseDTO> got = formApiService.getAllForms(postId, username);
+
+//         ApiResponse<FormListResponseDTO> gotForms = ApiResponse.successList(
+//                 SuccessCode.OK,
+//                 "해당 게시글에 제출된 신청폼이 정상적으로 조회 되었습니다.",
+//                 got,
+//                 got.size());
+
+//         return ResponseEntity
+//                 .status(HttpStatus.OK)
+//                 .body(gotForms);
+//     }
 
     // 해당 게시글에 제출된 신청폼 개별 조회
     @GetMapping("/{formId}")

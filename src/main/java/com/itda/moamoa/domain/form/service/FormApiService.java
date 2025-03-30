@@ -1,5 +1,6 @@
 package com.itda.moamoa.domain.form.service;
 
+import com.itda.moamoa.domain.form.dto.FormItemDTO;
 import com.itda.moamoa.domain.form.dto.FormListResponseDTO;
 import com.itda.moamoa.domain.form.dto.FormRequestDTO;
 import com.itda.moamoa.domain.form.dto.FormResponseDTO;
@@ -14,8 +15,10 @@ import com.itda.moamoa.domain.user.repository.UserRepository;
 import com.itda.moamoa.domain.participant.entity.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,36 +29,55 @@ public class FormApiService {
     private final ParticipantRepository participantRepository;
 
     // 해당 게시글에 제출된 신청폼 전체 조회
-    public List<FormListResponseDTO> getAllForms(long postId, String username) {
-        User user = userRepository.findByUsername(username)      // 예외처리 1. 회원이 아닌 사용자의 신청서 전체 조회 요청
+//     public List<FormListResponseDTO> getAllForms(long postId, String username) {
+//         User user = userRepository.findByUsername(username)      // 예외처리 1. 회원이 아닌 사용자의 신청서 전체 조회 요청
+//                 .orElseThrow(() -> new IllegalArgumentException("권한이 없는 사용자입니다."));
+//         Post post = postRepository.findById(postId)             // 예외처리 2. 아직 신청서가 제출되지 않은 게시글의 신청서 전체 조회 요청
+//                 .orElseThrow(() -> new IllegalArgumentException("아직 신청폼이 제출되지 않았습니다."));
+//         if (!post.getUser().getUsername().equals(username))     // 예외처리 3. 게시글 작성자가 아닌 회원의 신청서 조회 요청
+//             throw new IllegalStateException("신청서를 열람할 권한이 없습니다.");
+
+
+    // 커서 기반 페이지네이션으로 폼 목록 조회
+    public FormListResponseDTO getFormsByCursor(long postId, Long cursor, int size, String username) {
+        // 사용자 권한 검증
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("권한이 없는 사용자입니다."));
-        Post post = postRepository.findById(postId)             // 예외처리 2. 아직 신청서가 제출되지 않은 게시글의 신청서 전체 조회 요청
-                .orElseThrow(() -> new IllegalArgumentException("아직 신청폼이 제출되지 않았습니다."));
-        if (!post.getUser().getUsername().equals(username))     // 예외처리 3. 게시글 작성자가 아닌 회원의 신청서 조회 요청
+        
+        // 게시글 조회
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시물입니다."));
+        
+        // 게시글 작성자인지 확인
+        if (!post.getUser().getUsername().equals(username)) {
             throw new IllegalStateException("신청서를 열람할 권한이 없습니다.");
-
-        // 임시로 모든 폼을 가져옵니다.
-        List<Form> forms = formRepository.findAll();
-        
-        // 가져온 폼 중에서 해당 게시글에 속한 것만 필터링합니다.
-        forms = forms.stream()
-                .filter(form -> form.getPost().equals(post))
-                .toList();
-        
-        if (forms.isEmpty()) {
-            // 테스트를 위해 예외를 던지지 않고 빈 리스트 반환
-            return List.of();
         }
-
-        // Form 엔티티를 FormListResponseDTO로 변환합니다.
-        return forms.stream()
-                .map(form -> FormListResponseDTO.builder()
-                        .content(form.getContent())
+        
+        // 초기 요청인 경우 가장 큰 ID 값 설정
+        if (cursor == null || cursor <= 0) {
+            cursor = Long.MAX_VALUE;
+        }
+        
+        // 페이지 사이즈 설정
+        PageRequest pageRequest = PageRequest.of(0, size);
+        
+        // 커서 기반으로 id가 작은 순서대로 폼 목록 조회
+        List<Form> forms = formRepository.findByPostAndFormIdLessThanOrderByFormIdDesc(post, cursor, pageRequest);
+        
+        // FormItemDTO 리스트로 변환
+        List<FormItemDTO> formItemDTOs = forms.stream()
+                .map(form -> FormItemDTO.builder()
+                        .formId(form.getFormId())
                         .userName(form.getUser().getName())
                         .userImage(form.getUser().getImage())
-                        .postTitle(post.getTitle())
                         .build())
-                .toList();
+                .collect(Collectors.toList());
+        
+        // FormListResponseDTO 생성 및 반환
+        return FormListResponseDTO.builder()
+                .postTitle(post.getTitle())
+                .forms(formItemDTOs)
+                .build();
     }
 
     // 해당 게시글에 제출된 신청폼 개별 조회

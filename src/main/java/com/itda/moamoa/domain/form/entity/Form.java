@@ -15,7 +15,7 @@ public class Form {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "form_id")
-    private Long form_id;
+    private Long formId;
 
     @Enumerated(EnumType.STRING)
     @Builder.Default

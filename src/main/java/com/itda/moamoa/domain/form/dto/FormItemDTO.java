@@ -5,16 +5,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-
-public class FormListResponseDTO {
-    
-    private String postTitle;
-
-    private List<FormItemDTO> forms;
-}
+public class FormItemDTO {
+    private Long formId;
+    private String userName;
+    private String userImage;
+} 
