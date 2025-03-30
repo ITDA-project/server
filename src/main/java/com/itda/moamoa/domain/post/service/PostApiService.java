@@ -20,6 +20,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import jakarta.annotation.PostConstruct;
+import com.itda.moamoa.domain.spec.repository.SpecRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +30,7 @@ public class PostApiService {
     private final ModelMapper modelMapper;
     private final ParticipantRepository participantRepository;
     private final SomoimRepository somoimRepository;
+    private final SpecRepository specRepository;
 
     @PostConstruct
     public void setupMapper() { //response에 postId 받아오도록
@@ -157,7 +159,18 @@ public class PostApiService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
 
-        return modelMapper.map(post, PostResponseDTO.class);
+        PostResponseDTO postResponseDTO = modelMapper.map(post, PostResponseDTO.class);
+        
+        // 작성자 정보 설정
+        User user = post.getUser();
+        postResponseDTO.setUserId(user.getId());
+        postResponseDTO.setUserName(user.getName());
+        postResponseDTO.setUserImage(user.getImage());
+        
+        // 작성자의 경력 정보 가져오기
+        specRepository.findByUser(user).ifPresent(spec -> postResponseDTO.setUserCareer(spec.getCareer()));
+        
+        return postResponseDTO;
     }
 
     // 내가 좋아요한 글 목록 조회

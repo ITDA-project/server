@@ -27,6 +27,8 @@ public class PostResponseDTO {
     private LocalDate activityStartDate;
     private LocalDate activityEndDate;
     private LocalDateTime createdAt; //모집 시작 날짜도 얘로 활용
-    //작성자 id
-
+    private Long userId; //작성자 id
+    private String userName; //작성자 이름
+    private String userImage; //작성자 이미지
+    private String userCareer; //작성자 경력
 }
