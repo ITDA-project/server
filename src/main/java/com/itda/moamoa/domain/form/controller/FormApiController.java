@@ -25,9 +25,15 @@ public class FormApiController {
     @GetMapping
     public ResponseEntity<ApiResponse<FormListResponseDTO>> getAllForms(
             @PathVariable long postId,
-            @AuthenticationPrincipal String username,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestBody FormRequestDTO requestDto){
 
+        // if (userDetails == null) {
+        //     throw new IllegalArgumentException("로그인이 필요합니다.");
+        // }
+        
+        String username = userDetails.getUsername();
+        
         List<FormListResponseDTO> got = formApiService.getAllForms(postId, username, requestDto);
 
         ApiResponse<FormListResponseDTO> gotForms = ApiResponse.successList(
@@ -46,9 +52,12 @@ public class FormApiController {
     public ResponseEntity<ApiResponse<FormResponseDTO>> getFormById(
             @PathVariable long postId,
             @PathVariable long formId,
-            @AuthenticationPrincipal String username,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestBody FormRequestDTO requestDto){
 
+        
+        String username = userDetails.getUsername();
+        
         FormResponseDTO got = formApiService.getFormById(postId, formId, username, requestDto);
 
         ApiResponse<FormResponseDTO> gotForm = ApiResponse.success(
@@ -63,17 +72,20 @@ public class FormApiController {
 
     // 신청폼 생성
     @PostMapping
-    public ResponseEntity<ApiResponse<FormResponseDTO>> create(
-            @AuthenticationPrincipal String username,
+    public ResponseEntity<ApiResponse<Object>> create(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable long postId,
             @RequestBody FormRequestDTO requestDto){
 
-        FormResponseDTO created = formApiService.create(username, postId, requestDto);
+        
+        String username = userDetails.getUsername();
+        
+        formApiService.create(username, postId, requestDto);
 
-        ApiResponse<FormResponseDTO> createdForm = ApiResponse.success(
+        ApiResponse<Object> createdForm = ApiResponse.success(
                 SuccessCode.CREATED,
                 "신청폼이 성공적으로 제출되었습니다.",
-                created);
+                null);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED).
