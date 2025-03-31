@@ -10,7 +10,6 @@ import lombok.*;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Table(name = "forms")
 public class Form {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

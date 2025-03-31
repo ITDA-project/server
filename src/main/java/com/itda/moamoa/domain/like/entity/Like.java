@@ -5,6 +5,8 @@ import com.itda.moamoa.domain.post.entity.Post;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -12,6 +14,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "likes")
 public class Like {
     @Id
@@ -35,4 +38,6 @@ public class Like {
     public void setUser(User user) { this.user = user; }
 
     public void setPost(Post post) { this.post = post; }
+
+    //public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = LocalDateTime.now(); }
 }
