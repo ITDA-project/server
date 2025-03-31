@@ -62,6 +62,10 @@ public class JwtSecurityConfig {
                 .authorizeHttpRequests((auth)->auth
                         .requestMatchers("/login", "/join").permitAll()
                         .requestMatchers("/auth/login","/", "/auth/signup/**", "/auth").permitAll()
+                        
+                        // Swagger UI 접근 허용
+                        .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", 
+                                          "/swagger-resources/**", "/webjars/**").permitAll()
 
                         .requestMatchers(HttpMethod.GET, "/api/posts", "/api/posts/{postId}").permitAll() //GET 요청 허용
                         .requestMatchers(HttpMethod.POST, "/posts/search/**").permitAll()
