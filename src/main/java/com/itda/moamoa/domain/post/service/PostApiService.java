@@ -140,19 +140,19 @@ public class PostApiService {
                 .toList();
     }
     
-    // 내가 작성한 글 목록 조회
-    public List<PostListResponseDTO> getPostsByUserId(Long userId, Long cursor, int size) {
-        if (cursor == null || cursor <= 0) {
-            cursor = Long.MAX_VALUE;
-        }
-        
-        PageRequest pageRequest = PageRequest.of(0, size);
-        List<Post> posts = postRepository.findByUserIdAndPostIdLessThanOrderByCreatedAtDesc(userId, cursor, pageRequest);
-        
-        return posts.stream()
-                .map(this::convertToListDTO)
-                .toList();
-    }
+    // 내가 작성한 글 목록 조회 - MyPageService에서 구현된 getFullMyPage로 대체 가능
+//    public List<PostListResponseDTO> getPostsByUserId(Long userId, Long cursor, int size) {
+//        if (cursor == null || cursor <= 0) {
+//            cursor = Long.MAX_VALUE;
+//        }
+//        
+//        PageRequest pageRequest = PageRequest.of(0, size);
+//        List<Post> posts = postRepository.findByUserIdAndPostIdLessThanOrderByCreatedAtDesc(userId, cursor, pageRequest);
+//        
+//        return posts.stream()
+//                .map(this::convertToListDTO)
+//                .toList();
+//    }
 
     // 게시글 개별 조회
     public PostResponseDTO getPostById(long postId){
@@ -173,24 +173,24 @@ public class PostApiService {
         return postResponseDTO;
     }
 
-    // 내가 좋아요한 글 목록 조회
-    public List<PostListResponseDTO> getLikedPostsByUserId(Long userId, Long cursor, int size) {
-        // TODO: 좋아요 기능 구현 후 활성화
-        return List.of(); // 임시로 빈 목록 반환
-        
-        /*
-        if (cursor == null || cursor <= 0) {
-            cursor = Long.MAX_VALUE;
-        }
-        
-        PageRequest pageRequest = PageRequest.of(0, size);
-        List<Post> posts = postRepository.findByLikesUserIdAndPostIdLessThanOrderByCreatedAtDesc(userId, cursor, pageRequest);
-        
-        return posts.stream()
-                .map(this::convertToListDTO)
-                .toList();
-        */
-    }
+    // 내가 좋아요한 글 목록 조회 - MyPageService에서 구현된 getFullMyPage로 대체 가능
+//    public List<PostListResponseDTO> getLikedPostsByUserId(Long userId, Long cursor, int size) {
+//        // TODO: 좋아요 기능 구현 후 활성화
+//        return List.of(); // 임시로 빈 목록 반환
+//        
+//        /*
+//        if (cursor == null || cursor <= 0) {
+//            cursor = Long.MAX_VALUE;
+//        }
+//        
+//        PageRequest pageRequest = PageRequest.of(0, size);
+//        List<Post> posts = postRepository.findByLikesUserIdAndPostIdLessThanOrderByCreatedAtDesc(userId, cursor, pageRequest);
+//        
+//        return posts.stream()
+//                .map(this::convertToListDTO)
+//                .toList();
+//        */
+//    }
     
     // Post 엔티티를 PostListResponseDTO로 변환하는 헬퍼 메소드
     private PostListResponseDTO convertToListDTO(Post post) {
