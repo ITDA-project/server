@@ -1,6 +1,13 @@
 package com.itda.moamoa.domain.spec.service;
 
-import com.itda.moamoa.domain.spec.dto.response.ProfileDTO;
+import com.itda.moamoa.domain.form.entity.Form;
+import com.itda.moamoa.domain.form.repository.FormRepository;
+import com.itda.moamoa.domain.like.entity.Like;
+import com.itda.moamoa.domain.like.repository.LikeRepository;
+import com.itda.moamoa.domain.post.entity.Post;
+import com.itda.moamoa.domain.post.repository.PostRepository;
+import com.itda.moamoa.domain.spec.dto.response.MyPageDTO;
+import com.itda.moamoa.domain.spec.dto.response.UserProfileDTO;
 import com.itda.moamoa.domain.spec.dto.request.ProfileUpdateRequestDTO;
 import com.itda.moamoa.domain.spec.dto.response.ProfileUpdateResponseDTO;
 import com.itda.moamoa.domain.spec.entity.Spec;
@@ -17,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +33,9 @@ import java.io.IOException;
 public class MyPageService {
     private final UserRepository userRepository;
     private final SpecRepository specRepository;
+    private final PostRepository postRepository;
+    private final FormRepository formRepository;
+    private final LikeRepository likeRepository;
     private final S3Service s3Service;
     private final ModelMapper modelMapper;
 
@@ -67,7 +79,7 @@ public class MyPageService {
     }
 
     @Transactional(readOnly = true)
-    public ProfileDTO getProfile(String username) {
+    public UserProfileDTO getProfile(String username) {
         // 사용자명으로 사용자 조회
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
@@ -75,10 +87,76 @@ public class MyPageService {
         // 사용자의 Spec 정보 조회
         Spec spec = specRepository.findByUser(user).orElse(null);
         
-        return ProfileDTO.builder()
+        return UserProfileDTO.builder()
                 .name(user.getName())  // 사용자 이름
-                .profile(user.getImage())  // 프로필 이미지 URL
+                .image(user.getImage())  // 프로필 이미지 URL
+                .ratingAverage(user.getRatingAverage()) // 평균 별점
                 .career(spec != null ? spec.getCareer() : null)  // 경력 정보
+                .build();
+    }
+    
+    @Transactional(readOnly = true)
+    public MyPageDTO getFullMyPage(String username) {
+        // 사용자명으로 사용자 조회
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        
+        // 사용자의 Spec 정보 조회
+        Spec spec = specRepository.findByUser(user).orElse(null);
+        
+        // 1. 신청한 모임 목록 조회 (사용자가 form을 등록한 post)
+        List<Form> forms = formRepository.findByUser(user);
+        List<MyPageDTO.PostDTO> joinedPosts = forms.stream()
+                .map(form -> {
+                    Post post = form.getPost();
+                    // 삭제된 게시글은 제외
+                    if (post != null && !post.isDeleteFlag()) {
+                        return MyPageDTO.PostDTO.builder()
+                                .id(post.getPostId())
+                                .title(post.getTitle())
+                                .createdAt(post.getCreatedAt())
+                                .build();
+                    }
+                    return null;
+                })
+                .filter(dto -> dto != null) // null 제거
+                .collect(Collectors.toList());
+        
+        // 2. 좋아요한 모임 목록 조회
+        List<Like> likes = likeRepository.findByUser(user);
+        List<MyPageDTO.PostDTO> likedPosts = likes.stream()
+                .map(like -> {
+                    Post post = like.getPost();
+                    // 삭제된 게시글은 제외
+                    if (post != null && !post.isDeleteFlag()) {
+                        return MyPageDTO.PostDTO.builder()
+                                .id(post.getPostId())
+                                .title(post.getTitle())
+                                .createdAt(post.getCreatedAt())
+                                .build();
+                    }
+                    return null;
+                })
+                .filter(dto -> dto != null) // null 제거
+                .collect(Collectors.toList());
+        
+        // 3. 내가 만든 모임 목록 조회
+        List<Post> createdPosts = postRepository.findByUserAndDeleteFlagFalse(user);
+        List<MyPageDTO.PostDTO> myCreatedPosts = createdPosts.stream()
+                .map(post -> MyPageDTO.PostDTO.builder()
+                        .id(post.getPostId())
+                        .title(post.getTitle())
+                        .createdAt(post.getCreatedAt())
+                        .build())
+                .collect(Collectors.toList());
+        
+        return MyPageDTO.builder()
+                .name(user.getName())
+                .image(user.getImage())
+                .ratingAverage(user.getRatingAverage())
+                .joinedPosts(joinedPosts)
+                .likedPosts(likedPosts)
+                .createdPosts(myCreatedPosts)
                 .build();
     }
 }

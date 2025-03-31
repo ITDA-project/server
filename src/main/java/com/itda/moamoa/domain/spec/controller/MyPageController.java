@@ -1,6 +1,6 @@
 package com.itda.moamoa.domain.spec.controller;
 
-import com.itda.moamoa.domain.spec.dto.response.ProfileDTO;
+import com.itda.moamoa.domain.spec.dto.response.MyPageDTO;
 import com.itda.moamoa.domain.spec.dto.request.ProfileUpdateRequestDTO;
 import com.itda.moamoa.domain.spec.dto.response.ProfileUpdateResponseDTO;
 import com.itda.moamoa.domain.spec.service.MyPageService;
@@ -19,18 +19,18 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class MyPageController {
     private final MyPageService myPageService;
-
-    @GetMapping
-    public ResponseEntity<ApiResponse<ProfileDTO>> getProfile(
+    
+    @GetMapping("/full")
+    public ResponseEntity<ApiResponse<MyPageDTO>> getFullMyPage(
             @AuthenticationPrincipal UserDetails userDetails) {
         
         String username = userDetails.getUsername();
-        ProfileDTO profileDTO = myPageService.getProfile(username);
+        MyPageDTO myPageDTO = myPageService.getFullMyPage(username);
         
-        ApiResponse<ProfileDTO> response = ApiResponse.success(
+        ApiResponse<MyPageDTO> response = ApiResponse.success(
                 SuccessCode.OK,
-                "프로필 조회에 성공했습니다.",
-                profileDTO
+                "마이페이지 전체 정보 조회에 성공했습니다.",
+                myPageDTO
         );
         
         return ResponseEntity.ok(response);

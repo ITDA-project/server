@@ -14,4 +14,7 @@ public interface FormRepository extends JpaRepository<Form, Long> {
     boolean existsByUserAndPost(User user, Post post);
 
     List<Form> findByPostAndFormStatusAndFormIdLessThanOrderByFormIdDesc(Post post, FormStatus formStatus, Long cursor, Pageable pageable);
+    
+    // 특정 사용자가 신청한 모든 form 조회
+    List<Form> findByUser(User user);
 }
