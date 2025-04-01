@@ -6,6 +6,7 @@ import com.itda.moamoa.domain.user.entity.dto.UserDto;
 import com.itda.moamoa.domain.user.service.UserService;
 import com.itda.moamoa.global.common.ApiResponse;
 import com.itda.moamoa.global.common.SuccessCode;
+import com.itda.moamoa.global.email.dto.EmailDto;
 import com.itda.moamoa.global.security.jwt.util.JWTUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -85,9 +86,9 @@ public class SignUpController {
      * 이메일 중복확인 메서드
      */
     @PostMapping("/auth/signup/email/checkemail")
-    public ResponseEntity<ApiResponse<Boolean>> checkEmail(String email) {
+    public ResponseEntity<ApiResponse<Boolean>> checkEmail(@RequestBody EmailDto email) {
 
-        Boolean check = userService.checkEmail(email);
+        Boolean check = userService.checkEmail(email.getEmail());
         ApiResponse<Boolean> response = ApiResponse.success(
                 SuccessCode.OK,
                 "이메일 중복 조회에 성공했습니다.",

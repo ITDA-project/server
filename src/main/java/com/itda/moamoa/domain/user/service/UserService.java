@@ -2,7 +2,7 @@ package com.itda.moamoa.domain.user.service;
 
 import com.itda.moamoa.domain.user.entity.User;
 import com.itda.moamoa.domain.user.repository.UserRepository;
-import com.itda.moamoa.global.email.PasswordDto;
+import com.itda.moamoa.global.email.dto.PasswordDto;
 import com.itda.moamoa.global.security.jwt.entity.Refresh;
 import com.itda.moamoa.global.security.jwt.repository.RefreshRepository;
 import lombok.RequiredArgsConstructor;
@@ -41,8 +41,6 @@ public class UserService {
             if (!userRepository.findDeleteFlagByEmail(email).getDeleteFlag()) { //delete 가 false 라면 사용할 수 없음
                 return false;
             }
-            //존재하지만 탈퇴한 유저일 경우
-            return true;
         }
         //존재하지 않는 이메일
         return true;
@@ -56,7 +54,7 @@ public class UserService {
 
     /*비밀번호 찾기에서 사용*/
     public void changePassword(PasswordDto passwordDto) {
-        User user = userRepository.findByUsername(passwordDto.getEmail());
+        User user = userRepository.findByEmail(passwordDto.getEmail()).orElseThrow();
         user.encodingPassword(passwordEncoder, passwordDto.getPassword());
     }
 

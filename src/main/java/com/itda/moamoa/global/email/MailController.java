@@ -1,6 +1,8 @@
 package com.itda.moamoa.global.email;
 
 import com.itda.moamoa.domain.user.service.UserService;
+import com.itda.moamoa.global.email.dto.EmailDto;
+import com.itda.moamoa.global.email.dto.PasswordDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -27,8 +29,14 @@ public class MailController {
      * email 이 소셜 로그인한 이메일이라면?
      */
     @PostMapping("/auth/password/find")
-    public ResponseEntity<Map<String, String>> sendOtp(@RequestBody EmailDto email) {
-        mailService.sendMail(email.getEmail());
+    public ResponseEntity<Map<String, String>> sendOtp(@RequestBody EmailDto emailDto) {
+        String email = emailDto.getEmail();
+
+        //DB에 존재하고, 자체 회원가입한 사용자인지 확인
+        mailService.checkExistEmail(email);
+
+        //자체 회원가입한 사용자라면 인증번호 전송
+        mailService.sendMail(email);
         Map<String, String> response = new HashMap<>();
         response.put("status","success");
         response.put("message", "인증 번호가 전송되었습니다.");
