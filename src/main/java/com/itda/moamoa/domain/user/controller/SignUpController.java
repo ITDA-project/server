@@ -29,18 +29,11 @@ public class SignUpController {
     private final UserService userService;
     private final ModelMapper modelMapper;
     private final JWTUtil jwtUtil;
-
-    //회원가입 테스트용 메서드, 나중에 삭제
-    @GetMapping("/auth/login")
-    public ResponseEntity<String> testSignUp(){
-        return ResponseEntity.ok("ok");
-    }
-
+    
     /**
      * 자체 회원가입 메서드
      * snsDiv,image 미설정
      * image 는 회원 수정에서 등록
-     * soft delete 되었던 유저라면 deleteFlag 도 수정됨(추후 다시 논의)
      */
     @PostMapping("/auth/signup/email")
     public ResponseEntity<Object> signUpEmail(@RequestBody UserDto userDto){
