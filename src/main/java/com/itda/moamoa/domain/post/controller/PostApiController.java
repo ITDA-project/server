@@ -5,7 +5,6 @@ import com.itda.moamoa.domain.post.dto.PostResponseDTO;
 import com.itda.moamoa.domain.post.dto.PostListResponseDTO;
 import com.itda.moamoa.domain.post.entity.Category;
 import com.itda.moamoa.domain.post.service.PostApiService;
-import com.itda.moamoa.domain.user.repository.UserRepository;
 import com.itda.moamoa.global.common.ApiResponse;
 import com.itda.moamoa.global.common.SuccessCode;
 import com.itda.moamoa.global.security.jwt.dto.CustomUserDetails;
@@ -48,7 +47,6 @@ public class PostApiController {
     public ResponseEntity<ApiResponse<PostListResponseDTO>> searchPostsByKeywords(
             @RequestParam(required = false) Long cursor,
             @RequestParam(required = false) String keyword,
-            @RequestParam(defaultValue = "createdAt") String sort,
             @RequestParam(defaultValue = "10") int size) {
 
         List<PostListResponseDTO> posts = postApiService.searchPostsByKeywords(cursor, keyword, size);
