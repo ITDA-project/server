@@ -15,6 +15,7 @@ import com.itda.moamoa.domain.user.entity.User;
 import com.itda.moamoa.domain.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ import java.util.List;
 import jakarta.annotation.PostConstruct;
 import com.itda.moamoa.domain.spec.repository.SpecRepository;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PostApiService {
@@ -191,7 +193,33 @@ public class PostApiService {
 //                .toList();
 //        */
 //    }
-    
+
+    // 게시물 검색 및 조회
+    public List<PostListResponseDTO> searchPostsByKeywords(Long cursor, String keyword, String sort, int size) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            throw new IllegalArgumentException("검색어는 비어 있을 수 없습니다.");
+        }
+
+        if (cursor == null || cursor <= 0) {
+            cursor = Long.MAX_VALUE;
+        }
+
+        PageRequest pageRequest = PageRequest.of(0, size);
+
+        List<Post> posts;
+
+        posts = postRepository.searchByPostIdLessThanAndDeleteFlagFalseOrderByCreatedAtDesc(cursor, keyword, pageRequest);
+
+        if (posts.isEmpty()){
+            log.info("검색어 [{}]에 해당하는 결과가 없습니다.", keyword);
+            return List.of();
+        }
+
+        return posts.stream()
+                .map(this::convertToListDTO)
+                .toList();
+    }
+
     // Post 엔티티를 PostListResponseDTO로 변환하는 헬퍼 메소드
     private PostListResponseDTO convertToListDTO(Post post) {
         return new PostListResponseDTO(

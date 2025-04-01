@@ -5,7 +5,6 @@ import com.itda.moamoa.domain.post.dto.PostResponseDTO;
 import com.itda.moamoa.domain.post.dto.PostListResponseDTO;
 import com.itda.moamoa.domain.post.entity.Category;
 import com.itda.moamoa.domain.post.service.PostApiService;
-import com.itda.moamoa.domain.user.entity.User;
 import com.itda.moamoa.domain.user.repository.UserRepository;
 import com.itda.moamoa.global.common.ApiResponse;
 import com.itda.moamoa.global.common.SuccessCode;
@@ -46,6 +45,25 @@ public class PostApiController {
     // 게시글 카테고리 조회 - 목록 (최신 모임 / 주간 인기)
 
     // 게시글 검색 조회 - 목록
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<PostListResponseDTO>> searchPostsByKeywords(
+            @RequestParam(required = false) Long cursor,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "createdAt") String sort,
+            @RequestParam(defaultValue = "10") int size) {
+
+        List<PostListResponseDTO> posts = postApiService.searchPostsByKeywords(cursor, keyword, sort, size);
+
+        ApiResponse<PostListResponseDTO> response = ApiResponse.successList(
+                SuccessCode.OK,
+                "게시글이 성공적으로 검색 되었습니다.",
+                posts,
+                posts.size());
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
+    }
 
     // 게시글 개별 조회
     @GetMapping("/{postId}")
