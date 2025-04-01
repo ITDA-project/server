@@ -195,7 +195,7 @@ public class PostApiService {
 //    }
 
     // 게시물 검색 및 조회
-    public List<PostListResponseDTO> searchPostsByKeywords(Long cursor, String keyword, String sort, int size) {
+    public List<PostListResponseDTO> searchPostsByKeywords(Long cursor, String keyword, int size) {
         if (keyword == null || keyword.trim().isEmpty()) {
             throw new IllegalArgumentException("검색어는 비어 있을 수 없습니다.");
         }

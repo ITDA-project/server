@@ -21,7 +21,6 @@ import java.util.List;
 @RequestMapping("/api/posts")
 public class PostApiController {
     private final PostApiService postApiService;
-    private final UserRepository userRepository;
 
     // 게시글 전체 조회
     @GetMapping("/list")
@@ -52,7 +51,7 @@ public class PostApiController {
             @RequestParam(defaultValue = "createdAt") String sort,
             @RequestParam(defaultValue = "10") int size) {
 
-        List<PostListResponseDTO> posts = postApiService.searchPostsByKeywords(cursor, keyword, sort, size);
+        List<PostListResponseDTO> posts = postApiService.searchPostsByKeywords(cursor, keyword, size);
 
         ApiResponse<PostListResponseDTO> response = ApiResponse.successList(
                 SuccessCode.OK,
@@ -133,7 +132,7 @@ public class PostApiController {
             @PathVariable long postId) {
 
         String username = userDetails != null ? userDetails.getUsername() : null;
-        Long deletedPostId = postApiService.delete(username, postId);
+        postApiService.delete(username, postId);
 
         ApiResponse<Object> deletedResponse = ApiResponse.success(
                 SuccessCode.OK,
