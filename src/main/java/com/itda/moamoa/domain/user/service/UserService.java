@@ -3,8 +3,10 @@ package com.itda.moamoa.domain.user.service;
 import com.itda.moamoa.domain.user.entity.User;
 import com.itda.moamoa.domain.user.repository.UserRepository;
 import com.itda.moamoa.global.email.dto.PasswordDto;
+import com.itda.moamoa.global.exception.custom.UserException;
 import com.itda.moamoa.global.security.jwt.entity.Refresh;
 import com.itda.moamoa.global.security.jwt.repository.RefreshRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -34,12 +36,18 @@ public class UserService {
         addRefresh(user.getUsername(),refresh,86400000L);
     }
 
-    /*탈퇴한 이메일이라면 다시 사용 가능하게 false 반환*/
+    /**
+     * 존재하지 않는 이메일 -> 사용 가능 true
+     * 존재하지만 탈퇴한 이메일 -> 사용 불가능, 예외 발생
+     * 존재하고 탈퇴안한 이메일 -> 사용 불가능, 예외 발생
+     */
     public Boolean checkEmail(String email){
         Boolean exist = userRepository.existsByEmail(email);
         if(exist) { //존재한다면?
-            if (!userRepository.findDeleteFlagByEmail(email).getDeleteFlag()) { //delete 가 false 라면 사용할 수 없음
-                return false;
+            if (userRepository.findDeleteFlagByEmail(email).getDeleteFlag()) { //존재하지만 탈퇴한 이메일
+                throw new UserException("이미 탈퇴한 이메일입니다.");
+            }else{                                                             //존재하고 탈퇴안한 이메일
+                throw new UserException("사용 중인 이메일입니다.");
             }
         }
         //존재하지 않는 이메일
@@ -54,7 +62,7 @@ public class UserService {
 
     /*비밀번호 찾기에서 사용*/
     public void changePassword(PasswordDto passwordDto) {
-        User user = userRepository.findByEmail(passwordDto.getEmail()).orElseThrow();
+        User user = userRepository.findByEmail(passwordDto.getEmail()).orElseThrow(()->new EntityNotFoundException("등록되지 않은 이메일입니다."));
         user.encodingPassword(passwordEncoder, passwordDto.getPassword());
     }
 
