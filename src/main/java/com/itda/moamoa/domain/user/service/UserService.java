@@ -37,11 +37,11 @@ public class UserService {
     }
 
     /**
-     * 존재하지 않는 이메일 -> 사용 가능 true
+     * 존재하지 않는 이메일 -> 사용 가능
      * 존재하지만 탈퇴한 이메일 -> 사용 불가능, 예외 발생
      * 존재하고 탈퇴안한 이메일 -> 사용 불가능, 예외 발생
      */
-    public Boolean checkEmail(String email){
+    public void checkEmail(String email){
         Boolean exist = userRepository.existsByEmail(email);
         if(exist) { //존재한다면?
             if (userRepository.findDeleteFlagByEmail(email).getDeleteFlag()) { //존재하지만 탈퇴한 이메일
@@ -51,7 +51,6 @@ public class UserService {
             }
         }
         //존재하지 않는 이메일
-        return true;
     }
 
     /*soft delete 실행*/

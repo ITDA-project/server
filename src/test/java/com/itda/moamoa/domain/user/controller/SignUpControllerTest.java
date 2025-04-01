@@ -5,6 +5,7 @@ import com.itda.moamoa.domain.user.entity.User;
 import com.itda.moamoa.domain.user.entity.dto.UserDto;
 import com.itda.moamoa.domain.user.repository.UserRepository;
 import com.itda.moamoa.domain.user.service.UserService;
+import com.itda.moamoa.global.exception.custom.UserException;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -80,21 +81,6 @@ class SignUpControllerTest {
         assertThat(findUser.isDeleteFlag()).isEqualTo(false);
     }
 
-    //이메일이 이미 존재하는 상황
-    @Test
-    void checkEmail() {
-        User user1 = User.builder()
-                .email("temp@spring.com")
-                .gender(Gender.MALE)
-                .name("spring")
-                .password("1111")
-                .build();
-        userService.createUser(user1);
-
-        Boolean check = userService.checkEmail("temp@spring.com");
-        assertThat(check).isEqualTo(false);
-    }
-
     //이미 탈퇴한 회원의 이메일 확인
     @Test
     void checkEmailDeleteUser() {
@@ -108,7 +94,6 @@ class SignUpControllerTest {
         userService.deleteUser(user1);
         em.flush();
 
-        Boolean check = userService.checkEmail("temp@spring.com");
-        assertThat(check).isEqualTo(true);
+        assertThatThrownBy(()->userService.checkEmail("temp@spring.com")).isInstanceOf(UserException.class);
     }
 }

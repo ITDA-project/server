@@ -88,11 +88,11 @@ public class SignUpController {
     @PostMapping("/auth/signup/email/checkemail")
     public ResponseEntity<ApiResponse<Boolean>> checkEmail(@RequestBody EmailDto email) {
 
-        Boolean check = userService.checkEmail(email.getEmail());
+        userService.checkEmail(email.getEmail());
         ApiResponse<Boolean> response = ApiResponse.success(
                 SuccessCode.OK,
                 "이메일 중복 조회에 성공했습니다.",
-                check
+                true
         );
         return ResponseEntity.ok(response);
     }
