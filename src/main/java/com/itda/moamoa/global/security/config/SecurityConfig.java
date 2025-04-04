@@ -1,4 +1,4 @@
-package com.itda.moamoa.global.security.jwt.config;
+package com.itda.moamoa.global.security.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itda.moamoa.global.security.jwt.filter.CustomLogoutFilter;
@@ -14,20 +14,21 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 @Configuration
 @EnableWebSecurity
-public class JwtSecurityConfig {
+public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
     private final RefreshRepository refreshRepository;
     private final ObjectMapper objectMapper;
 
-    public JwtSecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil, RefreshRepository refreshRepository, ObjectMapper objectMapper){
+    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil, RefreshRepository refreshRepository, ObjectMapper objectMapper){
         this.authenticationConfiguration = authenticationConfiguration;
         this.jwtUtil = jwtUtil;
         this.refreshRepository = refreshRepository;
@@ -40,8 +41,8 @@ public class JwtSecurityConfig {
     }
     //비밀번호 인코딩
     @Bean
-    public BCryptPasswordEncoder bCryptPasswordEncoder(){
-        return new BCryptPasswordEncoder();
+    public PasswordEncoder passwordEncoder() {
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
     @Bean
@@ -60,12 +61,8 @@ public class JwtSecurityConfig {
         //경로별 인가 작업
         http
                 .authorizeHttpRequests((auth)->auth
-                        .requestMatchers("/login", "/join").permitAll()
-                        .requestMatchers("/auth/login","/", "/auth/signup/**", "/auth").permitAll()
-                        
-                        // Swagger UI 접근 허용
-                        .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", 
-                                          "/swagger-resources/**", "/webjars/**").permitAll()
+                        .requestMatchers( "/join","/", "auth").permitAll()
+                        .requestMatchers("/auth/login", "/api/auth/login","/api/auth/signup/**", "/error","/api/auth/password/find").permitAll()
 
                         .requestMatchers(HttpMethod.GET, "/api/posts", "/api/posts/{postId}").permitAll() //GET 요청 허용
                         .requestMatchers(HttpMethod.POST, "/posts/search/**").permitAll()

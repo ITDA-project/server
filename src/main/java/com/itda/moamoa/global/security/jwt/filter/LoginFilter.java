@@ -52,7 +52,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
             return authenticationManager.authenticate(authToken);
         } catch (IOException e) {
-            throw new AuthenticationException("failed to parse login reqeust body") {
+            throw new AuthenticationException("failed to parse login request body") {
             };
         }
     }

@@ -4,16 +4,17 @@ import com.itda.moamoa.domain.user.entity.User;
 import com.itda.moamoa.domain.user.repository.UserRepository;
 import com.itda.moamoa.global.security.jwt.dto.JoinDTO;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class JoinService {
     private final UserRepository userRepository;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-    public JoinService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder){
+    public JoinService(UserRepository userRepository, PasswordEncoder passwordEncoder){
         this.userRepository = userRepository;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public Boolean joinProcess(JoinDTO joinDTO){ //true false
@@ -28,7 +29,7 @@ public class JoinService {
         User user = User.builder()
                 .username(username)
                 //비밀번호 암호화 후 저장
-                .password(bCryptPasswordEncoder.encode(password))
+                .password(passwordEncoder.encode(password))
                 .role("ROLE_ADMIN").build(); //기본 role ADMIN
 
         userRepository.save(user);
