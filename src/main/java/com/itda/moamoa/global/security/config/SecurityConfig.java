@@ -64,6 +64,10 @@ public class SecurityConfig {
                         .requestMatchers( "/join","/", "auth").permitAll()
                         .requestMatchers("/auth/login", "/api/auth/login","/api/auth/signup/**", "/error","/api/auth/password/find").permitAll()
 
+                        // Swagger UI 접근 허용
+                        .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**",
+                                "/swagger-resources/**", "/webjars/**").permitAll()
+
                         .requestMatchers(HttpMethod.GET, "/api/posts", "/api/posts/{postId}").permitAll() //GET 요청 허용
                         .requestMatchers(HttpMethod.POST, "/posts/search/**").permitAll()
 
