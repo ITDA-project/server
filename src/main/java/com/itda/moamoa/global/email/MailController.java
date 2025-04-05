@@ -1,6 +1,8 @@
 package com.itda.moamoa.global.email;
 
 import com.itda.moamoa.domain.user.service.UserService;
+import com.itda.moamoa.global.common.ApiResponse;
+import com.itda.moamoa.global.common.SuccessCode;
 import com.itda.moamoa.global.email.dto.EmailDto;
 import com.itda.moamoa.global.email.dto.OtpDto;
 import com.itda.moamoa.global.email.dto.PasswordDto;
@@ -51,9 +53,14 @@ public class MailController {
      * 맞으면 true, 아니면 false
      */
     @PostMapping("/auth/password/otp")
-    public ResponseEntity<Boolean> checkOtp(@RequestBody OtpDto otpDto){
+    public ResponseEntity<ApiResponse<Boolean>> checkOtp(@RequestBody OtpDto otpDto){
         Boolean check = mailService.checkOtp(otpDto);
-        return ResponseEntity.ok(check);
+        ApiResponse<Boolean> response = ApiResponse.success(
+                SuccessCode.OK,
+                "인증번호 검증에 성공하였습니다.",
+                check
+        );
+        return ResponseEntity.ok(response);
     }
 
     /**
