@@ -53,12 +53,9 @@ public class MailController {
     @PatchMapping("/auth/password/find")
     public ResponseEntity<Map<String,String>> changePassword(@RequestBody PasswordDto passwordDto) {
         Boolean check = mailService.checkOtp(passwordDto);
-        HttpHeaders httpHeaders = null;
         if(check){
             userService.changePassword(passwordDto);
-            httpHeaders = new HttpHeaders();
-            httpHeaders.setLocation(URI.create("http://localhost:8080/api/auth/login"));
-            return new ResponseEntity<>(httpHeaders, HttpStatus.MOVED_PERMANENTLY);
+            return ResponseEntity.ok().build();
         }else{
             Map<String, String> response = new HashMap<>();
             response.put("message", "인증 번호가 일치하지 않습니다.");

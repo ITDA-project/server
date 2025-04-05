@@ -27,10 +27,8 @@ public class UserController {
     @DeleteMapping("/auth/delete")
     public ResponseEntity<?> userDelete(@AuthenticationPrincipal(expression = "user") User user){
         userService.deleteUser(user);
-        // logout 으로 redirect 해서 LogoutFilter에 걸리게 한다.  -> access, refresh token 무효화
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation(URI.create("http://localhost:8080/api/auth/logout"));
-        return new ResponseEntity<>(httpHeaders, HttpStatus.MOVED_PERMANENTLY);
+        // access, refresh token 무효화
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

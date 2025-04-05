@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Getter
 public class SocialUserDto {
-    private Long id;
+    private String id;
 
     private String email; //varchar
 
