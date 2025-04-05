@@ -3,7 +3,9 @@ package com.itda.moamoa.global.email;
 import com.itda.moamoa.domain.user.entity.SnsDiv;
 import com.itda.moamoa.domain.user.entity.User;
 import com.itda.moamoa.domain.user.repository.UserRepository;
+import com.itda.moamoa.global.email.dto.OtpDto;
 import com.itda.moamoa.global.email.dto.PasswordDto;
+import com.itda.moamoa.global.exception.custom.UserException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.persistence.EntityNotFoundException;
@@ -62,6 +64,7 @@ public class MailService {
     /**
      * DB에 없는 이메일 이라면 Exception 발생
      * 소셜 로그인한 유저라면 비밀번호 찾기 불가능
+     * 탈퇴한 유저도 비밀번호 찾기 불가능
      * 자체 회원가입한 유저만 비밀번호 찾기 가능
      */
     public void checkExistEmail(String email){
@@ -69,15 +72,18 @@ public class MailService {
         SnsDiv userSns = user.getSnsDiv();
         if(SnsDiv.NAVER.equals(userSns)||SnsDiv.KAKAO.equals(userSns))
             throw new EntityNotFoundException("요청한 " + email + "을 찾을 수 없습니다.");
+        else if(user.isDeleted()){
+            throw new UserException("이미 탈퇴한 회원입니다.");
+        }
     }
 
     private int getOtpNumber(String email){
         return otpNumbers.getOrDefault(email, -1);
     }
 
-    public Boolean checkOtp(PasswordDto passwordDto) {
-        int otpNumber = getOtpNumber(passwordDto.getEmail());
-        return otpNumber == passwordDto.getOtpNumber();
+    public Boolean checkOtp(OtpDto otpDto) {
+        int otpNumber = getOtpNumber(otpDto.getEmail());
+        return otpNumber == otpDto.getOtp();
     }
 
 }

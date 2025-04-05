@@ -61,7 +61,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((auth)->auth
                         .requestMatchers( "/join","/", "auth").permitAll()
-                        .requestMatchers("/auth/login", "/api/auth/login","/api/auth/signup/**", "/error","/api/auth/password/find").permitAll()
+                        .requestMatchers("/auth/login", "/api/auth/login","/api/auth/signup/**", "/error","/api/auth/password/**").permitAll()
 
                         .requestMatchers(HttpMethod.GET, "/posts", "/posts/{postId}").permitAll() //GET 요청 허용
                         .requestMatchers(HttpMethod.POST, "/posts/search/**").permitAll()
