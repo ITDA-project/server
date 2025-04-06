@@ -83,7 +83,11 @@ public class MailService {
 
     public Boolean checkOtp(OtpDto otpDto) {
         int otpNumber = getOtpNumber(otpDto.getEmail());
-        return otpNumber == otpDto.getOtp();
+        if(otpNumber == otpDto.getOtp()){
+            otpNumbers.remove(otpDto.getEmail());
+            return true;
+        }
+        return false;
     }
 
 }
