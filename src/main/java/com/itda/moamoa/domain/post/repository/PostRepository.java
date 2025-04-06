@@ -19,7 +19,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findByPostIdLessThanAndCategoryAndDeleteFlagFalseOrderByCreatedAtDesc(Long cursor, Category category, Pageable pageable);
     
     // 카테고리별 좋아요순 조회 (deleteFlag=false)
-    List<Post> findByPostIdLessThanAndCategoryAndDeleteFlagFalseOrderByLikesCountDescCreatedAtDesc(Long cursor, @Param("category") Category category, Pageable pageable);
+    List<Post> findByPostIdLessThanAndCategoryAndDeleteFlagFalseOrderByLikesCountDescCreatedAtDesc(Long cursor, Category category, Pageable pageable);
 
     // 전체글 최신순 조회 (deleteFlag=false)
     List<Post> findByPostIdLessThanAndDeleteFlagFalseOrderByCreatedAtDesc(Long cursor, Pageable pageable);
@@ -37,7 +37,10 @@ public interface PostRepository extends JpaRepository<Post, Long> {
                 OR LOWER(post.content) LIKE LOWER(CONCAT('%', :keyword, '%')))
                 ORDER BY post.createdAt DESC
             """)
-    List<Post> searchByPostIdLessThanAndDeleteFlagFalseOrderByCreatedAtDesc(@Param("cursor") Long cursor, @Param("keyword") String keyword, Pageable pageable);
+    //List<Post> searchByPostIdLessThanAndDeleteFlagFalseOrderByCreatedAtDesc(@Param("cursor") Long cursor, @Param("keyword") String keyword, Pageable pageable);
+
+    List<Post> searchByPostIdLessThanAndDeleteFlagFalseOrderByCreatedAtDesc( Long cursor, String keyword, Pageable pageable);
+
 
     // 마이페이지용 - PostApiController의 /my 엔드포인트에서 사용 (현재 주석 처리됨)
     // 특정 사용자가 작성한 글 조회
