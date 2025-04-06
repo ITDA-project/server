@@ -68,8 +68,7 @@ public class SecurityConfig {
                         .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**",
                                 "/swagger-resources/**", "/webjars/**").permitAll()
 
-                        .requestMatchers(HttpMethod.GET, "/api/posts", "/api/posts/{postId}").permitAll() //GET 요청 허용
-                        .requestMatchers(HttpMethod.POST, "/posts/search/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/posts/list", "/api/posts/search", "/api/posts/{postId}").permitAll() //GET 요청 허용
 
                         //권한 가진 사람
                         .requestMatchers("/admin").hasRole("ADMIN")
