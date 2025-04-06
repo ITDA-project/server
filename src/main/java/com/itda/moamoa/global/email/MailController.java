@@ -1,7 +1,10 @@
 package com.itda.moamoa.global.email;
 
 import com.itda.moamoa.domain.user.service.UserService;
+import com.itda.moamoa.global.common.ApiResponse;
+import com.itda.moamoa.global.common.SuccessCode;
 import com.itda.moamoa.global.email.dto.EmailDto;
+import com.itda.moamoa.global.email.dto.OtpDto;
 import com.itda.moamoa.global.email.dto.PasswordDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -26,7 +29,7 @@ public class MailController {
     private final UserService userService;
 
     /**
-     * email 이 소셜 로그인한 이메일이라면?
+     * 탈퇴한 유저, 소셜로그인 유저, DB에 존재하지 않는 이메일로 인증번호 전송 불가능
      */
     @PostMapping("/auth/password/find")
     public ResponseEntity<Map<String, String>> sendOtp(@RequestBody EmailDto emailDto) {
@@ -45,24 +48,28 @@ public class MailController {
     }
 
     /**
+     * 인증번호 검증 메서드
+     * email,otp 필요
+     * 맞으면 true, 아니면 false
+     */
+    @PostMapping("/auth/password/otp")
+    public ResponseEntity<ApiResponse<Boolean>> checkOtp(@RequestBody OtpDto otpDto){
+        Boolean check = mailService.checkOtp(otpDto);
+        ApiResponse<Boolean> response = ApiResponse.success(
+                SuccessCode.OK,
+                "인증번호 검증에 성공하였습니다.",
+                check
+        );
+        return ResponseEntity.ok(response);
+    }
+
+    /**
      * 비밀번호 변경 메서드
-     * 보낸 OTP 가 저장한 OTP 와 맞다면 true, 아니라면 false
-     * 맞는 경우, login 으로 리다이렉트
-     * 아닌 경우, OTP 가 맞지 않다고 응답
+     * email,password 필요
      */
     @PatchMapping("/auth/password/find")
-    public ResponseEntity<Map<String,String>> changePassword(@RequestBody PasswordDto passwordDto) {
-        Boolean check = mailService.checkOtp(passwordDto);
-        HttpHeaders httpHeaders = null;
-        if(check){
-            userService.changePassword(passwordDto);
-            httpHeaders = new HttpHeaders();
-            httpHeaders.setLocation(URI.create("http://localhost:8080/api/auth/login"));
-            return new ResponseEntity<>(httpHeaders, HttpStatus.MOVED_PERMANENTLY);
-        }else{
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "인증 번호가 일치하지 않습니다.");
-            return ResponseEntity.badRequest().body(response);
-        }
+    public ResponseEntity<?> changePassword(@RequestBody PasswordDto passwordDto) {
+        userService.changePassword(passwordDto);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
