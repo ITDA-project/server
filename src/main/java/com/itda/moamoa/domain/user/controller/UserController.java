@@ -2,16 +2,18 @@ package com.itda.moamoa.domain.user.controller;
 
 import com.itda.moamoa.domain.user.entity.User;
 import com.itda.moamoa.domain.user.service.UserService;
+import io.jsonwebtoken.ExpiredJwtException;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.net.URI;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,18 +21,33 @@ import java.net.URI;
 public class UserController {
 
     private final UserService userService;
-
     /**
      * 회원 탈퇴 메소드
-     * 탈퇴 후엔 로그아웃이 필요 -> 토큰들 다 만료시키기
+     * 탈퇴 후엔 로그아웃이 필요 -> refresh token 만료시키기
      */
     @DeleteMapping("/auth/delete")
-    public ResponseEntity<?> userDelete(@AuthenticationPrincipal(expression = "user") User user){
-        userService.deleteUser(user);
-        // logout 으로 redirect 해서 LogoutFilter에 걸리게 한다.  -> access, refresh token 무효화
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation(URI.create("http://localhost:8080/api/auth/logout"));
-        return new ResponseEntity<>(httpHeaders, HttpStatus.MOVED_PERMANENTLY);
-    }
+    public ResponseEntity<?> userDelete(@AuthenticationPrincipal(expression = "user") User user, @RequestBody Map<String,String> requestBody, HttpServletResponse response){
+        String refresh = requestBody.get("refresh_token");
 
+        if (refresh == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        try {
+            userService.deleteUserAndInvalidateToken(user, refresh);
+            //클라이언트에서 refresh 토큰 제거 필요
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write("{\"message\": \"Refresh token removed\"}");
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (ExpiredJwtException e) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
 }

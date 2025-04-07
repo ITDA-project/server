@@ -3,7 +3,7 @@ package com.itda.moamoa.global.email.dto;
 import lombok.Getter;
 
 @Getter
-public class PasswordDto {
+public class OtpDto {
     private String email;
-    private String password;
+    private Integer otp;
 }

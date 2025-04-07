@@ -6,6 +6,8 @@ import com.itda.moamoa.global.email.dto.PasswordDto;
 import com.itda.moamoa.global.exception.custom.UserException;
 import com.itda.moamoa.global.security.jwt.entity.Refresh;
 import com.itda.moamoa.global.security.jwt.repository.RefreshRepository;
+import com.itda.moamoa.global.security.jwt.util.JWTUtil;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,6 +23,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final RefreshRepository refreshRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JWTUtil jwtUtil;
 
     public void createUser(User user){
         user.encodingPassword(passwordEncoder);
@@ -64,6 +67,28 @@ public class UserService {
         User user = userRepository.findByEmail(passwordDto.getEmail()).orElseThrow(()->new EntityNotFoundException("등록되지 않은 이메일입니다."));
         user.encodingPassword(passwordEncoder, passwordDto.getPassword());
     }
+
+    public void deleteUserAndInvalidateToken(User user, String refreshToken) {
+        // refresh 토큰 유효성 검사
+        jwtUtil.isExpired(refreshToken);
+
+        // 유효한 토큰의 payload category 확인
+        String category = jwtUtil.getCategory(refreshToken);
+        if (!category.equals("refresh")) {
+            throw new IllegalArgumentException("refresh token 이 아닙니다.");
+        }
+
+        // DB에서 해당 refresh 토큰 확인
+        if (!refreshRepository.existsByRefresh(refreshToken)) {
+            throw new IllegalArgumentException("존재하지 않는 token 입니다.");
+        }
+
+        // 유저 삭제 처리
+        deleteUser(user);
+        // 토큰 무효화
+        refreshRepository.deleteByRefresh(refreshToken);
+    }
+
 
     private void addRefresh(String username, String refresh, Long expiredMs){
         //만료일자
