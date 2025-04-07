@@ -85,7 +85,7 @@ public class ReissueController {
         //refresh 토큰은 application/json으로
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8"); //인코딩
-        response.getWriter().write("{\"refresh_token\": \"" + refresh + "\"}");
+        response.getWriter().write("{\"refresh_token\": \"" + newRefresh + "\"}");
         response.setStatus(HttpServletResponse.SC_OK); //200
 
     }

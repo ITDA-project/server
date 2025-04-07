@@ -2,34 +2,25 @@ package com.itda.moamoa.domain.somoim.entity;
 
 import com.itda.moamoa.domain.participant.entity.Participant;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-
+import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString
 @Getter
+@ToString
+@NoArgsConstructor
 public class Somoim {
-
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "somoim_id")
     private Long id;
 
     @Enumerated(EnumType.STRING)
     private SomoimStatus status;
 
-    //OneToMany 추가
-    //participants
-    @OneToMany(mappedBy = "somoim")
+    @OneToMany(mappedBy = "somoim") // Participant:Somoim = 1:n
     List<Participant> participant = new ArrayList<>();
 
-    public Somoim(SomoimStatus status) {
-        this.status = status;
-    }
+    public void setSomoim(SomoimStatus status) { this.status = status; }
 }

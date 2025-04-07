@@ -2,41 +2,36 @@ package com.itda.moamoa.domain.form.entity;
 
 import com.itda.moamoa.domain.post.entity.Post;
 import com.itda.moamoa.domain.user.entity.User;
-
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@NoArgsConstructor //(access = AccessLevel.PROTECTED)
 @Builder
-@AllArgsConstructor //(access = AccessLevel.PRIVATE)
-@Table(name = "forms")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Form {
-
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "form_id")
-    private Long id;
+    private Long formId;
 
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private FormStatus formStatus = FormStatus.APPLY;
 
-    @Column(nullable = false) //길이제한 걸거라서, 그래도 longtext로 할건지??
+    @Column(nullable = false)
     private String content;
 
-    @ManyToOne
+    @ManyToOne                      // Form:Post = n:1
     @JoinColumn(name = "post_id")
     private Post post;
 
-    @ManyToOne
+    @ManyToOne                      // Form:User = n:1
     @JoinColumn(name = "user_id")
     private User user;
 
-    @CreatedDate
-    private LocalDateTime createdAt;
+    public void setUser(User user) { this.user = user; }
+    public void setPost(Post post) { this.post = post; }
+    public void updateFormStatus(FormStatus formStatus) {   this.formStatus = formStatus; }
 }

@@ -31,7 +31,7 @@ public class UserService {
     }
 
     public void createSocialUser(User user, String refresh) {
-        User findUser = userRepository.findByUsername(user.getUsername());
+        User findUser = userRepository.findByUsername(user.getUsername()).get();
         if (findUser == null) {
             user.encodingPassword(passwordEncoder);
             userRepository.save(user);

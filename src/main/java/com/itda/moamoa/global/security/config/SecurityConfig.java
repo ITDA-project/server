@@ -44,6 +44,7 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         //csrf disable - session의 경우 필수 방어 필요, jwt는 stateless
@@ -63,8 +64,11 @@ public class SecurityConfig {
                         .requestMatchers( "/join","/", "auth").permitAll()
                         .requestMatchers("/auth/login", "/api/auth/login","/api/auth/signup/**", "/error","/api/auth/password/**").permitAll()
 
-                        .requestMatchers(HttpMethod.GET, "/posts", "/posts/{postId}").permitAll() //GET 요청 허용
-                        .requestMatchers(HttpMethod.POST, "/posts/search/**").permitAll()
+                        // Swagger UI 접근 허용
+                        .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**",
+                                "/swagger-resources/**", "/webjars/**").permitAll()
+
+                        .requestMatchers(HttpMethod.GET, "/api/posts/list", "/api/posts/search", "/api/posts/{postId}").permitAll() //GET 요청 허용
 
                         //권한 가진 사람
                         .requestMatchers("/admin").hasRole("ADMIN")
