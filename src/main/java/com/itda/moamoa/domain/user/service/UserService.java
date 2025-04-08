@@ -31,11 +31,8 @@ public class UserService {
     }
 
     public void createSocialUser(User user, String refresh) {
-        User findUser = userRepository.findByUsername(user.getUsername()).get();
-        if (findUser == null) {
-            user.encodingPassword(passwordEncoder);
-            userRepository.save(user);
-        }
+        user.encodingPassword(passwordEncoder);
+        userRepository.save(user);
         addRefresh(user.getUsername(),refresh,86400000L);
     }
 
@@ -56,8 +53,13 @@ public class UserService {
         //존재하지 않는 이메일
     }
 
+    /*소셜로그인 username 중복에 사용*/
+    public Boolean checkUsername(String username){
+        return userRepository.existsByUsername(username);
+    }
+
     /*soft delete 실행*/
-    public void deleteUser(User user){
+    private void deleteUser(User user){
         user.softDelete();
         userRepository.save(user);
     }
@@ -90,7 +92,7 @@ public class UserService {
     }
 
 
-    private void addRefresh(String username, String refresh, Long expiredMs){
+    public void addRefresh(String username, String refresh, Long expiredMs){
         //만료일자
         Date date = new Date(System.currentTimeMillis() + expiredMs);
 

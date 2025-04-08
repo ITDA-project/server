@@ -40,6 +40,17 @@ public class SignUpController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
+    /**
+     * 회원가입에 실패하는 경우: 신규회원이며, 이미 가입된 이메일로 시도하는 경우
+     * 회원가입과 로그인 구분: DB에 이미 존재하는 username(id)로 요청한 경우는 로그인, 아니면 회원가입
+     * 1.username이 존재하는지 확인
+     * 1-1. 존재한다면 로그인처리만 하고 return
+     * 1-2. 존재하지 않으면 신규회원으로 2번으로 이동
+     * 2.email이 존재하는지 확인
+     * 2-1. 존재한다면 가입 불가능 예외 발생
+     * 2-2. 존재하지 않으면 신규회원 가입 가능 3번으로 이동
+     * 3.신규 회원가입 진행
+     */
     @PostMapping("/auth/signup/{social}")
     public ResponseEntity<?> signUpSocial(@RequestBody SocialUserDto socialUserDto,
                                           @PathVariable("social") String social,
@@ -50,12 +61,18 @@ public class SignUpController {
         String access = jwtUtil.createJwt("access", user.getUsername(), user.getRole(), 36000000L);
         String refresh = jwtUtil.createJwt("refresh", user.getUsername(), user.getRole(), 864000000L);
 
-        userService.createSocialUser(user, refresh);
+        //1.
+        if(userService.checkUsername(user.getUsername())){// 1-1.
+            userService.addRefresh(user.getUsername(),refresh,86400000L);
+            setResponseHeader(response,access,refresh);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        //2.
+        userService.checkEmail(user.getEmail());
 
-        response.setHeader("Authorization", "Bearer " + access);
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        response.getWriter().write("{\"refresh_token\": \"" + refresh + "\"}");
+        //3.
+        userService.createSocialUser(user, refresh);
+        setResponseHeader(response, access, refresh);
 
         // 프론트에서 화면 전환하므로 201 응답만 반환
         return new ResponseEntity<>(HttpStatus.CREATED);
@@ -73,5 +90,12 @@ public class SignUpController {
                 true
         );
         return ResponseEntity.ok(response);
+    }
+
+    private void setResponseHeader(HttpServletResponse response, String access, String refresh) throws IOException {
+        response.setHeader("Authorization", "Bearer " + access);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write("{\"refresh_token\": \"" + refresh + "\"}");
     }
 }
