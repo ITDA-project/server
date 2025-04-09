@@ -93,7 +93,7 @@ public class SignUpController {
     }
 
     private void setResponseHeader(HttpServletResponse response, String access, String refresh) throws IOException {
-        response.setHeader("Authorization", "Bearer " + access);
+        response.setHeader("access", access);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write("{\"refresh_token\": \"" + refresh + "\"}");
