@@ -1,0 +1,59 @@
+spring:
+  config:
+    import: optional:file:.env[.properties]
+
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+        default_batch_fetch_size: 100
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+  security:
+    user:
+      name: user
+      password: ''
+
+  jwt:
+    secret: ${JWT_SECRET}
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${SMTP_MAIL}
+    password: ${SMTP_PW}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          timeout: 5000
+          starttls:
+            enable: true
+
+cloud:
+  aws:
+    credentials:
+      access-key: ${CLOUD_ACCESS}
+      secret-key: ${CLOUD_SECRET}
+    s3:
+      bucket: moamoa-profile
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+
+logging.level:
+  org.hibernate.SQL: debug
+  org.hibernate.orm.jdbc.bind: trace
