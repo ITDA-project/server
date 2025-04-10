@@ -64,8 +64,15 @@ public class PostApiController {
 
     // 게시글 개별 조회
     @GetMapping("/{postId}")
-    public ResponseEntity<ApiResponse<PostResponseDTO>> getPostById(@PathVariable long postId){
-        PostResponseDTO got = postApiService.getPostById(postId);
+    public ResponseEntity<ApiResponse<PostResponseDTO>> getPostById(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable long postId) {
+        
+        // 로그인한 사용자면 username 전달, 아니면 null 전달
+        String username = userDetails != null ? userDetails.getUsername() : null;
+        
+        // 서비스에 username 전달하여 좋아요 여부 확인
+        PostResponseDTO got = postApiService.getPostById(postId, username);
 
         ApiResponse<PostResponseDTO> gotPost = ApiResponse.success(
                 SuccessCode.OK,
