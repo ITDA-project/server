@@ -21,8 +21,8 @@ jobs:
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
       SMTP_MAIL: ${{ secrets.SMTP_MAIL }}
       SMTP_PW: ${{secrets.SMTP_PW}}
-      CLOUD_ACCESS: ${CLOUD_ACCESS}
-      CLOUD_SECRET: ${CLOUD_SECRET}
+      CLOUD_ACCESS: ${{CLOUD_ACCESS}}
+      CLOUD_SECRET: ${{CLOUD_SECRET}}
 
     steps:
     - uses: actions/checkout@v4
