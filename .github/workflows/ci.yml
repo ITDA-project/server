@@ -20,9 +20,13 @@ jobs:
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
       SMTP_MAIL: ${{ secrets.SMTP_MAIL }}
-      SMTP_PW: ${{secrets.SMTP_PW}}
-      CLOUD_ACCESS: ${{CLOUD_ACCESS}}
-      CLOUD_SECRET: ${{CLOUD_SECRET}}
+      SMTP_PW: ${{ secrets.SMTP_PW }}
+      CLOUD_ACCESS: ${{ secrets.CLOUD_ACCESS }}
+      CLOUD_SECRET: ${{ secrets.CLOUD_SECRET }}
+      TEST_DB_URL: ${{ secrets.TEST_DB_URL }}
+      TEST_DB_USER: ${{ secrets.TEST_DB_USER }}
+      TEST_DB_PASSWORD: ${{ TEST_DB_PASSWORD }}
+
 
     steps:
     - uses: actions/checkout@v4
