@@ -1,0 +1,41 @@
+
+name: Java CI with Gradle
+
+on:
+  push:
+    branches: [ "develop" ]
+  pull_request:
+    branches: [ "develop" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    env:
+      DB_URL: ${{ secrets.DB_URL }} #url: ${DB_URL} (application.yml 환경변수)
+      DB_USERNAME: ${{ secrets.DB_USERNAME }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      SMTP_MAIL: ${{ secrets.SMTP_MAIL }}
+      SMTP_PW: ${{secrets.SMTP_PW}}
+      CLOUD_ACCESS: ${CLOUD_ACCESS}
+      CLOUD_SECRET: ${CLOUD_SECRET}
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+
+    - name: Build with Gradle Wrapper
+      run: ./gradlew build #./gradlew test 생략 - build로 자동 실행 
+
+# dependency-graph.yml 분리(생략)
