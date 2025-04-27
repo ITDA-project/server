@@ -73,7 +73,22 @@ public class Post extends BaseEntity{
     public void changeLocation(String location) {
         this.location = location;
     }
-
+    
+    public void changeWarranty(String warranty) {
+        this.warranty = warranty;
+    }
+    
+    public void changeDueDate(LocalDate dueDate) {
+        this.dueDate = dueDate;
+    }
+    
+    public void changeActivityStartDate(LocalDate activityStartDate) {
+        this.activityStartDate = activityStartDate;
+    }
+    
+    public void changeActivityEndDate(LocalDate activityEndDate) {
+        this.activityEndDate = activityEndDate;
+    }
 
     public void plusLikeCount() {   this.likesCount += 1; }
     public void minusLikeCount() {  this.likesCount -= 1; }

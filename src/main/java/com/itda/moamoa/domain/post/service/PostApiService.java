@@ -89,6 +89,10 @@ public class PostApiService {
         post.changeCategory(requestDto.getCategory());
         post.changeMembersMax(requestDto.getMembersMax());
         post.changeLocation(requestDto.getLocation());
+        post.changeWarranty(requestDto.getWarranty());
+        post.changeDueDate(requestDto.getDueDate());
+        post.changeActivityStartDate(requestDto.getActivityStartDate());
+        post.changeActivityEndDate(requestDto.getActivityEndDate());
 
         return post.getPostId();
     }
