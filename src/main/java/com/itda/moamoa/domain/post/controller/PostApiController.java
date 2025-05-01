@@ -24,10 +24,10 @@ public class PostApiController {
     // 게시글 전체 조회
     @GetMapping("/list")
     public ResponseEntity<ApiResponse<PostListResponseDTO>> getPostList(
-            @RequestParam(required = false) Long cursor,
-            @RequestParam(required = false) Category category,
-            @RequestParam(defaultValue = "createdAt") String sort,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(name="cursor", required = false) Long cursor,
+            @RequestParam(name="category", required = false) Category category,
+            @RequestParam(name="sort", defaultValue = "createdAt") String sort,
+            @RequestParam(name="size", defaultValue = "10") int size) {
         
         List<PostListResponseDTO> posts = postApiService.getPostsByCursor(cursor, category, sort, size);
         
