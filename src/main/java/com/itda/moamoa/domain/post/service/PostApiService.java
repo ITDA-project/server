@@ -256,7 +256,8 @@ public class PostApiService {
             post.getPostId(),
             post.getTitle(),
             post.getLikesCount(),
-            post.getCreatedAt()
+            post.getCreatedAt(),
+            post.getUser().getId()
         );
     }
 }
