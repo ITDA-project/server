@@ -19,7 +19,7 @@ public class LikeApiController {
     // 좋아요 생성 요청
     @PostMapping
     public ResponseEntity<ApiResponse<Object>> create(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                                               @PathVariable long postId){
+                                                               @PathVariable("postId") long postId){
 
        likeApiService.create(userDetails.getUsername(), postId);
 
@@ -36,7 +36,7 @@ public class LikeApiController {
     // 해당 게시글 좋아요 삭제 요청
     @DeleteMapping
     public ResponseEntity<ApiResponse<Object>> delete(@AuthenticationPrincipal CustomUserDetails userDetails,
-                                                              @PathVariable long postId){
+                                                              @PathVariable("postId") long postId){
 
         likeApiService.delete(userDetails.getUsername(), postId);
 

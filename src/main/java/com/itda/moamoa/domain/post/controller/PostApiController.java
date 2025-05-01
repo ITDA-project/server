@@ -66,7 +66,7 @@ public class PostApiController {
     @GetMapping("/{postId}")
     public ResponseEntity<ApiResponse<PostResponseDTO>> getPostById(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable long postId) {
+            @PathVariable("postId") long postId) {
         
         // 로그인한 사용자면 username 전달, 아니면 null 전달
         String username = userDetails != null ? userDetails.getUsername() : null;
@@ -113,7 +113,7 @@ public class PostApiController {
     @PatchMapping("/{postId}")
     public ResponseEntity<ApiResponse<Object>> update(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable long postId,
+            @PathVariable("postId") long postId,
             @RequestBody PostRequestDTO requestDto) {
 
         String username = userDetails != null ? userDetails.getUsername() : null;
@@ -134,7 +134,7 @@ public class PostApiController {
     @DeleteMapping("/{postId}")
     public ResponseEntity<ApiResponse<Object>> delete(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable long postId) {
+            @PathVariable("postId") long postId) {
 
         String username = userDetails != null ? userDetails.getUsername() : null;
         postApiService.delete(username, postId);

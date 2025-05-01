@@ -15,7 +15,7 @@ public class ProfileController {
     private final ProfileService profileService;
 
     @GetMapping("/{userId}")
-    public ResponseEntity<ApiResponse<UserProfileDTO>> getProfile(@PathVariable Long userId) {
+    public ResponseEntity<ApiResponse<UserProfileDTO>> getProfile(@PathVariable("userId") Long userId) {
         UserProfileDTO profileDTO = profileService.getProfileById(userId);
         
         ApiResponse<UserProfileDTO> response = ApiResponse.success(

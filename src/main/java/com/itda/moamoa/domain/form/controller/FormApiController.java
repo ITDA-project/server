@@ -24,7 +24,7 @@ public class FormApiController {
     // 커서 기반 폼 목록 조회
     @GetMapping("/list")
     public ResponseEntity<ApiResponse<FormListResponseDTO>> getFormList(
-            @PathVariable long postId,
+            @PathVariable("postId") long postId,
             @RequestParam(required = false) Long cursor,
             @RequestParam(defaultValue = "10") int size,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -48,8 +48,8 @@ public class FormApiController {
     // 해당 게시글에 제출된 신청폼 개별 조회
     @GetMapping("/{formId}")
     public ResponseEntity<ApiResponse<FormResponseDTO>> getFormById(
-            @PathVariable long postId,
-            @PathVariable long formId,
+            @PathVariable("postId") long postId,
+            @PathVariable("formId") long formId,
             @AuthenticationPrincipal CustomUserDetails userDetails){
 
         
@@ -71,7 +71,7 @@ public class FormApiController {
     @PostMapping
     public ResponseEntity<ApiResponse<Object>> create(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable long postId,
+            @PathVariable("postId") long postId,
             @RequestBody FormRequestDTO requestDto){
 
         if (userDetails == null) {
@@ -95,9 +95,9 @@ public class FormApiController {
     @PatchMapping("/{formId}/status/{status}")
     public ResponseEntity<ApiResponse<Participant>> updateParticipant(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable long postId,
-            @PathVariable long formId,
-            @PathVariable String status){   // ACCEPT, REFUSE
+            @PathVariable("postId") long postId,
+            @PathVariable("formId") long formId,
+            @PathVariable("status") String status){   // ACCEPT, REFUSE
 
         if (userDetails == null) {
             throw new IllegalArgumentException("로그인이 필요합니다.");
