@@ -104,15 +104,15 @@ class ApiResponseTest {
                 "괜찮았어요!",
                 "2025-02-14T12:35:00Z"
         );
-        
+
         SuccessCode successCode = SuccessCode.CREATED; // 201 코드 가정
         String message = "Review has been created successfully.";
-        
+
         ApiResponse<ReviewDto> response = ApiResponse.success(successCode, message, reviewDto);
-        
+
         // when
         String jsonResponse = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(response);
-        
+
         // then
         logger.info("API Response JSON:\n{}", jsonResponse);
         System.out.println("API Response JSON:");

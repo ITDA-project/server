@@ -2,31 +2,30 @@ package com.itda.moamoa.domain.post.entity;
 
 import com.itda.moamoa.domain.user.entity.User;
 import com.itda.moamoa.global.BaseEntity;
-import com.itda.moamoa.domain.post.entity.Category;
-
 import jakarta.persistence.*;
-        import lombok.*;
-
-        import java.time.LocalDate;
+import lombok.*;
+import java.time.LocalDate;
 
 @Entity
-@Getter
-@NoArgsConstructor //(access = AccessLevel.PROTECTED)
-@Builder
-@AllArgsConstructor //(access = AccessLevel.PRIVATE)
-@Table(name = "posts")
 @ToString
+@Getter
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Post extends BaseEntity{
-
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_id")
-    private long id;
+    private long postId;
+
+    @ManyToOne(fetch = FetchType.LAZY)      // Post:User = n:1
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Column(nullable = false)
     private String title;
 
-    @Column(columnDefinition = "LONGTEXT", nullable = false)
+    @Column(nullable = false)
     private String content;
 
     @Enumerated(EnumType.STRING)
@@ -41,33 +40,58 @@ public class Post extends BaseEntity{
     @Column(nullable = false)
     private LocalDate dueDate;
 
+    //@Column(nullable = false)
+    private String warranty;
+
+    //@Column(nullable = false)
+    private LocalDate activityStartDate;
+
+    @Column
+    private LocalDate activityEndDate;
+
     @Builder.Default
     private Integer likesCount = 0;
 
     @Builder.Default
-    private Integer commentsCount = 0;
+    private Integer participantCount = 0;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+
+    public void setUser(User user) { this.user = user; }
 
     public void changeTitle(String title) {
         this.title = title;
     }
-
     public void changeContent(String content) {
         this.content = content;
     }
-
     public void changeCategory(Category category) {
         this.category = category;
     }
-
     public void changeMembersMax(Integer membersMax) {
         this.membersMax = membersMax;
     }
-
     public void changeLocation(String location) {
         this.location = location;
     }
+    
+    public void changeWarranty(String warranty) {
+        this.warranty = warranty;
+    }
+    
+    public void changeDueDate(LocalDate dueDate) {
+        this.dueDate = dueDate;
+    }
+    
+    public void changeActivityStartDate(LocalDate activityStartDate) {
+        this.activityStartDate = activityStartDate;
+    }
+    
+    public void changeActivityEndDate(LocalDate activityEndDate) {
+        this.activityEndDate = activityEndDate;
+    }
+
+    public void plusLikeCount() {   this.likesCount += 1; }
+    public void minusLikeCount() {  this.likesCount -= 1; }
+    
+    public void incrementParticipantCount() { this.participantCount += 1; }
 }

@@ -7,12 +7,11 @@ import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import java.time.LocalDateTime;
 
-@EntityListeners(AuditingEntityListener.class) //entity life cycle event을 listen
+@EntityListeners(AuditingEntityListener.class)  // Entity Life Cycle Event을 Listen
 @Getter
-@MappedSuperclass //Entity 아닌 BaseEntity를 Entity들이 상속할 수 있도록
+@MappedSuperclass                               // Entity 아닌 BaseEntity를 Entity들이 상속할 수 있도록
 public abstract class BaseEntity {
     @CreatedDate
     @Column(nullable = false, updatable = false)

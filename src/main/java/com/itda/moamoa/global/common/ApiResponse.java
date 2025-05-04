@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-
 import java.util.List;
 
 @Getter
@@ -15,11 +14,11 @@ public class ApiResponse<T> {
     private String status;
     private int code;
     private String message;
-    private T data;
-    private List<T> dtoList;
-    private Integer size;
+    private T data;             // 단일 응답 데이터
+    private List<T> dtoList;    // 목록 응답 데이터
+    private Integer size;       // Paging
 
-    // SuccessCode를 활용한 성공 응답 생성 메서드 추가
+    // SuccessCode를 활용한 단일 성공 응답 데이터 생성 메서드
     public static <T> ApiResponse<T> success(SuccessCode successCode, String message, T data) {
         return ApiResponse.<T>builder()
                 .status("success")
@@ -29,7 +28,7 @@ public class ApiResponse<T> {
                 .build();
     }
     
-    // 리스트 응답을 위한 메서드 추가
+    // 목록 응답 데이터를 생성 메서드
     public static <T> ApiResponse<T> successList(SuccessCode successCode, String message, List<T> dtoList, Integer size) {
         return ApiResponse.<T>builder()
                 .status("success")

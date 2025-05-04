@@ -1,13 +1,10 @@
 package com.itda.moamoa.global.common;
 
-import com.itda.moamoa.global.common.ErrorCode;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.Builder;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.validation.BindingResult;
@@ -30,6 +27,7 @@ public class ErrorResponse {
         private String message;
     }
 
+    // 단순 에러
     public static ErrorResponse of(ErrorCode errorCode) {
         return ErrorResponse.builder()
                 .status("error")
@@ -38,6 +36,7 @@ public class ErrorResponse {
                 .build();
     }
 
+    // 유효성 검사 실패
     public static ErrorResponse of(ErrorCode errorCode, BindingResult bindingResult) {
         List<FieldError> fieldErrors = bindingResult.getFieldErrors().stream()
                 .map(error -> new FieldError(error.getField(), error.getDefaultMessage()))
@@ -51,6 +50,7 @@ public class ErrorResponse {
                 .build();
     }
 
+    // 메시지 커스터마이징
     public static ErrorResponse of(ErrorCode errorCode, String message) {
         return ErrorResponse.builder()
                 .status("error")

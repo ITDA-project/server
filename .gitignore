@@ -10,11 +10,13 @@ logs/
 *.log
 
 ### application.yml ###
-application.yml
-application-*.yml #application-dev.yml...
+#application.yml
 
 ### application.properties ###
 application.properties
+
+#환경변수
+.env*
 
 ### STS ###
 .apt_generated
