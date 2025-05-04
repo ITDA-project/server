@@ -14,6 +14,23 @@ jobs:
     permissions:
       contents: read
 
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: mydb
+          MYSQL_USER: user
+          MYSQL_PASSWORD: pass
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -u user -pass"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+          
+
     env:
       DB_URL: ${{ secrets.DB_URL }} #url: ${DB_URL} (application.yml 환경변수)
       DB_USERNAME: ${{ secrets.DB_USERNAME }}

@@ -59,7 +59,7 @@ public class UserService {
     }
 
     /*soft delete 실행*/
-    private void deleteUser(User user){
+    protected void deleteUser(User user){
         user.softDelete();
         userRepository.save(user);
     }
