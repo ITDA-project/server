@@ -13,4 +13,5 @@ public class PostListResponseDTO {
     private String title;
     private Integer likesCount;
     private LocalDateTime createdAt;
+    private Long userId;        // 작성자 ID
 }
