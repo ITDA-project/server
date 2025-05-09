@@ -14,24 +14,21 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 public class NotificationWebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config){
-        config.enableSimpleBroker("/payment/user", "/approval/user"); //client가 구독할 경로
+        config.enableSimpleBroker("/queue");
         //client에게 server에서 broker을 거쳐 broadcasting
-        //client가 메시지를 받을 경로
+        //client가 메시지를 받을 경로 = 구독 경로
 
         config.setApplicationDestinationPrefixes("/app"); //client에서 server로 메시지를 보낼 때의 prefix
+
+        config.setUserDestinationPrefix("/user"); //특정 사용자에게만 메시지 보내는 구조 활성화
     }
 
     @Override
-    public void registerStompEndpoints(StompEndpointRegistry registry){
+    public void registerStompEndpoints(StompEndpointRegistry registry) {
         //결제 요청 알림 전용 엔드포인트
-        registry.addEndpoint("/ws/payment") //client의 WebSocket 연결 요청 /ws/payment로
+        registry.addEndpoint("/ws") //client의 WebSocket 연결 요청 ws://.../ws으로 연결
                 .setAllowedOriginPatterns("*") //client 측에서 경로 결정되면 변경
                 .withSockJS(); //WebSocket 지원 x 환경에서 대체 - 리액트네이티브앱은 WebSocket 지원
-
-        registry.addEndpoint("/ws/approval")
-                .setAllowedOriginPatterns("*")
-                .withSockJS();
     }
-
 
 }
