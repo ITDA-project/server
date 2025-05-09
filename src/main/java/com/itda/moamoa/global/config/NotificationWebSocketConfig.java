@@ -27,7 +27,7 @@ public class NotificationWebSocketConfig implements WebSocketMessageBrokerConfig
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         //결제 요청 알림 전용 엔드포인트
         registry.addEndpoint("/ws") //client의 WebSocket 연결 요청 ws://.../ws으로 연결
-                .setAllowedOriginPatterns("*") //client 측에서 경로 결정되면 변경
+                .setAllowedOriginPatterns("*") //client 측에서 경로 결정되면 변경 (WebSocket cors)
                 .withSockJS(); //WebSocket 지원 x 환경에서 대체 - 리액트네이티브앱은 WebSocket 지원
     }
 

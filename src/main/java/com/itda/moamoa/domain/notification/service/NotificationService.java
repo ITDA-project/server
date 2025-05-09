@@ -14,8 +14,8 @@ public class NotificationService {
     public void notifyUser(String username, NotificationDto notificationDto) {
         messagingTemplate.convertAndSendToUser(username,
                 "/queue/notifications",
-                // /user/userA/queue/notification으로 전송
-                // setUserDestinationPrefix()로 /user/userId가 추가됨
+                // /user/userA/queue/notifications으로 전송
+                // setUserDestinationPrefix()로 /user/username이 추가됨
 
                 // => WebSocket 세션과 username의 매핑
                 notificationDto //NotificationDto로 Notification type, message, form id 전달
