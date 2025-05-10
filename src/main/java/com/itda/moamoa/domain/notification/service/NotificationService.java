@@ -1,6 +1,5 @@
 package com.itda.moamoa.domain.notification.service;
-
-import com.itda.moamoa.domain.notification.NotificationDto;
+import com.itda.moamoa.domain.notification.dto.NotificationDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;

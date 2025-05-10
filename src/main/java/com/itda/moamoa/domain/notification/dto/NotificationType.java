@@ -1,4 +1,4 @@
-package com.itda.moamoa.domain.notification;
+package com.itda.moamoa.domain.notification.dto;
 
 public enum NotificationType {
     FORM_SUBMITTED, //폼 제출
