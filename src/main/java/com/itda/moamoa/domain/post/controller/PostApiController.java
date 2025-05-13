@@ -1,5 +1,6 @@
 package com.itda.moamoa.domain.post.controller;
 
+import com.itda.moamoa.domain.post.dto.PostRecreateDTO;
 import com.itda.moamoa.domain.post.dto.PostRequestDTO;
 import com.itda.moamoa.domain.post.dto.PostResponseDTO;
 import com.itda.moamoa.domain.post.dto.PostListResponseDTO;
@@ -8,6 +9,7 @@ import com.itda.moamoa.domain.post.service.PostApiService;
 import com.itda.moamoa.global.common.ApiResponse;
 import com.itda.moamoa.global.common.SuccessCode;
 import com.itda.moamoa.global.security.jwt.dto.CustomUserDetails;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -99,6 +101,32 @@ public class PostApiController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .header("Location", "/api/posts/" + postId)
+                .body(createdResponse);
+    }
+
+    // 게시글 재생성 요청
+    @PostMapping("/{postId}/create")
+    public ResponseEntity<ApiResponse<Object>> Recreate(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable long postId,
+            @RequestBody PostRecreateDTO recreateDto){
+
+        if (userDetails == null) {
+            throw new IllegalArgumentException("로그인이 필요합니다.");
+        }
+
+        String username = userDetails.getUsername();
+
+        Long newPostId = postApiService.recreatePost(username, postId, recreateDto);
+
+        ApiResponse<Object> createdResponse = ApiResponse.success(
+                SuccessCode.CREATED,
+                "게시글을 성공적으로 등록하였습니다.",
+                null);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .header("Location", "/api/posts/" + newPostId)
                 .body(createdResponse);
     }
 
