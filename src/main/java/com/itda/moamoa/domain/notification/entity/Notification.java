@@ -32,10 +32,7 @@ public class Notification {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    //receiver 필드 필요 - 받는 사람에 대한 db 저장용
-    //Notification 하나는 한 receiver에게
-    //receiver 한명은 Notification 여러개
-    //1대다 : receiver 대 notification
+    //User receiver
     //@ManyToOne 으로 써줘야
 
 
