@@ -16,24 +16,37 @@ import java.util.Map;
 public class PortOneApiClient {
 
     private final PortOneProperties portOneProperties;
-    private final ObjectMapper objectMapper = new ObjectMapper();
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final ObjectMapper objectMapper;
+    private final RestTemplate restTemplate;
 
     private String getAccessToken() {
         String url = "https://api.iamport.kr/users/getToken";
+        
+        String apiKey = portOneProperties.getApiKey();
+        String apiSecret = portOneProperties.getApiSecret();
+        System.out.println("Using API Key: " + apiKey);
+        System.out.println("Using API Secret: " + apiSecret);
+        
+        if (apiKey == null || apiKey.isEmpty() || apiSecret == null || apiSecret.isEmpty()) {
+            throw new IllegalStateException("포트원 API 키 또는 시크릿 키가 설정되지 않았습니다.");
+        }
 
-        Map<String, String> body = new HashMap<>();
-        body.put("imp_key", portOneProperties.getApiKey());
-        body.put("imp_secret", portOneProperties.getApiSecret());
+        // 직접 JSON 문자열 생성
+        String jsonBody = String.format("{\"imp_key\":\"%s\",\"imp_secret\":\"%s\"}", apiKey, apiSecret);
+        System.out.println("Request body: " + jsonBody);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpEntity<Map<String, String>> request = new HttpEntity<>(body, headers);
+        HttpEntity<String> request = new HttpEntity<>(jsonBody, headers);
         ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
 
+        // 응답 본문 출력
+        System.out.println("Response status: " + response.getStatusCode());
+        System.out.println("Response body: " + response.getBody());
+        
         if (response.getStatusCode() != HttpStatus.OK) {
-            throw new IllegalStateException("아임포트 토큰 요청 실패");
+            throw new IllegalStateException("아임포트 토큰 요청 실패: " + response.getBody());
         }
 
         try {
