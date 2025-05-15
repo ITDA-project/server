@@ -24,8 +24,6 @@ public class PortOneApiClient {
         
         String apiKey = portOneProperties.getApiKey();
         String apiSecret = portOneProperties.getApiSecret();
-        System.out.println("Using API Key: " + apiKey);
-        System.out.println("Using API Secret: " + apiSecret);
         
         if (apiKey == null || apiKey.isEmpty() || apiSecret == null || apiSecret.isEmpty()) {
             throw new IllegalStateException("포트원 API 키 또는 시크릿 키가 설정되지 않았습니다.");
@@ -33,7 +31,6 @@ public class PortOneApiClient {
 
         // 직접 JSON 문자열 생성
         String jsonBody = String.format("{\"imp_key\":\"%s\",\"imp_secret\":\"%s\"}", apiKey, apiSecret);
-        System.out.println("Request body: " + jsonBody);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
