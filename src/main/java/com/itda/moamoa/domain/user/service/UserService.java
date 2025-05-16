@@ -102,4 +102,16 @@ public class UserService {
 
         refreshRepository.save(refresh1);
     }
+
+    public String getFcmTokenById(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저입니다."));
+        return user.getFcmToken();
+    }
+
+    public void updateFcmToken(Long userId, String fcmToken) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저입니다."));
+        user.setFcmToken(fcmToken);
+    }
 }

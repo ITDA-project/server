@@ -21,7 +21,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 import jakarta.annotation.PostConstruct;
 import com.itda.moamoa.domain.spec.repository.SpecRepository;
@@ -99,7 +98,7 @@ public class PostApiService {
         newPost.incrementParticipantCount();
         Post savedPost = postRepository.save(newPost);
 
-        Somoim somoim = somoimRepository.findByPost(oldPost)
+        Somoim somoim = somoimRepository.findSomoimByPostId(oldPost.getPostId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글에 연결된 소모임이 없습니다."));
 
 

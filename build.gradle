@@ -63,6 +63,9 @@ dependencies {
 	implementation 'org.modelmapper:modelmapper:3.1.0'
 	//메일 인증 사용
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+	// firebase
+	implementation 'com.google.firebase:firebase-admin:9.2.0'
 }
 
 tasks.named('test') {

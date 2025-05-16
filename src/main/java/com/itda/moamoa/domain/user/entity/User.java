@@ -64,4 +64,10 @@ public class User extends BaseEntity {
             this.ratingAverage = (this.ratingAverage + rating) / 2;
         }
     }
+
+    // FCM 토큰
+    @Column
+    private String fcmToken;
+
+    public void setFcmToken(String fcmToken) { this.fcmToken = fcmToken; }
 }
