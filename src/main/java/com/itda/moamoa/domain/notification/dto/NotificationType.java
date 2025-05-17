@@ -5,5 +5,6 @@ public enum NotificationType {
     FORM_REJECTED, //폼 거절
     FORM_APPROVED, //폼 승인
     PAYMENT_REQUEST, //결제 요청
-    PAYMENT_COMPLETE //결제 완료
+    PAYMENT_COMPLETE, //결제 완료
+    CHAT //채팅 메시지
 }
