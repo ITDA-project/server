@@ -1,6 +1,7 @@
 package com.itda.moamoa.domain.notification.entity;
 
 import com.itda.moamoa.domain.notification.dto.NotificationType;
+import com.itda.moamoa.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -32,8 +33,9 @@ public class Notification {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    //User receiver
-    //@ManyToOne 으로 써줘야
-
+    //알림 받는 user : 한 user은 여러 알림 받고 알림 하나는 한 user에 대응
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
 }
