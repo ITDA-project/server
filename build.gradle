@@ -71,6 +71,9 @@ dependencies {
 
 	//메일 인증 사용
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+	//Spring STOMP (WebSocket)
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 }
 
 tasks.named('test') {
