@@ -41,7 +41,10 @@ public class ChatRoomService {
 
     public void leaveChatRoom(Long roomId,CustomUserDetails userDetails){
         //ChatRoomUser 에서 해당 userId와 roomId를 삭제
+        //userId 가져오기
         User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new EntityNotFoundException("찾을 수 없는 유저입니다"));
+
+        //OWNER -> 채팅방 deleteFlag 수정
 
         chatRoomUserRepository.deleteByUserIdAndRoomId(user.getId(),roomId);
     }

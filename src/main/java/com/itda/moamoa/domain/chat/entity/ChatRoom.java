@@ -23,14 +23,17 @@ public class ChatRoom {
     //만들어진 시간
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    private Boolean isDeleted = false;
+    private Boolean deleteFlag = false;
+
+    private LocalDateTime deletedAt;
 
     public void softDelete(){
-        this.isDeleted = true;
+        this.deleteFlag = true;
+        this.deletedAt = LocalDateTime.now();
     }
 
     public Boolean isDeleted(){
-        return this.isDeleted;
+        return this.deleteFlag;
     }
 
 }
