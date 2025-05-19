@@ -26,8 +26,8 @@ public class ChatRoomController {
 
     //채팅방 퇴장(참여자)
     @DeleteMapping("/{roomId}")
-    public void leaveChatRoom(@PathVariable(name = "roomId") Long roomId) {
-
+    public void leaveChatRoom(@PathVariable(name = "roomId") Long roomId,@AuthenticationPrincipal CustomUserDetails user) {
+        chatRoomService.leaveChatRoom(roomId,user);
     }
 
     //채팅방 제거 (방장이 폭파)
