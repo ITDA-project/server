@@ -2,10 +2,12 @@ package com.itda.moamoa.domain.chat.entity;
 
 import com.itda.moamoa.domain.user.entity.User;
 import jakarta.persistence.*;
+import lombok.Builder;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Builder
 public class ChatMessage {
 
     @Id @GeneratedValue
@@ -22,5 +24,6 @@ public class ChatMessage {
 
     private String content;
 
+    @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 }

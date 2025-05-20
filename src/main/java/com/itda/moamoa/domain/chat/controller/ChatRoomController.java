@@ -1,8 +1,13 @@
 package com.itda.moamoa.domain.chat.controller;
 
+import com.itda.moamoa.domain.chat.dto.ChatRoomCreateDto;
 import com.itda.moamoa.domain.chat.service.ChatRoomService;
+import com.itda.moamoa.global.common.ApiResponse;
+import com.itda.moamoa.global.common.SuccessCode;
 import com.itda.moamoa.global.security.jwt.dto.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,8 +20,13 @@ public class ChatRoomController {
 
     //채팅방 생성
     @PostMapping
-    public void createChatRoom(@RequestBody String roomName, @AuthenticationPrincipal CustomUserDetails user){
-        chatRoomService.createChatRoom(roomName,user);
+    public ResponseEntity<ApiResponse<Long>> createChatRoom(@RequestBody ChatRoomCreateDto roomName, @AuthenticationPrincipal CustomUserDetails user){
+        Long chatRoomId = chatRoomService.createChatRoom(roomName.getRoomName(), user);
+
+        //채팅방 아이디를 알려주면, 해당 경로를 SUBSCRIBE
+        ApiResponse<Long> apiResponse = ApiResponse.success(SuccessCode.CREATED,"채팅방 생성 완료",chatRoomId);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(apiResponse);
     }
 
     //채팅방 초대
@@ -24,10 +34,13 @@ public class ChatRoomController {
     //온라인 사용자는?
     //오프라인과 온라인 구별 방법
 
-    //채팅방 퇴장(참여자)
+    //채팅방 퇴장
     @DeleteMapping("/{roomId}")
-    public void leaveChatRoom(@PathVariable(name = "roomId") Long roomId,@AuthenticationPrincipal CustomUserDetails user) {
+    public ResponseEntity<ApiResponse<Object>> leaveChatRoom(@PathVariable(name = "roomId") Long roomId,@AuthenticationPrincipal CustomUserDetails user) {
         chatRoomService.leaveChatRoom(roomId,user);
+
+        ApiResponse<Object> apiResponse = ApiResponse.success(SuccessCode.OK,"채팅방 퇴장 완료",null);
+        return ResponseEntity.ok(apiResponse);
     }
 
     //채팅방 제거 (방장이 폭파)

@@ -17,13 +17,13 @@ public class ChatRoomUser {
     @GeneratedValue
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")
-    private ChatRoom roomId;
+    private ChatRoom room;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User userId;
+    private User user;
 
     //유저의 채팅방에서의 권한(방장,참여자)
     @Enumerated(EnumType.STRING)

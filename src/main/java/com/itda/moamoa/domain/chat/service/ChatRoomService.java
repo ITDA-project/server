@@ -22,7 +22,7 @@ public class ChatRoomService {
     private final UserRepository userRepository;
     private final ChatRoomUserRepository chatRoomUserRepository;
 
-    public void createChatRoom(String roomName, CustomUserDetails userDetails){
+    public Long createChatRoom(String roomName, CustomUserDetails userDetails){
         ChatRoom chatRoom = ChatRoom.builder().
                 roomName(roomName).
                 build();
@@ -32,24 +32,31 @@ public class ChatRoomService {
         User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new EntityNotFoundException("찾을 수 없는 유저입니다"));
 
         ChatRoomUser chatRoomUser = ChatRoomUser.builder()
-                .userId(user)
-                .roomId(savedChatRoom)
+                .user(user)
+                .room(savedChatRoom)
                 .role(RoomRole.OWNER)
                 .build();
         chatRoomUserRepository.save(chatRoomUser);
+        return savedChatRoom.getId();
     }
 
     public void leaveChatRoom(Long roomId,CustomUserDetails userDetails){
         //userId 가져오기
-        Long userId = userDetails.getUserId();
+        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new EntityNotFoundException("찾을 수 없는 유저입니다"));;
+
         //OWNER 라면 채팅방 deleteFlag 수정
-        ChatRoomUser leaveRoomUser = chatRoomUserRepository.findById(userId).orElseThrow();
+        ChatRoomUser leaveRoomUser = chatRoomUserRepository.findByUserIdAndRoomId(user.getId(),roomId).orElseThrow();
         if(RoomRole.OWNER.equals(leaveRoomUser.getRole())){
             ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow();
             chatRoom.softDelete();
         }
-        //ChatRoomUser 에서 해당 userId와 roomId를 삭제
-        chatRoomUserRepository.deleteByUserIdAndRoomId(roomId,userId);
+        //ChatRoomUser 에서 삭제
+        chatRoomUserRepository.delete(leaveRoomUser);
+    }
+
+    public void getRoomChatting(Long roomId){
+        //페이징 사용
+        //최신 순으로 정렬해서 데이터를 반환한다.
     }
 
 
