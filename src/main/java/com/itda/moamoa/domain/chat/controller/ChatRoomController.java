@@ -1,6 +1,7 @@
 package com.itda.moamoa.domain.chat.controller;
 
 import com.itda.moamoa.domain.chat.dto.ChatRoomCreateDto;
+import com.itda.moamoa.domain.chat.dto.ChatRoomMessageResponseDto;
 import com.itda.moamoa.domain.chat.service.ChatRoomService;
 import com.itda.moamoa.global.common.ApiResponse;
 import com.itda.moamoa.global.common.SuccessCode;
@@ -10,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -39,11 +42,10 @@ public class ChatRoomController {
     public ResponseEntity<ApiResponse<Object>> leaveChatRoom(@PathVariable(name = "roomId") Long roomId,@AuthenticationPrincipal CustomUserDetails user) {
         chatRoomService.leaveChatRoom(roomId,user);
 
+        //퇴장 후에는 클라이언트에서 UNSUBSCRIBE 요청 필요
         ApiResponse<Object> apiResponse = ApiResponse.success(SuccessCode.OK,"채팅방 퇴장 완료",null);
         return ResponseEntity.ok(apiResponse);
     }
-
-    //채팅방 제거 (방장이 폭파)
 
     //채팅방 목록 조회
     @GetMapping
@@ -53,7 +55,12 @@ public class ChatRoomController {
 
     //이전 채팅들 조회
     @GetMapping("/{roomId}")
-    public void getChatOfChatRoom(){
+    public ResponseEntity<ApiResponse<ChatRoomMessageResponseDto>> getChatOfChatRoom(@PathVariable(name = "roomId") Long roomId,
+                                                                                           @RequestParam(required = false)Long cursor,
+                                                                                           @RequestParam(defaultValue = "30")int size){
+        List<ChatRoomMessageResponseDto> messages = chatRoomService.getRoomChatting(roomId, cursor, size);
 
+        ApiResponse<ChatRoomMessageResponseDto> apiResponse = ApiResponse.successList(SuccessCode.OK, "채팅방 채팅 조회 완료", messages,messages.size());
+        return ResponseEntity.ok(apiResponse);
     }
 }

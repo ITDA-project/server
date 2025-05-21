@@ -3,10 +3,12 @@ package com.itda.moamoa.domain.chat.entity;
 import com.itda.moamoa.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Builder;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Getter
 @Builder
 public class ChatMessage {
 
@@ -14,11 +16,11 @@ public class ChatMessage {
     @Column(name = "message_id")
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User sender;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")
     private ChatRoom room;
 
