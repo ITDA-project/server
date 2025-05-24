@@ -17,7 +17,7 @@ public class ChatRoom {
     @Column(name="room_id")
     private Long id; //채팅방 ID
 
-    //채팅방 제목?
+    //채팅방 제목
     private String roomName;
 
     //만들어진 시간

@@ -1,18 +1,27 @@
 package com.itda.moamoa.domain.chat.controller;
 
-import com.itda.moamoa.domain.chat.dto.ChatRoomCreateDto;
+import com.itda.moamoa.domain.chat.dto.ChatRoomDto;
+import com.itda.moamoa.domain.chat.dto.ChatRoomInviteDto;
+import com.itda.moamoa.domain.chat.dto.ChatRoomInviteResponseDto;
 import com.itda.moamoa.domain.chat.dto.ChatRoomMessageResponseDto;
+import com.itda.moamoa.domain.chat.entity.ChatRoom;
+import com.itda.moamoa.domain.chat.entity.RoomRole;
 import com.itda.moamoa.domain.chat.service.ChatRoomService;
+import com.itda.moamoa.domain.chat.service.ChatRoomUserService;
 import com.itda.moamoa.global.common.ApiResponse;
 import com.itda.moamoa.global.common.SuccessCode;
 import com.itda.moamoa.global.security.jwt.dto.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,10 +29,13 @@ import java.util.List;
 public class ChatRoomController {
 
     private final ChatRoomService chatRoomService;
+    private final ChatRoomUserService chatRoomUserService;
+    private final SimpMessagingTemplate messagingTemplate;
+    private final ModelMapper modelMapper;
 
     //채팅방 생성
     @PostMapping
-    public ResponseEntity<ApiResponse<Long>> createChatRoom(@RequestBody ChatRoomCreateDto roomName, @AuthenticationPrincipal CustomUserDetails user){
+    public ResponseEntity<ApiResponse<Long>> createChatRoom(@RequestBody ChatRoomDto roomName, @AuthenticationPrincipal CustomUserDetails user){
         Long chatRoomId = chatRoomService.createChatRoom(roomName.getRoomName(), user);
 
         //채팅방 아이디를 알려주면, 해당 경로를 SUBSCRIBE
@@ -34,8 +46,20 @@ public class ChatRoomController {
 
     //채팅방 초대
     //오프라인은 채팅방 DB에 초대받은 사용자를 추가해서 조회할 때, 가져오면 됨
-    //온라인 사용자는?
-    //오프라인과 온라인 구별 방법
+    //유저 식별은 username 으로 구분함, form 수락 시 username 도 보내줘야 됨
+    //초대한 사용자, ChatRoomUser 에 넣기
+    //초대한 사용자에게 채팅방 정보를 넘겨줌
+    // /user/{username}/queue/invite
+    @PostMapping("/invite")
+    public ResponseEntity<ApiResponse<Object>> inviteUser(@RequestBody ChatRoomInviteDto chatRoomInviteDto){
+        ChatRoom chatRoom = chatRoomService.inviteUser(chatRoomInviteDto);
+
+        ChatRoomInviteResponseDto chatRoomDto = modelMapper.map(chatRoom, ChatRoomInviteResponseDto.class);
+        messagingTemplate.convertAndSendToUser(chatRoomInviteDto.getUsername(),"/queue/invite",chatRoomDto);
+
+        ApiResponse<Object> apiResponse = ApiResponse.success(SuccessCode.OK,"초대 성공",null);
+        return ResponseEntity.ok(apiResponse);
+    }
 
     //채팅방 퇴장
     @DeleteMapping("/{roomId}")
@@ -48,6 +72,8 @@ public class ChatRoomController {
     }
 
     //채팅방 목록 조회
+    //roomName, roomId, lastMessage, 읽지 않은 메시지 수
+    //마지막 메시지의 내용은 /user/queue/last-message 를 통해 전달해서 실시간 갱신?
     @GetMapping
     public void getChatRoom() {
 
@@ -55,12 +81,20 @@ public class ChatRoomController {
 
     //이전 채팅들 조회
     @GetMapping("/{roomId}")
-    public ResponseEntity<ApiResponse<ChatRoomMessageResponseDto>> getChatOfChatRoom(@PathVariable(name = "roomId") Long roomId,
+    public ResponseEntity<ApiResponse<Map<String,Object>>> getChatOfChatRoom(@PathVariable(name = "roomId") Long roomId,
                                                                                            @RequestParam(required = false)Long cursor,
-                                                                                           @RequestParam(defaultValue = "30")int size){
+                                                                                           @RequestParam(defaultValue = "30")int size,
+                                                                                     @AuthenticationPrincipal CustomUserDetails user){
         List<ChatRoomMessageResponseDto> messages = chatRoomService.getRoomChatting(roomId, cursor, size);
+        Map<String,Object> response = new HashMap<>();
+        response.put("messages",messages);
+        response.put("size",messages.size());
+        if(cursor == null || cursor <= 0){
+            RoomRole roomRole = chatRoomUserService.findRoomRole(roomId, user.getUsername());
+            response.put("role",roomRole);
+        }
 
-        ApiResponse<ChatRoomMessageResponseDto> apiResponse = ApiResponse.successList(SuccessCode.OK, "채팅방 채팅 조회 완료", messages,messages.size());
+        ApiResponse<Map<String,Object>> apiResponse = ApiResponse.success(SuccessCode.OK, "채팅방 채팅 조회 완료", response);
         return ResponseEntity.ok(apiResponse);
     }
 }

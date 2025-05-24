@@ -31,7 +31,7 @@ public class ChatRoomUser {
 
     private LocalDateTime lastReadAt; //마지막으로 채팅방을 읽은 시간, 안읽은 메시지 수 카운트 위함
 
-    private LocalDateTime joinedAt;
+    private LocalDateTime joinedAt; //사용자가 채팅방에 들어간 시간
 
     @PrePersist
     protected void onJoin() {
