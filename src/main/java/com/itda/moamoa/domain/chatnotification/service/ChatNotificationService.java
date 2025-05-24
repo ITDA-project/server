@@ -71,7 +71,7 @@ public class ChatNotificationService {
 
 
         for (String receiverUsername : createChatNotificationDto.getReceiver()) {
-            User receiver = userRepository.findByUsername(receiverUsername)
+            User receiver = userService.findUserByUsername(receiverUsername)
                     .orElseThrow(() -> new EntityNotFoundException("수신 유저 없음 "));
 
             ChatNotification chatNotification = ChatNotification.builder()
@@ -101,11 +101,11 @@ public class ChatNotificationService {
     }
 
     //편의용 알림 생성 + 전송 메서드
-    public void createAndSendChatNotification(String username, ChatNotificationDto chatNotificationDto, CreateChatNotificationDto createChatNotificationDto){
+    public void createAndSendChatNotification(ChatNotificationDto chatNotificationDto, CreateChatNotificationDto createChatNotificationDto){
         //바로 알림 저장 후 전송이므로 유효성 검증 생략 가능
         createChatNotification(createChatNotificationDto); //저장 후 전송 - 유실 방지
         //메서드 호출 자체로 Notification 생성 후 저장됨 - 변수의 선언 필요 x (사용할 필요 x이므로)
-        notifyChatToUser(username, chatNotificationDto);
+        notifyChatToUser(chatNotificationDto);
     }
 
 
