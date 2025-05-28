@@ -11,10 +11,16 @@ import java.util.List;
 
 @Repository
 public interface ChatRoomRepository extends JpaRepository<ChatRoom,Long> {
-    @Query("select c.room_id,c.room_name,c.lastMessageAt " +
-            "(select count(*) from ChatMessage m where u.last_read_at > m.created_at) as unread " +
-            "from ChatRoom c join ChatRoomUser u using(roomId)" +
-            "where user_id = :userId" +
+    @Query("select new com.itda.moamoa.domain.chat.dto.ChatRoomListDto(" +
+            "c.id," +
+            "c.roomName," +
+            "c.lastMessageAt, " +
+            "(" +
+            "select count(m) from ChatMessage m where m.room.id = c.id and u.lastReadAt < m.createdAt" +
+            ")" +
+            ") " +
+            "from ChatRoom c join ChatRoomUser u on c.id = u.room.id " +
+            "where u.user.id = :userId " +
             "order by c.lastMessageAt desc")
     List<ChatRoomListDto> findChatRoomList(@Param("userId") Long userId);
 }
