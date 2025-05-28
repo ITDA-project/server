@@ -2,14 +2,15 @@ package com.itda.moamoa.domain.chat.entity;
 
 import com.itda.moamoa.domain.user.entity.User;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ChatMessage {
 
     @Id @GeneratedValue

@@ -1,6 +1,7 @@
 package com.itda.moamoa.domain.chat.service;
 
-import com.itda.moamoa.domain.chat.dto.ChatRoomInviteDto;
+import com.itda.moamoa.domain.chat.dto.ChatRoomInviteRequestDto;
+import com.itda.moamoa.domain.chat.dto.ChatRoomListDto;
 import com.itda.moamoa.domain.chat.dto.ChatRoomMessageResponseDto;
 import com.itda.moamoa.domain.chat.entity.ChatRoom;
 import com.itda.moamoa.domain.chat.entity.ChatRoomUser;
@@ -79,13 +80,13 @@ public class ChatRoomService {
                 .toList();
     }
 
-    public ChatRoom inviteUser(ChatRoomInviteDto chatRoomInviteDto){
+    public ChatRoom inviteUser(ChatRoomInviteRequestDto chatRoomInviteRequestDto){
         //초대한 유저가 탈퇴한 경우
-        User user = userRepository.findByUsername(chatRoomInviteDto.getUsername()).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 회원입니다."));
+        User user = userRepository.findByUsername(chatRoomInviteRequestDto.getUsername()).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 회원입니다."));
         if(user.isDeleted()){
             throw new UserException("이미 탈퇴한 회원입니다.");
         }
-        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomInviteDto.getRoomId()).orElseThrow(()->new EntityNotFoundException("존재하지 않는 채팅방입니다."));
+        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomInviteRequestDto.getRoomId()).orElseThrow(()->new EntityNotFoundException("존재하지 않는 채팅방입니다."));
 
         ChatRoomUser invite = ChatRoomUser.builder()
                 .room(chatRoom)
@@ -96,6 +97,10 @@ public class ChatRoomService {
         return chatRoom;
     }
 
+    public List<ChatRoomListDto> getChatRoomList(String username){
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 회원입니다."));
 
+        return chatRoomRepository.findChatRoomList(user.getId());
+    }
 
 }

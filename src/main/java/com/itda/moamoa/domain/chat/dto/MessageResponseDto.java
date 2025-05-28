@@ -5,6 +5,9 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+/**
+ * 메시지 요청 응답 DTO
+ */
 @Getter
 @Setter
 public class MessageResponseDto {

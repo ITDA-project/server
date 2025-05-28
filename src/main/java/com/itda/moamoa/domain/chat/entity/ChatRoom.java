@@ -20,6 +20,12 @@ public class ChatRoom {
     //채팅방 제목
     private String roomName;
 
+    //채팅방의 마지막 메세지
+    private String lastMessage;
+
+    //마지막 메세지가 전송된 시간
+    private LocalDateTime lastMessageAt;
+
     //만들어진 시간
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();

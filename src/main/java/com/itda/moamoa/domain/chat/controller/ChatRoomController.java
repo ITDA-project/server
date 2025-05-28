@@ -1,9 +1,6 @@
 package com.itda.moamoa.domain.chat.controller;
 
-import com.itda.moamoa.domain.chat.dto.ChatRoomDto;
-import com.itda.moamoa.domain.chat.dto.ChatRoomInviteDto;
-import com.itda.moamoa.domain.chat.dto.ChatRoomInviteResponseDto;
-import com.itda.moamoa.domain.chat.dto.ChatRoomMessageResponseDto;
+import com.itda.moamoa.domain.chat.dto.*;
 import com.itda.moamoa.domain.chat.entity.ChatRoom;
 import com.itda.moamoa.domain.chat.entity.RoomRole;
 import com.itda.moamoa.domain.chat.service.ChatRoomService;
@@ -51,11 +48,11 @@ public class ChatRoomController {
     //초대한 사용자에게 채팅방 정보를 넘겨줌
     // /user/{username}/queue/invite
     @PostMapping("/invite")
-    public ResponseEntity<ApiResponse<Object>> inviteUser(@RequestBody ChatRoomInviteDto chatRoomInviteDto){
-        ChatRoom chatRoom = chatRoomService.inviteUser(chatRoomInviteDto);
+    public ResponseEntity<ApiResponse<Object>> inviteUser(@RequestBody ChatRoomInviteRequestDto chatRoomInviteRequestDto){
+        ChatRoom chatRoom = chatRoomService.inviteUser(chatRoomInviteRequestDto);
 
         ChatRoomInviteResponseDto chatRoomDto = modelMapper.map(chatRoom, ChatRoomInviteResponseDto.class);
-        messagingTemplate.convertAndSendToUser(chatRoomInviteDto.getUsername(),"/queue/invite",chatRoomDto);
+        messagingTemplate.convertAndSendToUser(chatRoomInviteRequestDto.getUsername(),"/queue/invite",chatRoomDto);
 
         ApiResponse<Object> apiResponse = ApiResponse.success(SuccessCode.OK,"초대 성공",null);
         return ResponseEntity.ok(apiResponse);
@@ -75,8 +72,11 @@ public class ChatRoomController {
     //roomName, roomId, lastMessage, 읽지 않은 메시지 수
     //마지막 메시지의 내용은 /user/queue/last-message 를 통해 전달해서 실시간 갱신?
     @GetMapping
-    public void getChatRoom() {
+    public ResponseEntity<ApiResponse<ChatRoomListDto>> getChatRoom(@AuthenticationPrincipal CustomUserDetails user) {
+        List<ChatRoomListDto> chatRoomList = chatRoomService.getChatRoomList(user.getUsername());
 
+        ApiResponse<ChatRoomListDto> response = ApiResponse.successList(SuccessCode.OK,"채팅방 목록 조회 완료",chatRoomList,chatRoomList.size());
+        return ResponseEntity.ok(response);
     }
 
     //이전 채팅들 조회
