@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import jakarta.annotation.PostConstruct;
 import com.itda.moamoa.domain.spec.repository.SpecRepository;
+import com.itda.moamoa.domain.like.repository.LikeRepository;
 
 @Slf4j
 @Service
@@ -35,6 +36,7 @@ public class PostApiService {
     private final ParticipantRepository participantRepository;
     private final SomoimRepository somoimRepository;
     private final SpecRepository specRepository;
+    private final LikeRepository likeRepository;
 
     @PostConstruct
     public void setupMapper() { //response에 postId 받아오도록
@@ -133,6 +135,10 @@ public class PostApiService {
         post.changeCategory(requestDto.getCategory());
         post.changeMembersMax(requestDto.getMembersMax());
         post.changeLocation(requestDto.getLocation());
+        post.changeWarranty(requestDto.getWarranty());
+        post.changeDueDate(requestDto.getDueDate());
+        post.changeActivityStartDate(requestDto.getActivityStartDate());
+        post.changeActivityEndDate(requestDto.getActivityEndDate());
 
         return post.getPostId();
     }
@@ -220,6 +226,30 @@ public class PostApiService {
         
         return postResponseDTO;
     }
+    
+    // 게시글 개별 조회 (사용자 정보 포함)
+    public PostResponseDTO getPostById(long postId, String username){
+        // 기존 메서드 호출하여 게시글 정보 가져오기
+        PostResponseDTO postResponseDTO = getPostById(postId);
+        
+        // 로그인한 사용자인 경우에만 좋아요 여부 확인
+        if (username != null) {
+            User user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+            
+            Post post = postRepository.findById(postId)
+                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
+            
+            // LikeRepository를 통해 좋아요 여부 확인
+            boolean isLiked = likeRepository.existsByUserAndPost(user, post);
+            postResponseDTO.setLiked(isLiked);
+        } else {
+            // 로그인하지 않은 사용자는 항상 false
+            postResponseDTO.setLiked(false);
+        }
+        
+        return postResponseDTO;
+    }
 
     // 내가 좋아요한 글 목록 조회 - MyPageService에서 구현된 getFullMyPage로 대체 가능
 //    public List<PostListResponseDTO> getLikedPostsByUserId(Long userId, Long cursor, int size) {
@@ -272,7 +302,8 @@ public class PostApiService {
             post.getPostId(),
             post.getTitle(),
             post.getLikesCount(),
-            post.getCreatedAt()
+            post.getCreatedAt(),
+            post.getUser().getId()
         );
     }
 }

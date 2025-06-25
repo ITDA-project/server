@@ -4,7 +4,10 @@ import com.itda.moamoa.domain.spec.dto.response.MyPageDTO;
 import com.itda.moamoa.domain.spec.dto.request.ProfileUpdateRequestDTO;
 import com.itda.moamoa.domain.spec.dto.response.ProfileUpdateResponseDTO;
 import com.itda.moamoa.domain.spec.service.MyPageService;
+import com.itda.moamoa.domain.user.entity.User;
+import com.itda.moamoa.domain.user.repository.UserRepository;
 import com.itda.moamoa.global.common.ApiResponse;
+import com.itda.moamoa.global.common.ErrorCode;
 import com.itda.moamoa.global.common.SuccessCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -13,12 +16,15 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import com.itda.moamoa.global.exception.CustomException;
+
 
 @RestController
 @RequestMapping("/api/mypage")
 @RequiredArgsConstructor
 public class MyPageController {
     private final MyPageService myPageService;
+    private final UserRepository userRepository;
     
     @GetMapping("/full")
     public ResponseEntity<ApiResponse<MyPageDTO>> getFullMyPage(
@@ -59,6 +65,23 @@ public class MyPageController {
                 responseDTO
         );
 
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponse<Long>> getMyUserId(
+            @AuthenticationPrincipal UserDetails userDetails) {
+        
+        String username = userDetails.getUsername();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        
+        ApiResponse<Long> response = ApiResponse.success(
+                SuccessCode.OK,
+                "사용자 ID 조회에 성공했습니다.",
+                user.getId()
+        );
+        
         return ResponseEntity.ok(response);
     }
 }

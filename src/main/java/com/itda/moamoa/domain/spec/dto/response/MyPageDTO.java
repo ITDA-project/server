@@ -22,5 +22,6 @@ public class MyPageDTO {
         private Long id;             // 게시글 ID
         private String title;        // 게시글 제목
         private LocalDateTime createdAt;  // 생성일
+        private Long userId;         // 작성자 ID
     }
 } 

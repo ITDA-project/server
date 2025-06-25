@@ -4,6 +4,7 @@ import com.itda.moamoa.domain.user.entity.User;
 import com.itda.moamoa.domain.user.repository.UserRepository;
 import com.itda.moamoa.global.email.dto.PasswordDto;
 import com.itda.moamoa.global.exception.custom.UserException;
+import com.itda.moamoa.global.security.jwt.dto.CustomUserDetails;
 import com.itda.moamoa.global.security.jwt.entity.Refresh;
 import com.itda.moamoa.global.security.jwt.repository.RefreshRepository;
 import com.itda.moamoa.global.security.jwt.util.JWTUtil;
@@ -31,11 +32,8 @@ public class UserService {
     }
 
     public void createSocialUser(User user, String refresh) {
-        User findUser = userRepository.findByUsername(user.getUsername()).get();
-        if (findUser == null) {
-            user.encodingPassword(passwordEncoder);
-            userRepository.save(user);
-        }
+        user.encodingPassword(passwordEncoder);
+        userRepository.save(user);
         addRefresh(user.getUsername(),refresh,86400000L);
     }
 
@@ -56,6 +54,11 @@ public class UserService {
         //존재하지 않는 이메일
     }
 
+    /*소셜로그인 username 중복에 사용*/
+    public Boolean checkUsername(String username){
+        return userRepository.existsByUsername(username);
+    }
+
     /*soft delete 실행*/
     public void deleteUser(User user){
         user.softDelete();
@@ -68,7 +71,7 @@ public class UserService {
         user.encodingPassword(passwordEncoder, passwordDto.getPassword());
     }
 
-    public void deleteUserAndInvalidateToken(User user, String refreshToken) {
+    public void deleteUserAndInvalidateToken(CustomUserDetails customUserDetails, String refreshToken) {
         // refresh 토큰 유효성 검사
         jwtUtil.isExpired(refreshToken);
 
@@ -82,7 +85,7 @@ public class UserService {
         if (!refreshRepository.existsByRefresh(refreshToken)) {
             throw new IllegalArgumentException("존재하지 않는 token 입니다.");
         }
-
+        User user = userRepository.findByUsername(customUserDetails.getUsername()).orElseThrow(()->new EntityNotFoundException("존재하지 않는 회원입니다."));
         // 유저 삭제 처리
         deleteUser(user);
         // 토큰 무효화
@@ -90,7 +93,7 @@ public class UserService {
     }
 
 
-    private void addRefresh(String username, String refresh, Long expiredMs){
+    public void addRefresh(String username, String refresh, Long expiredMs){
         //만료일자
         Date date = new Date(System.currentTimeMillis() + expiredMs);
 
