@@ -1,6 +1,5 @@
 package com.itda.moamoa.domain.payment.service;
 
-import com.itda.moamoa.domain.participant.entity.Participant;
 import com.itda.moamoa.domain.participant.entity.Role;
 import com.itda.moamoa.domain.participant.repository.ParticipantRepository;
 import com.itda.moamoa.domain.payment.dto.PaymentRefundRequest;
@@ -15,7 +14,6 @@ import com.itda.moamoa.domain.user.entity.User;
 import com.itda.moamoa.domain.user.repository.UserRepository;
 import com.itda.moamoa.global.fcm.FcmService;
 import com.itda.moamoa.global.fcm.dto.NotificationRequestDTO;
-import com.itda.moamoa.global.fcm.dto.NotificationType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

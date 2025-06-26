@@ -1,0 +1,17 @@
+package com.itda.moamoa.global.fcm.dto;
+
+public enum NotificationType {
+    // Form
+    FORM_APPROVED,
+    FORM_REJECTED,
+
+    // Payment
+    PAYMENT_REQUESTED,
+    PAYMENT_COMPLETED,
+
+    // Chat
+    CHAT_MESSAGE,
+
+    // Optional
+    SYSTEM
+}
