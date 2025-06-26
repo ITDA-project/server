@@ -1,5 +1,8 @@
 package com.itda.moamoa.domain.payment.service;
 
+import com.itda.moamoa.domain.participant.entity.Participant;
+import com.itda.moamoa.domain.participant.entity.Role;
+import com.itda.moamoa.domain.participant.repository.ParticipantRepository;
 import com.itda.moamoa.domain.payment.dto.PaymentRefundRequest;
 import com.itda.moamoa.domain.payment.dto.PaymentVerifyRequest;
 import com.itda.moamoa.domain.payment.entity.Payment;
@@ -10,12 +13,17 @@ import com.itda.moamoa.domain.somoim.entity.Somoim;
 import com.itda.moamoa.domain.somoim.repository.SomoimRepository;
 import com.itda.moamoa.domain.user.entity.User;
 import com.itda.moamoa.domain.user.repository.UserRepository;
+import com.itda.moamoa.global.fcm.FcmService;
+import com.itda.moamoa.global.fcm.dto.NotificationRequestDTO;
+import com.itda.moamoa.global.fcm.dto.NotificationType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 import java.util.Optional;
+
+import static com.itda.moamoa.global.fcm.dto.NotificationType.PAYMENT_COMPLETED;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +34,8 @@ public class PaymentService {
     private final UserRepository userRepository;
     private final SomoimRepository somoimRepository;
     private final SessionRepository sessionRepository;
+    private final FcmService fcmService;
+    private final ParticipantRepository participantRepository;
 
     @Transactional
     public void verifyPayment(PaymentVerifyRequest request, String userId) {
@@ -38,7 +48,7 @@ public class PaymentService {
 
         // DB 결제 정보 검증
         Optional<Payment> optionalPayment = paymentRepository.findByMerchantUid(merchantUid);
-        
+
         // 사용자 조회 - 이메일 형식인 경우 username으로 조회
         User user;
         if (userId.contains("@")) {
@@ -57,11 +67,11 @@ public class PaymentService {
                         .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다"));
             }
         }
-        
+
         if (optionalPayment.isPresent()) {
             // 기존 결제 정보가 있는 경우
             Payment payment = optionalPayment.get();
-            
+
             if (!payment.getUser().getId().toString().equals(user.getId().toString())) {
                 throw new SecurityException("본인 결제가 아님");
             }
@@ -73,21 +83,24 @@ public class PaymentService {
             // 결제 상태 갱신
             payment.markPaid();
             paymentRepository.save(payment);
+
+            notifyHost(payment.getSomoim(), user);
+
         } else {
             // 결제 정보가 없는 경우, 새로 생성
             Somoim somoim = null;
             Session session = null;
-            
+
             if (request.somoimId() != null) {
                 somoim = somoimRepository.findById(request.somoimId())
                         .orElse(null);
             }
-            
+
             if (request.sessionId() != null) {
                 session = sessionRepository.findById(request.sessionId())
                         .orElse(null);
             }
-            
+
             // 새 결제 정보 생성
             Payment newPayment = Payment.builder()
                     .merchantUid(merchantUid)
@@ -99,9 +112,11 @@ public class PaymentService {
                     .status(Payment.PaymentStatus.PAID)
                     .username(user.getUsername())
                     .build();
-            
+
             newPayment.markPaid();
             paymentRepository.save(newPayment);
+
+            notifyHost(somoim, user);
         }
     }
 
@@ -136,5 +151,22 @@ public class PaymentService {
 
         payment.markCancelled();
         paymentRepository.save(payment);
+    }
+
+    private void notifyHost(Somoim somoim, User payer) {
+        if (somoim == null) return;
+
+        User host = participantRepository.findBySomoimAndRole(somoim, Role.ORGANIZER);
+
+        if (host != null) {
+            fcmService.sendNotification(
+                    NotificationRequestDTO.builder()
+                            .receiverId(host.getId())
+                            .title("결제 완료")
+                            .body(payer.getUsername() + "님이 결제를 완료했습니다.")
+                            .notificationType(PAYMENT_COMPLETED)
+                            .build()
+            );
+        }
     }
 }
