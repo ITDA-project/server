@@ -2,6 +2,7 @@ package com.itda.moamoa.domain.user.controller;
 
 import com.itda.moamoa.domain.user.entity.User;
 import com.itda.moamoa.domain.user.service.UserService;
+import com.itda.moamoa.global.security.jwt.dto.CustomUserDetails;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ public class UserController {
      * 탈퇴 후엔 로그아웃이 필요 -> refresh token 만료시키기
      */
     @DeleteMapping("/auth/delete")
-    public ResponseEntity<?> userDelete(@AuthenticationPrincipal(expression = "user") User user, @RequestBody Map<String,String> requestBody, HttpServletResponse response){
+    public ResponseEntity<?> userDelete(@AuthenticationPrincipal CustomUserDetails user, @RequestBody Map<String,String> requestBody, HttpServletResponse response){
         String refresh = requestBody.get("refresh_token");
 
         if (refresh == null) {

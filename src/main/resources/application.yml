@@ -57,3 +57,7 @@ cloud:
 logging.level:
   org.hibernate.SQL: debug
   org.hibernate.orm.jdbc.bind: trace
+
+portone:
+  api-key: ${PORTONE_REST_API_KEY}
+  api-secret: ${PORTONE_REST_API_SECRET}

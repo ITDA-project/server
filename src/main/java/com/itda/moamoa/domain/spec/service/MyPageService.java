@@ -133,6 +133,7 @@ public class MyPageService {
                                 .id(post.getPostId())
                                 .title(post.getTitle())
                                 .createdAt(post.getCreatedAt())
+                                .userId(post.getUser().getId())
                                 .build();
                     }
                     return null;
@@ -147,6 +148,7 @@ public class MyPageService {
                         .id(post.getPostId())
                         .title(post.getTitle())
                         .createdAt(post.getCreatedAt())
+                        .userId(post.getUser().getId())
                         .build())
                 .collect(Collectors.toList());
         

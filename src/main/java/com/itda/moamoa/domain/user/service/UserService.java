@@ -4,6 +4,7 @@ import com.itda.moamoa.domain.user.entity.User;
 import com.itda.moamoa.domain.user.repository.UserRepository;
 import com.itda.moamoa.global.email.dto.PasswordDto;
 import com.itda.moamoa.global.exception.custom.UserException;
+import com.itda.moamoa.global.security.jwt.dto.CustomUserDetails;
 import com.itda.moamoa.global.security.jwt.entity.Refresh;
 import com.itda.moamoa.global.security.jwt.repository.RefreshRepository;
 import com.itda.moamoa.global.security.jwt.util.JWTUtil;
@@ -70,7 +71,7 @@ public class UserService {
         user.encodingPassword(passwordEncoder, passwordDto.getPassword());
     }
 
-    public void deleteUserAndInvalidateToken(User user, String refreshToken) {
+    public void deleteUserAndInvalidateToken(CustomUserDetails customUserDetails, String refreshToken) {
         // refresh 토큰 유효성 검사
         jwtUtil.isExpired(refreshToken);
 
@@ -84,7 +85,7 @@ public class UserService {
         if (!refreshRepository.existsByRefresh(refreshToken)) {
             throw new IllegalArgumentException("존재하지 않는 token 입니다.");
         }
-
+        User user = userRepository.findByUsername(customUserDetails.getUsername()).orElseThrow(()->new EntityNotFoundException("존재하지 않는 회원입니다."));
         // 유저 삭제 처리
         deleteUser(user);
         // 토큰 무효화
@@ -103,5 +104,19 @@ public class UserService {
                 .build();
 
         refreshRepository.save(refresh1);
+    }
+    
+    // FCM Token 찾기
+    public String getFcmTokenById(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저입니다."));
+        return user.getFcmToken();
+    }
+
+    // FCM Token 수정
+    public void updateFcmToken(Long userId, String fcmToken) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저입니다."));
+        user.setFcmToken(fcmToken);
     }
 }

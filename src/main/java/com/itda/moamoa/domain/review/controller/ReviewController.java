@@ -40,7 +40,7 @@ public class ReviewController {
     
     @GetMapping("/{userId}")
     public ResponseEntity<ApiResponse<ReviewResponseDTO>> getReviewsByUserId(
-            @PathVariable Long userId) {
+            @PathVariable("userId") Long userId) {
         
         List<ReviewResponseDTO> reviewList = reviewService.getReviewsByUserId(userId);
         
