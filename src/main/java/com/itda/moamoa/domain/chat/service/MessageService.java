@@ -26,7 +26,7 @@ public class MessageService {
                 .sender(user)
                 .content(messageRequestDto.getContent())
                 .build();
-
+        chatRoom.updateLastMessage(message.getContent(),message.getCreatedAt());
         chatMessageRepository.save(message);
     }
 }

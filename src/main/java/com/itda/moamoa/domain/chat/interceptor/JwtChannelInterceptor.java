@@ -1,10 +1,7 @@
 package com.itda.moamoa.domain.chat.interceptor;
 
-import com.itda.moamoa.domain.user.entity.User;
-import com.itda.moamoa.global.security.jwt.dto.CustomUserDetails;
 import com.itda.moamoa.global.security.jwt.util.JWTUtil;
 import io.jsonwebtoken.ExpiredJwtException;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
@@ -13,7 +10,6 @@ import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.stereotype.Component;
 
-import java.io.PrintWriter;
 
 @Component
 public class JwtChannelInterceptor implements ChannelInterceptor {

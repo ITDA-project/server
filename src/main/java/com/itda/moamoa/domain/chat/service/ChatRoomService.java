@@ -56,7 +56,7 @@ public class ChatRoomService {
         User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new EntityNotFoundException("찾을 수 없는 유저입니다"));;
 
         //OWNER 라면 채팅방 deleteFlag 수정
-        ChatRoomUser leaveRoomUser = chatRoomUserRepository.findByUserIdAndRoomId(user.getId(),roomId).orElseThrow();
+        ChatRoomUser leaveRoomUser = chatRoomUserRepository.findByUserIdAndRoomId(user.getId(),roomId).orElseThrow(() -> new EntityNotFoundException("찾을 수 없는 유저입니다"));
         if(RoomRole.OWNER.equals(leaveRoomUser.getRole())){
             ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow();
             chatRoom.softDelete();
@@ -65,7 +65,7 @@ public class ChatRoomService {
         chatRoomUserRepository.delete(leaveRoomUser);
     }
 
-    //사용자가 첫 채팅방을 들어왔을 때와 그 다음 예전 메시지를 불러오는 로직 구분 해야 함(미완)
+    //사용자가 첫 채팅방을 들어왔을 때와 그 다음 예전 메시지를 불러오는 로직 구분 해야 함
     public List<ChatRoomMessageResponseDto> getRoomChatting(Long roomId, Long cursor, int size){
         //페이징 사용
         if (cursor == null || cursor <= 0) {

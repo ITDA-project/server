@@ -46,4 +46,9 @@ public class ChatRoom {
         return this.deleteFlag;
     }
 
+    public void updateLastMessage(String lastMessage,LocalDateTime lastMessageAt){
+        this.lastMessage = lastMessage;
+        this.lastMessageAt = lastMessageAt;
+    }
+
 }
