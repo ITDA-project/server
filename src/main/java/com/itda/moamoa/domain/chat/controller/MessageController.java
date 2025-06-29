@@ -20,7 +20,7 @@ public class MessageController {
 
     //응답:메시지 내용, 메시지 보낸 사람, 전송 시간
     @MessageMapping("/{roomId}")
-    public void sendMessage(@DestinationVariable Long roomId, @AuthenticationPrincipal CustomUserDetails user, MessageRequestDto messageRequestDto){
+    public void sendMessage(@DestinationVariable("roomId") Long roomId, @AuthenticationPrincipal CustomUserDetails user, MessageRequestDto messageRequestDto){
         messageRequestDto.setUsername(user.getUsername());
         messageRequestDto.setRoomId(roomId);
         //service -> 보낸 메시지 내용을 저장
