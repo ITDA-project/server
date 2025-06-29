@@ -3,12 +3,11 @@ package com.itda.moamoa.domain.chat.controller;
 import com.itda.moamoa.domain.chat.dto.MessageRequestDto;
 import com.itda.moamoa.domain.chat.dto.MessageResponseDto;
 import com.itda.moamoa.domain.chat.service.MessageService;
-import com.itda.moamoa.global.security.jwt.dto.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 
 import java.security.Principal;
@@ -22,7 +21,7 @@ public class MessageController {
 
     //응답:메시지 내용, 메시지 보낸 사람, 전송 시간
     @MessageMapping("/{roomId}")
-    public void sendMessage(@DestinationVariable("roomId") Long roomId, Principal user, MessageRequestDto messageRequestDto){
+    public void sendMessage(@DestinationVariable("roomId") Long roomId, Principal user, @Payload MessageRequestDto messageRequestDto){
         messageRequestDto.setUsername(user.getName());
         messageRequestDto.setRoomId(roomId);
         //service -> 보낸 메시지 내용을 저장
