@@ -1,6 +1,7 @@
 package com.itda.moamoa.domain.chat.service;
 
 import com.itda.moamoa.domain.chat.dto.MessageRequestDto;
+import com.itda.moamoa.domain.chat.dto.MessageResponseDto;
 import com.itda.moamoa.domain.chat.entity.ChatMessage;
 import com.itda.moamoa.domain.chat.entity.ChatRoom;
 import com.itda.moamoa.domain.chat.repository.ChatMessageRepository;
@@ -17,7 +18,7 @@ public class MessageService {
     private final ChatRoomRepository chatRoomRepository;
     private final UserRepository userRepository;
 
-    public void saveMessage(MessageRequestDto messageRequestDto){
+    public MessageResponseDto saveMessage(MessageRequestDto messageRequestDto){
         ChatRoom chatRoom = chatRoomRepository.findById(messageRequestDto.getRoomId()).orElseThrow();
         User user = userRepository.findByUsername(messageRequestDto.getUsername()).orElseThrow();
 
@@ -28,5 +29,6 @@ public class MessageService {
                 .build();
         chatRoom.updateLastMessage(message.getContent(),message.getCreatedAt());
         chatMessageRepository.save(message);
+        return new MessageResponseDto(user.getName(), messageRequestDto.getContent(), message.getCreatedAt());
     }
 }

@@ -1,6 +1,7 @@
 package com.itda.moamoa.domain.chat.controller;
 
 import com.itda.moamoa.domain.chat.dto.MessageRequestDto;
+import com.itda.moamoa.domain.chat.dto.MessageResponseDto;
 import com.itda.moamoa.domain.chat.service.MessageService;
 import com.itda.moamoa.global.security.jwt.dto.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
@@ -17,14 +18,14 @@ public class MessageController {
     private final SimpMessagingTemplate messagingTemplate;
     private final MessageService messageService;
 
-    //메시지 내용, 메시지 보낸 사람, 전송 시간
+    //응답:메시지 내용, 메시지 보낸 사람, 전송 시간
     @MessageMapping("/{roomId}")
     public void sendMessage(@DestinationVariable Long roomId, @AuthenticationPrincipal CustomUserDetails user, MessageRequestDto messageRequestDto){
         messageRequestDto.setUsername(user.getUsername());
         messageRequestDto.setRoomId(roomId);
         //service -> 보낸 메시지 내용을 저장
-        messageService.saveMessage(messageRequestDto);
+        MessageResponseDto messageResponseDto = messageService.saveMessage(messageRequestDto);
         //특정 채팅방에 메시지 DTO 를 전달
-        messagingTemplate.convertAndSend("/topic/room/"+roomId,"ㅎㅇ"); //수정
+        messagingTemplate.convertAndSend("/topic/room/"+roomId,messageResponseDto);
     }
 }
