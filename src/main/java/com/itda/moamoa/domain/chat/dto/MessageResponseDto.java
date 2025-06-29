@@ -13,8 +13,11 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 public class MessageResponseDto {
-    private String sender;
+    private Long id;
+    private Long senderId;
+    private String senderName;
+    private String profileImage;
     private String content;
-    private LocalDateTime createdAt;
+    private LocalDateTime sentAt;
 
 }

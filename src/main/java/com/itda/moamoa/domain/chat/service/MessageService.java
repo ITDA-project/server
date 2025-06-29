@@ -29,6 +29,11 @@ public class MessageService {
                 .build();
         chatRoom.updateLastMessage(message.getContent(),message.getCreatedAt());
         chatMessageRepository.save(message);
-        return new MessageResponseDto(user.getName(), messageRequestDto.getContent(), message.getCreatedAt());
+        return new MessageResponseDto(message.getId(),
+                user.getId(),
+                user.getName(),
+                user.getImage(),
+                message.getContent(),
+                message.getCreatedAt());
     }
 }
