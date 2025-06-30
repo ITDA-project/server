@@ -45,7 +45,7 @@ public class NotificationService {
 
         //redirect 경로 + 알림 type dto로 반환해야
 
-        if notification.getType() == FORM_SUBMITTED:
+        if (notification.getType() == FORM_SUBMITTED):
             redirect "/forms"; //사용자 id에 대한 (postId에 대한)
 
 

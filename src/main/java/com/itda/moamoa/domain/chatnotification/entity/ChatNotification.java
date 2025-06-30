@@ -1,5 +1,7 @@
 package com.itda.moamoa.domain.chatnotification.entity;
 
+import com.itda.moamoa.domain.chat.entity.ChatMessage;
+import com.itda.moamoa.domain.chat.entity.ChatRoom;
 import com.itda.moamoa.domain.chatnotification.dto.ChatNotificationType;
 import com.itda.moamoa.domain.user.entity.User;
 import jakarta.persistence.*;
@@ -23,18 +25,24 @@ public class ChatNotification {
 
     //채팅 메시지를 보내는 사람
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sender_id", nullable = false)
     private User sender;
 
     //채팅 메시지 받는 사람
     @ManyToOne(fetch = FetchType.LAZY) //특정 유저는 여러 알림을 받음
+    @JoinColumn(name = "receiver_id", nullable = false)
     private User receiver;
 
     //채팅 메시지 발생 채팅방
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Chatroom chatRoom;
+    //@ManyToOne(fetch = FetchType.LAZY)
+    //private ChatRoom chatRoom;
+
+    private Long chatRoomId;
+
+    private Long chatMessageId;
 
     //해당 채팅 메시지
-    @ManyToOne(fetch = FetchType.LAZY) //메시지 하나에서 여러 알림
+    //@ManyToOne(fetch = FetchType.LAZY) //메시지 하나에서 여러 알림
     private ChatMessage chatMessage;
 
     //알림 유형

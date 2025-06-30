@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-//클라이언트에 전송, 저장된 ChatNotification dms dtodptj 조회 용도
+//클라이언트에 전송, 저장된 ChatNotification dto 조회 용도
 
 public class ChatNotificationDto {
     private Long id;
@@ -22,5 +22,5 @@ public class ChatNotificationDto {
     private Long chatMessageId; //해당 채팅 메시지
     private Long chatRoomId; //chatRoom으로 접근 용도
     private String sender;
-    private List<String> receivers;
+    private List<String> receivers; //해당 receiver들에게 전송
 }
