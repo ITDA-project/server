@@ -9,6 +9,8 @@ import com.itda.moamoa.domain.chat.entity.RoomRole;
 import com.itda.moamoa.domain.chat.repository.ChatMessageRepository;
 import com.itda.moamoa.domain.chat.repository.ChatRoomRepository;
 import com.itda.moamoa.domain.chat.repository.ChatRoomUserRepository;
+import com.itda.moamoa.domain.post.entity.Post;
+import com.itda.moamoa.domain.post.repository.PostRepository;
 import com.itda.moamoa.domain.user.entity.User;
 import com.itda.moamoa.domain.user.repository.UserRepository;
 import com.itda.moamoa.global.exception.custom.UserException;
@@ -32,6 +34,7 @@ public class ChatRoomService {
     private final UserRepository userRepository;
     private final ChatRoomUserRepository chatRoomUserRepository;
     private final ChatMessageRepository chatMessageRepository;
+    private final PostRepository postRepository;
 
     public Long createChatRoom(String roomName, CustomUserDetails userDetails){
         ChatRoom chatRoom = ChatRoom.builder().
@@ -86,14 +89,15 @@ public class ChatRoomService {
         if(user.isDeleted()){
             throw new UserException("이미 탈퇴한 회원입니다.");
         }
-        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomInviteRequestDto.getRoomId()).orElseThrow(()->new EntityNotFoundException("존재하지 않는 채팅방입니다."));
+        Post post = postRepository.findById(chatRoomInviteRequestDto.getPostId()).orElseThrow(()->new EntityNotFoundException("존재하지 않는 게시글입니다."));
+        ChatRoom chatRoom = post.getChatRoom();
 
-        ChatRoomUser invite = ChatRoomUser.builder()
+        ChatRoomUser invitedUser = ChatRoomUser.builder()
                 .room(chatRoom)
                 .user(user)
                 .role(RoomRole.USER)
                 .build();
-        chatRoomUserRepository.save(invite);
+        chatRoomUserRepository.save(invitedUser);
         return chatRoom;
     }
 

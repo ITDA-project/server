@@ -1,5 +1,6 @@
 package com.itda.moamoa.domain.post.entity;
 
+import com.itda.moamoa.domain.chat.entity.ChatRoom;
 import com.itda.moamoa.domain.user.entity.User;
 import com.itda.moamoa.global.BaseEntity;
 import jakarta.persistence.*;
@@ -55,6 +56,9 @@ public class Post extends BaseEntity{
     @Builder.Default
     private Integer participantCount = 0;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "room_id")
+    ChatRoom chatRoom;
 
     public void setUser(User user) { this.user = user; }
 
