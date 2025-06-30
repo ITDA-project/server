@@ -46,7 +46,6 @@ public class ChatRoomController {
     //유저 식별은 username 으로 구분함, form 수락 시 username 도 보내줘야 됨
     //초대한 사용자, ChatRoomUser 에 넣기
     //초대한 사용자에게 채팅방 정보를 넘겨줌
-    // /user/{username}/queue/invite
     @PostMapping("/invite")
     public ResponseEntity<ApiResponse<Object>> inviteUser(@RequestBody ChatRoomInviteRequestDto chatRoomInviteRequestDto){
         ChatRoom chatRoom = chatRoomService.inviteUser(chatRoomInviteRequestDto);
