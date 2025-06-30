@@ -12,6 +12,9 @@ logs/
 ### application.yml ###
 #application.yml
 
+#firebase admin sdk
+src/main/resources/fcm-moamoa-firebase-adminsdk-fbsvc-e842db0a21.json
+
 ### application.properties ###
 application.properties
 

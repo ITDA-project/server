@@ -24,10 +24,10 @@ public class PostApiController {
     // 게시글 전체 조회
     @GetMapping("/list")
     public ResponseEntity<ApiResponse<PostListResponseDTO>> getPostList(
-            @RequestParam(required = false) Long cursor,
-            @RequestParam(required = false) Category category,
-            @RequestParam(defaultValue = "createdAt") String sort,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(name="cursor", required = false) Long cursor,
+            @RequestParam(name="category", required = false) Category category,
+            @RequestParam(name="sort", defaultValue = "createdAt") String sort,
+            @RequestParam(name="size", defaultValue = "10") int size) {
         
         List<PostListResponseDTO> posts = postApiService.getPostsByCursor(cursor, category, sort, size);
         
@@ -66,7 +66,7 @@ public class PostApiController {
     @GetMapping("/{postId}")
     public ResponseEntity<ApiResponse<PostResponseDTO>> getPostById(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable long postId) {
+            @PathVariable("postId") long postId) {
         
         // 로그인한 사용자면 username 전달, 아니면 null 전달
         String username = userDetails != null ? userDetails.getUsername() : null;
@@ -113,7 +113,7 @@ public class PostApiController {
     @PatchMapping("/{postId}")
     public ResponseEntity<ApiResponse<Object>> update(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable long postId,
+            @PathVariable("postId") long postId,
             @RequestBody PostRequestDTO requestDto) {
 
         String username = userDetails != null ? userDetails.getUsername() : null;
@@ -134,7 +134,7 @@ public class PostApiController {
     @DeleteMapping("/{postId}")
     public ResponseEntity<ApiResponse<Object>> delete(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable long postId) {
+            @PathVariable("postId") long postId) {
 
         String username = userDetails != null ? userDetails.getUsername() : null;
         postApiService.delete(username, postId);

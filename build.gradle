@@ -52,6 +52,9 @@ dependencies {
 	// ModelMapper
 	implementation 'org.modelmapper:modelmapper:3.1.0'
 
+	//fcm
+	implementation 'com.google.firebase:firebase-admin:9.2.0'
+
 	// AWS
 	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 
@@ -71,6 +74,13 @@ dependencies {
 
 	//메일 인증 사용
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+	//결제 포트원
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
+
+	//Spring STOMP (WebSocket)
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 }
 
 tasks.named('test') {
