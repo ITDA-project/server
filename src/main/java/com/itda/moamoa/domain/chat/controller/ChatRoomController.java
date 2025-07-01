@@ -90,7 +90,9 @@ public class ChatRoomController {
         response.put("size",messages.size());
         if(cursor == null || cursor <= 0){
             RoomRole roomRole = chatRoomUserService.findRoomRole(roomId, user.getUsername());
+            Boolean deleteFlag = chatRoomService.isDeleted(roomId);
             response.put("role",roomRole);
+            response.put("deleteFlag",deleteFlag);
         }
 
         ApiResponse<Map<String,Object>> apiResponse = ApiResponse.success(SuccessCode.OK, "채팅방 채팅 조회 완료", response);

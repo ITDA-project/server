@@ -107,4 +107,11 @@ public class ChatRoomService {
         return chatRoomRepository.findChatRoomList(user.getId());
     }
 
+    public Boolean isDeleted(Long roomId){
+        return chatRoomRepository
+                .findById(roomId)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 채팅방입니다."))
+                .isDeleted();
+    }
+
 }
