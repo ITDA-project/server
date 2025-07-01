@@ -14,6 +14,7 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom,Long> {
     @Query("select new com.itda.moamoa.domain.chat.dto.ChatRoomListDto(" +
             "c.id," +
             "c.roomName," +
+            "c.lastMessage, " +
             "c.lastMessageAt, " +
             "(" +
             "select count(m) from ChatMessage m where m.room.id = c.id and u.lastReadAt < m.createdAt" +

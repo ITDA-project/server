@@ -15,12 +15,14 @@ import java.time.LocalDateTime;
 public class ChatRoomListDto {
     private Long id;
     private String roomName;
+    private String lastMessage;
     private LocalDateTime lastMessageAt;
     private Long unread;
 
-    public ChatRoomListDto(Long id, String roomName, LocalDateTime lastMessageAt, Long unread) {
+    public ChatRoomListDto(Long id, String roomName, String lastMessage, LocalDateTime lastMessageAt, Long unread) {
         this.id = id;
         this.roomName = roomName;
+        this.lastMessage = lastMessage;
         this.lastMessageAt = lastMessageAt;
         this.unread = unread;
     }

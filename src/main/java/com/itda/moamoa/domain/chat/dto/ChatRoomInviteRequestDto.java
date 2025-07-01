@@ -9,6 +9,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ChatRoomInviteRequestDto {
-    private Long roomId; //초대할 roomId
+    private Long postId; //초대할 roomId(postId로 roomId를 찾음)
     private String username; //초대할 상대방의 username
 }
