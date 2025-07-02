@@ -30,10 +30,6 @@ public class ChatNotificationService {
     private final ChatRoomService chatroomService;
     private final MessageService chatMessageService;
 
-    //알림 생성 + 전송 메서드는 chat notice의 service로 -> chat service에서 분리
-    //ChatNotificatinoDto는 ChatService에서 생성
-    //채팅 메시지에 대한 알림 전송
-    //같은 Service 계층에서의 데이터 교환이지만 dto를 쓰도록 함 - 각 메서드 안에 쓰면 중복 발생, 책임 단일화
     @Transactional
     public void notifyChatToUser(ChatNotificationDto chatNotificationDto) {
 
@@ -50,26 +46,13 @@ public class ChatNotificationService {
         }
     }
 
-    //알림 type - 초대와 일반 메시지의 차이
-    //초대인 경우 문구가 정해짐 : 00님이 00으로 00님을 초대했습니다 와 같은 형태
-    //알림을 저장해야함 - 가공 후 넘길 수 있음
-    //초대, 일반 메시지는 타입이랑 문구 빼고 거의 중복됨
-    //db에 넣을 때 가공하지 않더라도 어차피 동일 데이터임(같은 데이터로 같은 가공 가능)
-    //=> 차이를 안두고 클라이언트로 넘김
-    //다국어 지원 시 클라이언트에서 메시지를 만들어야 함
 
     //채팅 메시지에 대한 알림 저장
     @Transactional
     public List<ChatNotification> createChatNotification(CreateChatNotificationDto createChatNotificationDto) {
         User sender = userService.findUserByUsername(createChatNotificationDto.getSender())
                 .orElseThrow(() -> new EntityNotFoundException("송신 유저 없음 "));
-/*
-        ChatRoom chatRoom = chatroomService.getChatroomById(createChatNotificationDto.getChatRoomId())
-                .orElseThrow(() -> new EntityNotFoundException("채팅방을 찾을 수 없음"));        
 
-        ChatMessage chatMessage = chatMessageService.getChatMessageById(createChatNotificationDto.getChatMessageId())
-                .orElseThrow(() -> new EntityNotFoundException("채팅 메시지를 찾을 수 없음"));
-*/
         List<ChatNotification> savedNotifications = new ArrayList<>();
 
         for (String receiverUsername : createChatNotificationDto.getReceivers()) {
