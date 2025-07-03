@@ -1,6 +1,9 @@
 package com.itda.moamoa.domain.post.service;
 
+import com.itda.moamoa.domain.chat.entity.ChatRoom;
+import com.itda.moamoa.domain.chat.service.ChatRoomService;
 import com.itda.moamoa.domain.participant.repository.ParticipantRepository;
+import com.itda.moamoa.domain.post.dto.PostCreateResponseDTO;
 import com.itda.moamoa.domain.post.dto.PostListResponseDTO;
 import com.itda.moamoa.domain.post.dto.PostRequestDTO;
 import com.itda.moamoa.domain.post.dto.PostResponseDTO;
@@ -35,6 +38,7 @@ public class PostApiService {
     private final SomoimRepository somoimRepository;
     private final SpecRepository specRepository;
     private final LikeRepository likeRepository;
+    private final ChatRoomService chatRoomService;
 
     @PostConstruct
     public void setupMapper() { //response에 postId 받아오도록
@@ -44,12 +48,15 @@ public class PostApiService {
 
     // 게시글 생성
     @Transactional
-    public Long create(String username, PostRequestDTO requestDto) {
+    public PostCreateResponseDTO create(String username, PostRequestDTO requestDto) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));  
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
+        ChatRoom createdChatRoom = chatRoomService.createChatRoom(requestDto.getTitle(), username);
 
         Post post = modelMapper.map(requestDto, Post.class);
         post.setUser(user);     // 연관 관계
+        post.setChatRoom(createdChatRoom);
         // 게시글 작성자(organizer)도 참가자로 계산하여 초기값 1 설정
         post.incrementParticipantCount();
         Post createdPost = postRepository.save(post);
@@ -68,7 +75,7 @@ public class PostApiService {
                 .build();
         participantRepository.save(participant);
 
-        return createdPost.getPostId();
+        return new PostCreateResponseDTO(createdPost.getPostId(),createdChatRoom.getId());
     }
 
     // 게시글 수정

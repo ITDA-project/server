@@ -1,5 +1,6 @@
 package com.itda.moamoa.domain.post.controller;
 
+import com.itda.moamoa.domain.post.dto.PostCreateResponseDTO;
 import com.itda.moamoa.domain.post.dto.PostRequestDTO;
 import com.itda.moamoa.domain.post.dto.PostResponseDTO;
 import com.itda.moamoa.domain.post.dto.PostListResponseDTO;
@@ -86,7 +87,7 @@ public class PostApiController {
 
     // 게시글 생성 요청
     @PostMapping("/create")
-    public ResponseEntity<ApiResponse<Object>> create(
+    public ResponseEntity<ApiResponse<Long>> create(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestBody PostRequestDTO requestDto) {
 
@@ -96,16 +97,16 @@ public class PostApiController {
         
         String username = userDetails.getUsername();
         
-        Long postId = postApiService.create(username, requestDto);
+        PostCreateResponseDTO postCreateResponseDTO = postApiService.create(username, requestDto);
 
-        ApiResponse<Object> createdResponse = ApiResponse.success(
+        ApiResponse<Long> createdResponse = ApiResponse.success(
                 SuccessCode.CREATED,
                 "게시글을 성공적으로 등록하였습니다.",
-                null);
+                postCreateResponseDTO.getRoomId());
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .header("Location", "/api/posts/" + postId)
+                .header("Location", "/api/posts/" + postCreateResponseDTO.getPostId())
                 .body(createdResponse);
     }
 

@@ -36,14 +36,14 @@ public class ChatRoomService {
     private final ChatMessageRepository chatMessageRepository;
     private final PostRepository postRepository;
 
-    public Long createChatRoom(String roomName, CustomUserDetails userDetails){
+    public ChatRoom createChatRoom(String roomName, String username){
         ChatRoom chatRoom = ChatRoom.builder().
                 roomName(roomName).
                 build();
         ChatRoom savedChatRoom = chatRoomRepository.save(chatRoom);
 
         //ChatRoomUser 에 방장 저장
-        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new EntityNotFoundException("찾을 수 없는 유저입니다"));
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new EntityNotFoundException("찾을 수 없는 유저입니다"));
 
         ChatRoomUser chatRoomUser = ChatRoomUser.builder()
                 .user(user)
@@ -51,7 +51,7 @@ public class ChatRoomService {
                 .role(RoomRole.OWNER)
                 .build();
         chatRoomUserRepository.save(chatRoomUser);
-        return savedChatRoom.getId();
+        return savedChatRoom;
     }
 
     public void leaveChatRoom(Long roomId,CustomUserDetails userDetails){

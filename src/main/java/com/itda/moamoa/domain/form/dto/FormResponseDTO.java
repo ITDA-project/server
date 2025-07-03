@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 
 public class FormResponseDTO {
     private String content;
-
+    private String username; //고유한 필드
     private String userName;
     private String userImage;
 }

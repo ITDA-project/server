@@ -31,7 +31,7 @@ public class ChatRoomController {
     private final ModelMapper modelMapper;
 
     //채팅방 생성
-    @PostMapping
+ /*   @PostMapping
     public ResponseEntity<ApiResponse<Long>> createChatRoom(@RequestBody ChatRoomDto roomName, @AuthenticationPrincipal CustomUserDetails user){
         Long chatRoomId = chatRoomService.createChatRoom(roomName.getRoomName(), user);
 
@@ -39,7 +39,7 @@ public class ChatRoomController {
         ApiResponse<Long> apiResponse = ApiResponse.success(SuccessCode.CREATED,"채팅방 생성 완료",chatRoomId);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(apiResponse);
-    }
+    }*/
 
     //채팅방 초대
     //오프라인은 채팅방 DB에 초대받은 사용자를 추가해서 조회할 때, 가져오면 됨
