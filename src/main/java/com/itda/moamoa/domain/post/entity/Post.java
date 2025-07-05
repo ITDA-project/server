@@ -62,6 +62,10 @@ public class Post extends BaseEntity{
 
     public void setUser(User user) { this.user = user; }
 
+    public void setChatRoom(ChatRoom chatRoom) {
+        this.chatRoom = chatRoom;
+    }
+
     public void changeTitle(String title) {
         this.title = title;
     }

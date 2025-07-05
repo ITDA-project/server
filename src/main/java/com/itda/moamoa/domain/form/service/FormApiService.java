@@ -88,6 +88,7 @@ public class FormApiService {
         return FormResponseDTO.builder()
                 .content(form.getContent())
                 .userName(form.getUser().getName())
+                .username(form.getUser().getUsername()) //고유 STRING 반환
                 .userImage(form.getUser().getImage())
                 .build();
     }
