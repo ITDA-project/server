@@ -1,6 +1,6 @@
 package com.itda.moamoa.global.config;
 
-import com.itda.moamoa.domain.chatnotification.handler.ChatNotificationWebSocketHandler;
+
 import com.itda.moamoa.global.security.jwt.interceptor.JwtHandshakeInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
