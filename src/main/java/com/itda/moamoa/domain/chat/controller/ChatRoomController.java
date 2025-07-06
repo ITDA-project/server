@@ -98,4 +98,15 @@ public class ChatRoomController {
         ApiResponse<Map<String,Object>> apiResponse = ApiResponse.success(SuccessCode.OK, "채팅방 채팅 조회 완료", response);
         return ResponseEntity.ok(apiResponse);
     }
+
+    @GetMapping("/{roomId}/participants")
+    public ResponseEntity<Object> getParticipantsOfChatRoom(@PathVariable(name = "roomId") Long roomId){
+        List<ChatRoomParticipantsDto> participants = chatRoomUserService.getParticipants(roomId);
+
+        ApiResponse<ChatRoomParticipantsDto> response = ApiResponse.successList(SuccessCode.OK,
+                "채팅방 참여자 조회 완료",
+                participants,
+                participants.size());
+        return ResponseEntity.ok(response);
+    }
 }
