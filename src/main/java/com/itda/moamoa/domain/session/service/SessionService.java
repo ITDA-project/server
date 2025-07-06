@@ -67,9 +67,9 @@ public class SessionService {
         Somoim somoim = organizer.getSomoim();
         
         // 5. 소모임 상태가 BEFORE인지 확인
-        if (somoim.getStatus() != SomoimStatus.BEFORE) {
-            throw new IllegalStateException("이미 시작된 모임이거나 종료된 모임입니다.");
-        }
+//        if (somoim.getStatus() != SomoimStatus.BEFORE) {
+//            throw new IllegalStateException("이미 시작된 모임이거나 종료된 모임입니다.");
+//        }
         
         // 6. 다음 회차 번호 계산 (기존 세션 개수 + 1)
         List<Session> existingSessions = sessionRepository.findBySomoimOrderBySessionNumberAsc(somoim);
