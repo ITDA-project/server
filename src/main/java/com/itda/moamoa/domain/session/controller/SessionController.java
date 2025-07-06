@@ -4,6 +4,8 @@ import com.itda.moamoa.domain.session.dto.SessionRequestDTO;
 import com.itda.moamoa.domain.session.dto.SessionResponseDTO;
 import com.itda.moamoa.domain.session.dto.SessionStartRequestDTO;
 import com.itda.moamoa.domain.session.dto.SessionStartResponseDTO;
+import com.itda.moamoa.domain.session.dto.SessionEndRequestDTO;
+import com.itda.moamoa.domain.session.dto.SessionEndResponseDTO;
 import com.itda.moamoa.domain.session.entity.Session;
 import com.itda.moamoa.domain.session.service.SessionService;
 import com.itda.moamoa.global.common.ApiResponse;
@@ -35,6 +37,22 @@ public class SessionController {
         ApiResponse<SessionStartResponseDTO> apiResponse = ApiResponse.success(
             SuccessCode.CREATED, 
             "모임이 시작되었습니다.", 
+            response
+        );
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    // 모임 종료 - 세션 종료
+    @PostMapping("/end")
+    public ResponseEntity<ApiResponse<SessionEndResponseDTO>> endSession(
+            @RequestBody SessionEndRequestDTO request,
+            @AuthenticationPrincipal CustomUserDetails user) {
+        
+        SessionEndResponseDTO response = sessionService.endSession(request, user.getUsername());
+        
+        ApiResponse<SessionEndResponseDTO> apiResponse = ApiResponse.success(
+            SuccessCode.OK, 
+            "모임이 종료되었습니다.", 
             response
         );
         return ResponseEntity.ok(apiResponse);
