@@ -2,8 +2,13 @@ package com.itda.moamoa.domain.session.controller;
 
 import com.itda.moamoa.domain.session.dto.SessionRequestDTO;
 import com.itda.moamoa.domain.session.dto.SessionResponseDTO;
+import com.itda.moamoa.domain.session.dto.SessionStartRequestDTO;
+import com.itda.moamoa.domain.session.dto.SessionStartResponseDTO;
 import com.itda.moamoa.domain.session.entity.Session;
 import com.itda.moamoa.domain.session.service.SessionService;
+import com.itda.moamoa.global.common.ApiResponse;
+import com.itda.moamoa.global.common.SuccessCode;
+import com.itda.moamoa.global.security.jwt.dto.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,6 +23,22 @@ import java.util.List;
 public class SessionController {
 
     private final SessionService sessionService;
+
+    // 모임 시작 - 세션 생성
+    @PostMapping("/start")
+    public ResponseEntity<ApiResponse<SessionStartResponseDTO>> startSession(
+            @RequestBody SessionStartRequestDTO request,
+            @AuthenticationPrincipal CustomUserDetails user) {
+        
+        SessionStartResponseDTO response = sessionService.startSession(request, user.getUsername());
+        
+        ApiResponse<SessionStartResponseDTO> apiResponse = ApiResponse.success(
+            SuccessCode.CREATED, 
+            "모임이 시작되었습니다.", 
+            response
+        );
+        return ResponseEntity.ok(apiResponse);
+    }
 
     // 회차 생성
     @PostMapping
