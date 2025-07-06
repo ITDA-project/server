@@ -40,18 +40,6 @@ public class SessionController {
         return ResponseEntity.ok(apiResponse);
     }
 
-    // 회차 생성
-    @PostMapping
-    public ResponseEntity<SessionResponseDTO> createSession(
-            @AuthenticationPrincipal UserDetails user,
-            @RequestBody SessionRequestDTO request) {
-        
-        // TODO: 소모임 관리자 권한 확인 로직 추가 필요
-        
-        SessionResponseDTO response = sessionService.createSession(request);
-        return ResponseEntity.ok(response);
-    }
-
     // 소모임별 회차 목록 조회
     @GetMapping("/somoim/{somoimId}")
     public ResponseEntity<List<SessionResponseDTO>> getSessions(@PathVariable Long somoimId) {
