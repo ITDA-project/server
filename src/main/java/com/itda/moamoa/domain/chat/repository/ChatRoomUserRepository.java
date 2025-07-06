@@ -18,6 +18,7 @@ public interface ChatRoomUserRepository extends JpaRepository<ChatRoomUser,Long>
 
     Optional<ChatRoomUser> findByUserIdAndRoomId(Long user, Long room);
 
+
     @Query("select new com.itda.moamoa.domain.chat.dto.ChatRoomParticipantsDto(" +
             "u.name," +
             "u.image) " +
@@ -31,5 +32,8 @@ public interface ChatRoomUserRepository extends JpaRepository<ChatRoomUser,Long>
             "where u.username = :username and c.room.id = :roomId")
     boolean existsByUsernameAndRoomId(@Param("username") String username,
                                     @Param("roomId") Long roomId);
+
+
+    Optional <ChatRoomUser> findAllByRoomId(Long roomId);
 
 }

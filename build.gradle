@@ -42,6 +42,9 @@ dependencies {
 	// DevTools
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
+	//WebSocket
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
 	// Database
 	//runtimeOnly 'com.h2database:h2' // H2는 주석 처리
 	runtimeOnly 'com.mysql:mysql-connector-j' // MySQL 사용

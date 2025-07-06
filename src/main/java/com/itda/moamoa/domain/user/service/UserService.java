@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -104,5 +105,9 @@ public class UserService {
                 .build();
 
         refreshRepository.save(refresh1);
+    }
+
+    public Optional<User> findUserByUsername(String username){
+        return userRepository.findUserByUsername(username);
     }
 }
