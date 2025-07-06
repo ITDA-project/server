@@ -7,7 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,15 +29,13 @@ public class Session extends BaseEntity {
     private int sessionNumber;     // 회차 번호 (1회차, 2회차 등)
 
     private LocalDate sessionDate; // 회차 진행 예정일
+    
+    private LocalTime sessionTime; // 회차 진행 시간
 
     private int price;            // 회차별 참가 비용
     
     @Enumerated(EnumType.STRING)
     private SessionStatus status; // 회차 상태 (SCHEDULED, IN_PROGRESS, COMPLETED, CANCELLED)
-
-    private String location;      // 회차 장소
-    
-    private String description;   // 회차 설명
 
     @Builder.Default
     @OneToMany(mappedBy = "session", cascade = CascadeType.ALL)
