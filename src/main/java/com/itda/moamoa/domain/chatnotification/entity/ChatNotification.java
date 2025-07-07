@@ -43,8 +43,8 @@ public class ChatNotification {
     private Long chatMessageId;
 
     //해당 채팅 메시지
-    @ManyToOne(fetch = FetchType.LAZY) //메시지 하나에서 여러 알림
-    private ChatMessage chatMessage;
+    //@ManyToOne(fetch = FetchType.LAZY) //메시지 하나에서 여러 알림
+    //private ChatMessage chatMessage;
 
     //알림 유형
     @Enumerated(EnumType.STRING)
@@ -59,6 +59,7 @@ public class ChatNotification {
     private LocalDateTime createdAt;
 
     //알림 읽음 여부
+    @Builder.Default
     private boolean read = false;
 
 }
