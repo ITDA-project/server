@@ -85,4 +85,28 @@ public class SessionController {
         SessionResponseDTO response = sessionService.updateSessionStatus(sessionId, sessionStatus);
         return ResponseEntity.ok(response);
     }
+    
+    // 채팅방 기반 현재 진행 중인 세션 조회
+    @GetMapping("/chatroom/{roomId}/active")
+    public ResponseEntity<ApiResponse<SessionResponseDTO>> getActiveSessionByChatRoom(@PathVariable Long roomId) {
+        SessionResponseDTO response = sessionService.getActiveSessionByChatRoom(roomId);
+        
+        if (response == null) {
+            // 진행 중인 세션이 없는 경우
+            ApiResponse<SessionResponseDTO> apiResponse = ApiResponse.success(
+                SuccessCode.OK,
+                "진행 중인 세션이 없습니다.",
+                null
+            );
+            return ResponseEntity.ok(apiResponse);
+        }
+        
+        // 진행 중인 세션이 있는 경우
+        ApiResponse<SessionResponseDTO> apiResponse = ApiResponse.success(
+            SuccessCode.OK,
+            "진행 중인 세션을 조회했습니다.",
+            response
+        );
+        return ResponseEntity.ok(apiResponse);
+    }
 } 

@@ -206,4 +206,29 @@ public class SessionService {
         
         return SessionResponseDTO.from(session);
     }
+    
+    // 채팅방 기반 현재 진행 중인 세션 조회
+    @Transactional(readOnly = true)
+    public SessionResponseDTO getActiveSessionByChatRoom(Long roomId) {
+        // 1. 채팅방 조회
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 채팅방입니다."));
+        
+        // 2. 채팅방 → 게시글 조회
+        Post post = postRepository.findAll().stream()
+                .filter(p -> p.getChatRoom() != null && p.getChatRoom().getId().equals(roomId))
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException("채팅방에 연결된 게시글이 없습니다."));
+        
+        // 3. 게시글 → 소모임 조회
+        Participant organizer = participantRepository.findByPostAndRole(post, Role.ORGANIZER)
+                .orElseThrow(() -> new EntityNotFoundException("소모임 주최자 정보를 찾을 수 없습니다."));
+        
+        Somoim somoim = organizer.getSomoim();
+        
+        // 4. 현재 진행 중인 세션 조회
+        return sessionRepository.findBySomoimAndStatus(somoim, Session.SessionStatus.IN_PROGRESS)
+                .map(SessionResponseDTO::from)
+                .orElse(null);
+    }
 } 
