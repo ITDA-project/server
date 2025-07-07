@@ -20,6 +20,7 @@ public interface ChatRoomUserRepository extends JpaRepository<ChatRoomUser,Long>
 
 
     @Query("select new com.itda.moamoa.domain.chat.dto.ChatRoomParticipantsDto(" +
+            "u.id," +
             "u.name," +
             "u.image) " +
             "from ChatRoomUser c join c.user u " +
