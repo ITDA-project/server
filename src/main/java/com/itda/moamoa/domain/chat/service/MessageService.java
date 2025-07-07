@@ -7,10 +7,10 @@ import com.itda.moamoa.domain.chat.entity.ChatRoom;
 import com.itda.moamoa.domain.chat.entity.ChatRoomUser;
 import com.itda.moamoa.domain.chat.repository.ChatMessageRepository;
 import com.itda.moamoa.domain.chat.repository.ChatRoomRepository;
-import com.itda.moamoa.domain.chat.repository.ChatRoomUserRepository;
-import com.itda.moamoa.domain.chatnotification.dto.ChatNotificationType;
-import com.itda.moamoa.domain.chatnotification.dto.CreateChatNotificationDto;
-import com.itda.moamoa.domain.chatnotification.service.ChatNotificationService;
+//import com.itda.moamoa.domain.chat.repository.ChatRoomUserRepository;
+//import com.itda.moamoa.domain.chatnotification.dto.ChatNotificationType;
+//import com.itda.moamoa.domain.chatnotification.dto.CreateChatNotificationDto;
+//import com.itda.moamoa.domain.chatnotification.service.ChatNotificationService;
 import com.itda.moamoa.domain.user.entity.User;
 import com.itda.moamoa.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,8 +27,8 @@ public class MessageService {
     private final ChatMessageRepository chatMessageRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final UserRepository userRepository;
-    private final ChatRoomUserRepository chatRoomUserRepository;
-    private final ChatNotificationService chatNotificationService;
+    //private final ChatRoomUserRepository chatRoomUserRepository;
+    //private final ChatNotificationService chatNotificationService;
 
     public MessageResponseDto saveMessage(MessageRequestDto messageRequestDto){
         ChatRoom chatRoom = chatRoomRepository.findById(messageRequestDto.getRoomId()).orElseThrow();
@@ -42,6 +42,7 @@ public class MessageService {
         chatRoom.updateLastMessage(message.getContent(),message.getCreatedAt());
         chatMessageRepository.save(message);
 
+        /*
         chatNotificationService.createAndSendChatNotification(
                 CreateChatNotificationDto.builder()
                         .chatRoomId(chatRoom.getId())
@@ -53,6 +54,8 @@ public class MessageService {
                         .build()
         );
 
+         */
+
         return new MessageResponseDto(message.getId(),
                 user.getId(),
                 user.getName(),
@@ -61,6 +64,7 @@ public class MessageService {
                 message.getCreatedAt());
     }
 
+    /*
     public List<String> findReceiverUsernames(Long roomId, String senderUsername){
         User sender = userRepository.findByUsername(senderUsername).orElseThrow();
 
@@ -71,4 +75,5 @@ public class MessageService {
                 .map(User::getUsername)
                 .collect(Collectors.toList());
     }
+     */
 }
