@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 @Builder
 @Getter
 @EntityListeners(AuditingEntityListener.class)
+@Table(name = "chat_notification")
 public class ChatNotification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
