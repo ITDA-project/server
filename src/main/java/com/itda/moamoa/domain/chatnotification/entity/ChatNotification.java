@@ -42,7 +42,7 @@ public class ChatNotification {
     private Long chatMessageId;
 
     //해당 채팅 메시지
-    //@ManyToOne(fetch = FetchType.LAZY) //메시지 하나에서 여러 알림
+    @ManyToOne(fetch = FetchType.LAZY) //메시지 하나에서 여러 알림
     private ChatMessage chatMessage;
 
     //알림 유형
