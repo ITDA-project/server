@@ -12,8 +12,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
 
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@NoArgsConstructor(access = AccessLevel.PUBLIC)
 @Builder
 @Getter
 @EntityListeners(AuditingEntityListener.class)
@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 public class ChatNotification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "chatnotification_id")
+    @Column(name = "chat_notification_id")
     private Long id;
 
     //채팅 메시지를 보내는 사람
@@ -60,6 +60,7 @@ public class ChatNotification {
 
     //알림 읽음 여부
     @Builder.Default
+    @Column(name = "is_read")
     private boolean read = false;
 
 }

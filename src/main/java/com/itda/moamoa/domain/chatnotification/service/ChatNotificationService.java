@@ -17,8 +17,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.itda.moamoa.domain.chat.service.ChatRoomService;
-
 
 
 @Service
@@ -27,8 +25,6 @@ public class ChatNotificationService {
     private final SimpMessagingTemplate messagingTemplate;
     private final ChatNotificationRepository chatNotificationRepository;
     private final UserService userService;
-    private final ChatRoomService chatroomService;
-    private final MessageService chatMessageService;
 
     @Transactional
     public void notifyChatToUser(ChatNotificationDto chatNotificationDto) {
