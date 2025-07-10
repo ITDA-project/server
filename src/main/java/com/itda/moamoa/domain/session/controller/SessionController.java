@@ -14,10 +14,10 @@ import com.itda.moamoa.global.security.jwt.dto.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
+
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/sessions")
@@ -58,31 +58,31 @@ public class SessionController {
         return ResponseEntity.ok(apiResponse);
     }
 
-    // 소모임별 회차 목록 조회
-    @GetMapping("/somoim/{somoimId}")
-    public ResponseEntity<List<SessionResponseDTO>> getSessions(@PathVariable Long somoimId) {
-        List<SessionResponseDTO> sessions = sessionService.getSessions(somoimId);
-        return ResponseEntity.ok(sessions);
-    }
 
-    // 회차 상세 조회
-    @GetMapping("/{sessionId}")
-    public ResponseEntity<SessionResponseDTO> getSession(@PathVariable Long sessionId) {
-        SessionResponseDTO session = sessionService.getSession(sessionId);
-        return ResponseEntity.ok(session);
-    }
 
-    // 회차 상태 변경
-    @PatchMapping("/{sessionId}/status")
-    public ResponseEntity<SessionResponseDTO> updateSessionStatus(
-            @AuthenticationPrincipal UserDetails user,
-            @PathVariable Long sessionId,
-            @RequestParam String status) {
+
+    
+    // 채팅방 기반 현재 진행 중인 세션 조회
+    @GetMapping("/chatroom/{roomId}/active")
+    public ResponseEntity<ApiResponse<SessionResponseDTO>> getActiveSessionByChatRoom(@PathVariable Long roomId) {
+        SessionResponseDTO response = sessionService.getActiveSessionByChatRoom(roomId);
         
-        // TODO: 소모임 관리자 권한 확인 로직 추가 필요
+        if (response == null) {
+            // 진행 중인 세션이 없는 경우
+            ApiResponse<SessionResponseDTO> apiResponse = ApiResponse.success(
+                SuccessCode.OK,
+                "진행 중인 세션이 없습니다.",
+                null
+            );
+            return ResponseEntity.ok(apiResponse);
+        }
         
-        Session.SessionStatus sessionStatus = Session.SessionStatus.valueOf(status);
-        SessionResponseDTO response = sessionService.updateSessionStatus(sessionId, sessionStatus);
-        return ResponseEntity.ok(response);
+        // 진행 중인 세션이 있는 경우
+        ApiResponse<SessionResponseDTO> apiResponse = ApiResponse.success(
+            SuccessCode.OK,
+            "진행 중인 세션을 조회했습니다.",
+            response
+        );
+        return ResponseEntity.ok(apiResponse);
     }
 } 

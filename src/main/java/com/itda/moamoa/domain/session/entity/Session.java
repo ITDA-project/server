@@ -32,6 +32,8 @@ public class Session extends BaseEntity {
     
     private LocalTime sessionTime; // 회차 진행 시간
 
+    private String location;       // 모임 장소
+
     private int price;            // 회차별 참가 비용
     
     @Enumerated(EnumType.STRING)

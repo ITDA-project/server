@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ChatRoomParticipantsDto {
+    private Long userId;
     private String participantName;
     private String image;
 }

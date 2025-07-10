@@ -1,6 +1,7 @@
 package com.itda.moamoa.domain.payment.service;
 
 import com.itda.moamoa.domain.payment.dto.PaymentRefundRequest;
+import com.itda.moamoa.domain.payment.dto.PaymentStatusResponseDto;
 import com.itda.moamoa.domain.payment.dto.PaymentVerifyRequest;
 import com.itda.moamoa.domain.payment.entity.Payment;
 import com.itda.moamoa.domain.payment.repository.PaymentRepository;
@@ -10,12 +11,22 @@ import com.itda.moamoa.domain.somoim.entity.Somoim;
 import com.itda.moamoa.domain.somoim.repository.SomoimRepository;
 import com.itda.moamoa.domain.user.entity.User;
 import com.itda.moamoa.domain.user.repository.UserRepository;
+import com.itda.moamoa.domain.chat.entity.ChatRoom;
+import com.itda.moamoa.domain.chat.repository.ChatRoomRepository;
+import com.itda.moamoa.domain.post.entity.Post;
+import com.itda.moamoa.domain.post.repository.PostRepository;
+import com.itda.moamoa.domain.participant.entity.Participant;
+import com.itda.moamoa.domain.participant.entity.Role;
+import com.itda.moamoa.domain.participant.repository.ParticipantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import jakarta.persistence.EntityNotFoundException;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +37,9 @@ public class PaymentService {
     private final UserRepository userRepository;
     private final SomoimRepository somoimRepository;
     private final SessionRepository sessionRepository;
+    private final ChatRoomRepository chatRoomRepository;
+    private final PostRepository postRepository;
+    private final ParticipantRepository participantRepository;
 
     @Transactional
     public void verifyPayment(PaymentVerifyRequest request, String userId) {
@@ -136,5 +150,55 @@ public class PaymentService {
 
         payment.markCancelled();
         paymentRepository.save(payment);
+    }
+
+    @Transactional(readOnly = true)
+    public PaymentStatusResponseDto getPaymentStatus(Long roomId, List<Long> userIds) {
+        // 1. 채팅방 조회
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 채팅방입니다."));
+        
+        // 2. 채팅방 → 게시글 조회
+        Post post = postRepository.findAll().stream()
+                .filter(p -> p.getChatRoom() != null && p.getChatRoom().getId().equals(roomId))
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException("채팅방에 연결된 게시글이 없습니다."));
+        
+        // 3. 게시글 → 소모임 조회
+        Participant organizer = participantRepository.findByPostAndRole(post, Role.ORGANIZER)
+                .orElseThrow(() -> new EntityNotFoundException("소모임 주최자 정보를 찾을 수 없습니다."));
+        
+        Somoim somoim = organizer.getSomoim();
+        
+        // 4. 현재 진행 중인 세션 조회
+        Session activeSession = sessionRepository.findBySomoimAndStatus(somoim, Session.SessionStatus.IN_PROGRESS)
+                .orElseThrow(() -> new EntityNotFoundException("진행 중인 세션이 없습니다."));
+        
+        // 5. 사용자 정보 조회
+        List<User> users = userRepository.findAllById(userIds);
+        
+        // 6. 결제 정보 조회 (sessionId와 userIds로 직접 조회)
+        List<Payment> paidPayments = paymentRepository.findPaidPaymentsBySessionAndUsers(activeSession.getId(), userIds);
+        Map<Long, Payment> paymentMap = paidPayments.stream()
+                .collect(Collectors.toMap(p -> p.getUser().getId(), p -> p));
+        
+        // 7. 응답 데이터 구성
+        List<PaymentStatusResponseDto.UserPaymentStatus> userPaymentStatuses = users.stream()
+                .map(user -> {
+                    Payment payment = paymentMap.get(user.getId());
+                    boolean isPaid = payment != null;
+                    int paymentAmount = isPaid ? payment.getAmount() : 0;
+                    
+                    return new PaymentStatusResponseDto.UserPaymentStatus(
+                            user.getId(),
+                            user.getUsername(),
+                            user.getName(),
+                            isPaid,
+                            paymentAmount
+                    );
+                })
+                .collect(Collectors.toList());
+        
+        return new PaymentStatusResponseDto(activeSession.getId(), userPaymentStatuses);
     }
 }
