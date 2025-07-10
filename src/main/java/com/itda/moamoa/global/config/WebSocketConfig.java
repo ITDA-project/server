@@ -37,7 +37,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.setApplicationDestinationPrefixes("/app") //@MessageMapping 과 매칭될 prefix 설정
-                .enableSimpleBroker("/topic","/queue"); //해당 prefix로 시작하는 경로를 구독한 사용자에게 메시지 전달
-                                                                         // /topic->해당 주소를 구독한 전체 사용자, /queue -> 개인 메시지
+                .enableSimpleBroker("/topic","/queue", "/user"); //해당 prefix로 시작하는 경로를 구독한 사용자에게 메시지 전달
+        registry.setUserDestinationPrefix("/user");
     }
 }
