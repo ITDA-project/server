@@ -27,16 +27,15 @@ public class ChatNotificationService {
     private final UserService userService;
 
     @Transactional
-    public void notifyChatToUser(ChatNotificationDto chatNotificationDto) {
-
-        for (String receiver : chatNotificationDto.getReceivers()) {
+    public void notifyChatToUser(CreateChatNotificationDto createChatNotificationDto) {
+        List<ChatNotification> savedNotifications = createChatNotification(createChatNotificationDto);
+        for (ChatNotification notification : savedNotifications) {
+            String receiver = notification.getReceiver().getUsername();
+            ChatNotificationDto chatNotificationDto = notificationToDto(notification, receiver);
             messagingTemplate.convertAndSendToUser(
                     receiver, //dto의 각 username(전송 대상)
 
                     "/queue/chat-notifications",
-                    // /user/userA/queue/chat-notifications으로 전송
-                    // /prefix/username/broker/chat-notifications
-                    // => WebSocket 세션과 username의 매핑
                     chatNotificationDto
             );
         }
@@ -77,16 +76,15 @@ public class ChatNotificationService {
         return savedNotifications;
     }
 
-    public ChatNotificationDto notificationToDto(ChatNotification chatNotification, List<String> receivers){
+    public ChatNotificationDto notificationToDto(ChatNotification chatNotification, String receiver){
         return ChatNotificationDto.builder()
         .id(chatNotification.getId())
         .createdAt(chatNotification.getCreatedAt())
         .chatNotificationType(chatNotification.getChatNotificationType())
-        .message(chatNotification.getContent())
         .chatMessageId(chatNotification.getChatMessageId())
         .chatRoomId(chatNotification.getChatRoomId())
         .sender(chatNotification.getSender().getUsername())
-        .receivers(receivers)
+        .receiver(receiver)
         .build();
     }
 
@@ -97,6 +95,7 @@ public class ChatNotificationService {
                 .orElseThrow(() -> new EntityNotFoundException("알림이 존재하지 않습니다"));
     }
 
+    /*
     //편의용 알림 생성 + 전송 메서드
     @Transactional
     public void createAndSendChatNotification(CreateChatNotificationDto createChatNotificationDto){
@@ -104,12 +103,12 @@ public class ChatNotificationService {
         List<ChatNotification> saved = createChatNotification(createChatNotificationDto);
 
         for(ChatNotification chatNotification : saved) {
-            ChatNotificationDto chatNotificationDto = notificationToDto(
-                    chatNotification,
-                    List.of(chatNotification.getReceiver().getUsername())
+
             );
             //메서드 호출 자체로 Notification 생성 후 저장됨 - 변수의 선언 필요 x (사용할 필요 x이므로)
             notifyChatToUser(chatNotificationDto);
         }
     }
+
+     */
 }
