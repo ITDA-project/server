@@ -10,6 +10,7 @@ public record SessionResponseDTO(
     int sessionNumber,
     LocalDate sessionDate,
     LocalTime sessionTime,
+    String location,
     int price,
     String status,
     int paymentCount
@@ -21,6 +22,7 @@ public record SessionResponseDTO(
             session.getSessionNumber(),
             session.getSessionDate(),
             session.getSessionTime(),
+            session.getLocation(),
             session.getPrice(),
             session.getStatus().name(),
             session.getPayments().size()

@@ -81,6 +81,7 @@ public class SessionService {
                 .sessionNumber(nextSessionNumber)
                 .sessionDate(request.sessionDate())
                 .sessionTime(request.sessionTime())
+                .location(request.location())
                 .price(request.price())
                 .status(Session.SessionStatus.IN_PROGRESS)
                 .build();
