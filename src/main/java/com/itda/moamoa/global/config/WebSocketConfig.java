@@ -2,6 +2,7 @@ package com.itda.moamoa.global.config;
 
 import com.itda.moamoa.domain.chat.interceptor.JwtChannelInterceptor;
 import com.itda.moamoa.global.config.websocket.CustomHandshakeHandler;
+import com.itda.moamoa.global.security.jwt.interceptor.JwtHandshakeInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
@@ -16,6 +17,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     private final JwtChannelInterceptor jwtChannelInterceptor;
     private final CustomHandshakeHandler customHandshakeHandler;
+    private final JwtHandshakeInterceptor jwtHandshakeInterceptor;
 
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
@@ -30,6 +32,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
         registry.addEndpoint("/ws") //처음 서버와 WebSocket 연결 시 요청하는 곳
                 .setAllowedOriginPatterns("*") //운영할 땐 *가 아닌 주소로 수정
+                .addInterceptors(jwtHandshakeInterceptor)
                 .setHandshakeHandler(customHandshakeHandler)
                 .withSockJS();
     }
