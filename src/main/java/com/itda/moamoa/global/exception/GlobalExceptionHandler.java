@@ -2,6 +2,8 @@ package com.itda.moamoa.global.exception;
 
 import com.itda.moamoa.global.common.ErrorCode;
 import com.itda.moamoa.global.common.ErrorResponse;
+import com.itda.moamoa.global.exception.custom.UserException;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -103,6 +105,20 @@ public class GlobalExceptionHandler {
         log.error("Exception", e);
         final ErrorResponse response = ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getCode()));
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleEntityNotFoundException(EntityNotFoundException e){
+        log.error("EntityNotFoundException",e);
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.NOT_FOUND,e.getMessage());
+        return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(UserException.class)
+    public ResponseEntity<ErrorResponse> handleUserException(UserException e){
+        log.error("UserException",e);
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.CONFLICT,e.getMessage());
+        return new ResponseEntity<>(response,HttpStatus.CONFLICT);
     }
 
 }

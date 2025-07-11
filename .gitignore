@@ -10,11 +10,16 @@ logs/
 *.log
 
 ### application.yml ###
-application.yml
-application-*.yml #application-dev.yml...
+#application.yml
+
+#firebase admin sdk
+src/main/resources/fcm-moamoa-firebase-adminsdk-fbsvc-e842db0a21.json
 
 ### application.properties ###
 application.properties
+
+#환경변수
+.env*
 
 ### STS ###
 .apt_generated

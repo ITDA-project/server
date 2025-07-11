@@ -14,4 +14,4 @@ public enum SuccessCode {
     private final HttpStatus httpStatus;
     private final int code;
     
-} 
+}
