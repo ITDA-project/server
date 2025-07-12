@@ -122,7 +122,7 @@ public class FormService {
                 form.getUser().getId(),
                 "모임 신청서가 도착했습니다.",
                 "모임에 함께 하고자 하는 사람이 있어요 !!",
-                NotificationType.FORM_APPROVED
+                NotificationType.FORM_APPLY
         );
         fcmServaice.sendNotification(dto);
     }
