@@ -27,7 +27,10 @@ public enum ErrorCode {
     
     // 리뷰 관련 에러 코드
     CANNOT_REVIEW_SELF(HttpStatus.BAD_REQUEST, 400, "자신의 리뷰를 작성할 수 없습니다."),
-    NOT_PARTICIPATED_TOGETHER(HttpStatus.BAD_REQUEST, 400, "함께 참여하지 않은 활동에 대한 리뷰를 작성할 수 없습니다.");
+    NOT_PARTICIPATED_TOGETHER(HttpStatus.BAD_REQUEST, 400, "함께 참여하지 않은 활동에 대한 리뷰를 작성할 수 없습니다."),
+
+    // 알림 관련 에러 코드
+    NOTIFICATION_NOT_FOUND(HttpStatus.BAD_REQUEST, 400, "사용자에게 수신된 알림이 존재하지 않습니다.");
 
     private final HttpStatus status;
     private final int code;

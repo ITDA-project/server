@@ -9,10 +9,4 @@ public enum NotificationType {
     // Payment
     PAYMENT_REQUESTED,
     PAYMENT_COMPLETED,
-
-    // Chat
-    CHAT_MESSAGE,
-
-    // Optional
-    SYSTEM
 }
