@@ -13,6 +13,8 @@ import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.stereotype.Component;
 
+import java.security.Principal;
+
 
 @Component
 @AllArgsConstructor
@@ -22,6 +24,7 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
+        System.out.println("preSend");
         StompHeaderAccessor accessor =
                 MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
         if(accessor == null){
@@ -34,13 +37,18 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
 
         switch(command){
             case CONNECT:
+                System.out.println("connect");
                 authenticateUser(accessor);
                 break;
             case SUBSCRIBE:
                 //채팅방 접근 권한 확인
                 String destination = accessor.getDestination();
                 Long roomId = extractRoomId(destination);
-                String currentUser = accessor.getUser().getName();
+                Principal user = accessor.getUser();
+                if (user == null) {
+                    throw new IllegalArgumentException("인증되지 않은 사용자입니다.");
+                }
+                String currentUser = user.getName();
 
                 if(roomId == null) break;
 

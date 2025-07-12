@@ -28,7 +28,9 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
                                    WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception{
         URI uri = request.getURI(); //websocket 요청의 uri 객체 가져옴
+        System.out.println("WebSocket handshake URI: " + request.getURI());
         String query = uri.getQuery(); //uri 중 쿼리 스트링 추출
+        System.out.println("Query string: " + query);
         String token = null;
 
         if(query != null) {
@@ -36,20 +38,34 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
             for(String param : query.split("&")){ //여러 쿼리 파라미터 가능 -> & 기준 분리
                 String[] pair = param.split("="); //각 파라미터를 key=value 형태로 나눔
                 if (pair.length == 2 && pair[0].equals("token")) { //key=="token"
+
                     token = pair[1];
+                    System.out.println("Extracted token: " + token);
                 }
             }
         }
-        if(token != null && ! (jwtUtil.isExpired(token))){ //토큰 유효 시
+        if(token == null){
+            System.out.println("WebSocket 연결 거부: token 없음");
+            return false;
+        }
+        if((jwtUtil.isExpired(token))){
+            System.out.println("WebSocket 연결 거부: token 만료");
+            return false;
+        }
+
+        try{ //토큰 유효 시
             String username = jwtUtil.getUsername(token);
             String role = jwtUtil.getRole(token);
 
             attributes.put("username", username); //WebSocketSession에 데이터 전달 - WebSocket 연결 성립된 후에도 유지
             attributes.put("role", role);
+            System.out.println("WebSocket 연결 허용: " + username);
             return true;
 
+        }catch (Exception e) {
+            System.out.println("WebSocket 연결 거부: 토큰 파싱 실패");
+            return false;
         }
-        return false;
     }
 
     @Override

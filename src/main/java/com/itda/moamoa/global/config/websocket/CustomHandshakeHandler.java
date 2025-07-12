@@ -12,9 +12,13 @@ import java.util.Map;
 public class CustomHandshakeHandler extends DefaultHandshakeHandler {
     @Override
     protected Principal determineUser(ServerHttpRequest request,
-                                      WebSocketHandler webSocketHandler,
+                                       WebSocketHandler webSocketHandler,
                                       Map<String, Object> attributes){
+
         String username = (String)attributes.get("username");
+        if (username == null) {
+            throw new IllegalArgumentException("WebSocket handshake: username not found in attributes");
+        }
         return new StompPrincipal(username);
     }
 }
