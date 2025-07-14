@@ -17,8 +17,10 @@ public class CustomHandshakeHandler extends DefaultHandshakeHandler {
 
         String username = (String)attributes.get("username");
         if (username == null) {
+            System.out.println("username not found");
             throw new IllegalArgumentException("WebSocket handshake: username not found in attributes");
         }
+        System.out.println("username found");
         return new StompPrincipal(username);
     }
 }

@@ -72,5 +72,6 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
     public void afterHandshake(ServerHttpRequest serverHttpRequest, ServerHttpResponse serverHttpResponse,
                                WebSocketHandler webSocketHandler, Exception exception){
         //필요 시 로그 출력
+        System.out.println("WebSocket 연결 완료");
     }
 }

@@ -4,6 +4,7 @@ import com.itda.moamoa.domain.chat.repository.ChatRoomUserRepository;
 import com.itda.moamoa.global.security.jwt.util.JWTUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Component;
 
 import java.security.Principal;
 
-
+@Slf4j
 @Component
 @AllArgsConstructor
 public class JwtChannelInterceptor implements ChannelInterceptor {
@@ -24,22 +25,30 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
-        System.out.println("preSend");
+        log.info("preSend called");
         StompHeaderAccessor accessor =
                 MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+
         if(accessor == null){
+            log.info("accessor null");
+            return message;
+        }
+        else log.info("accessor not null");
+        StompCommand command = accessor.getCommand();
+        log.info("STOMP Command: {}", command);
+
+        if(command == null){
+            System.out.println("command null");
             return message;
         }
 
-        StompCommand command = accessor.getCommand();
-
-        if(command == null) return message;
-
         switch(command){
             case CONNECT:
-                System.out.println("connect");
+                log.info("connect");
                 authenticateUser(accessor);
+                log.info("authenticated");
                 break;
+
             case SUBSCRIBE:
                 //채팅방 접근 권한 확인
                 String destination = accessor.getDestination();
@@ -65,6 +74,7 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
     private void authenticateUser(StompHeaderAccessor accessor){
         // 클라이언트가 CONNECT 프레임을 보낼 때 헤더에서 JWT 추출
         String accessToken = accessor.getFirstNativeHeader("access");
+        log.info("Access token: {}", accessToken);
         if (accessToken == null) {
             throw new IllegalArgumentException("access token이 존재하지 않습니다.");
         }
@@ -94,6 +104,7 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
         if(!category.equals("access")) {
             return false;
         }
+        log.info("access category right");
         return true;
     }
 
