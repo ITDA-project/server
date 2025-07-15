@@ -33,7 +33,8 @@
             registry.addEndpoint("/ws") //처음 서버와 WebSocket 연결 시 요청하는 곳
                     .setAllowedOriginPatterns("*") //운영할 땐 *가 아닌 주소로 수정
                     .addInterceptors(jwtHandshakeInterceptor)
-                    .setHandshakeHandler(customHandshakeHandler);
+                    .setHandshakeHandler(customHandshakeHandler)
+                    .withSockJS();
         }
 
         @Override
