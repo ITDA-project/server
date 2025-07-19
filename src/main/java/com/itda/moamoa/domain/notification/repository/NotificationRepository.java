@@ -13,5 +13,5 @@ import java.util.Optional;
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
     List<Notification> findByUserAndIdLessThanOrderByIdDesc(User user, Long cursor, PageRequest pageRequest);
     Optional<Notification> findByIdAndUser(Long notificationId, User user);
-    List<Notification> findByUserAndIsReadFalse(User user);
+    List<Notification> findByUserAndReadFalse(User user);
 }

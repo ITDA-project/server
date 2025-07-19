@@ -7,6 +7,7 @@ import com.itda.moamoa.domain.form.dto.FormResponseDTO;
 import com.itda.moamoa.domain.form.entity.Form;
 import com.itda.moamoa.domain.form.entity.FormStatus;
 import com.itda.moamoa.domain.form.repository.FormRepository;
+import com.itda.moamoa.domain.notification.service.NotificationService;
 import com.itda.moamoa.domain.participant.repository.ParticipantRepository;
 import com.itda.moamoa.domain.post.entity.Post;
 import com.itda.moamoa.domain.post.repository.PostRepository;
@@ -30,7 +31,7 @@ public class FormService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final ParticipantRepository participantRepository;
-    private final FcmService fcmServaice;
+    private final NotificationService notificationService;
 
     // 커서 기반 페이지네이션으로 폼 목록 조회
     public FormListResponseDTO getFormsByCursor(long postId, Long cursor, int size, String username) {
@@ -118,13 +119,14 @@ public class FormService {
         formRepository.save(form);
 
         // 알림 전송
-        NotificationRequestDTO dto = new NotificationRequestDTO(
-                form.getUser().getId(),
-                "모임 신청서가 도착했습니다.",
-                "모임에 함께 하고자 하는 사람이 있어요 !!",
-                NotificationType.FORM_APPLY
+        notificationService.saveAndSendNotification(
+                new NotificationRequestDTO(
+                    form.getUser().getId(),
+                    "모임 신청서가 도착했습니다.",
+                    "모임에 함께 하고자 하는 사람이 있어요 !!",
+                    NotificationType.FORM_APPLY
+                )
         );
-        fcmServaice.sendNotification(dto);
     }
 
     // 신청서 수락
@@ -166,13 +168,14 @@ public class FormService {
         postRepository.save(post);
 
         // 알림 전송
-        NotificationRequestDTO dto = new NotificationRequestDTO(
-                form.getUser().getId(),
-                "모임 신청이 승인되었습니다.",
-                "함께하게 되어 기뻐요 !!",
-                NotificationType.FORM_APPROVED
+        notificationService.saveAndSendNotification(
+                new NotificationRequestDTO(
+                        form.getUser().getId(),
+                        "모임 신청이 승인되었습니다.",
+                        "함께하게 되어 기뻐요 !!",
+                        NotificationType.FORM_APPROVED
+                )
         );
-        fcmServaice.sendNotification(dto);
     }
 
     // 신청서 거절
@@ -194,12 +197,13 @@ public class FormService {
         form.updateFormStatus(FormStatus.REFUSE);
 
         // 알림 전송
-        NotificationRequestDTO dto = new NotificationRequestDTO(
-                form.getUser().getId(),
-                "모임 신청이 거절되었습니다.",
-                "다음 기회에 함께 해요 ㅠㅠ",
-                NotificationType.FORM_REJECTED
+        notificationService.saveAndSendNotification(
+                new NotificationRequestDTO(
+                        form.getUser().getId(),
+                        "모임 신청이 거절되었습니다.",
+                        "다음 기회에 함께 해요 ㅠㅠ",
+                        NotificationType.FORM_REJECTED
+                )
         );
-        fcmServaice.sendNotification(dto);
     }
 }

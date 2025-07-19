@@ -1,5 +1,7 @@
 package com.itda.moamoa.domain.payment.service;
 
+import com.itda.moamoa.domain.notification.entity.Notification;
+import com.itda.moamoa.domain.notification.repository.NotificationRepository;
 import com.itda.moamoa.domain.participant.entity.Role;
 import com.itda.moamoa.domain.participant.repository.ParticipantRepository;
 import com.itda.moamoa.domain.payment.dto.PaymentRefundRequest;
@@ -14,10 +16,12 @@ import com.itda.moamoa.domain.user.entity.User;
 import com.itda.moamoa.domain.user.repository.UserRepository;
 import com.itda.moamoa.global.fcm.FcmService;
 import com.itda.moamoa.global.fcm.dto.NotificationRequestDTO;
+import com.itda.moamoa.global.fcm.dto.NotificationType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 
@@ -32,8 +36,9 @@ public class PaymentService {
     private final UserRepository userRepository;
     private final SomoimRepository somoimRepository;
     private final SessionRepository sessionRepository;
-    private final FcmService fcmService;
+    private final NotificationRepository notificationRepository;
     private final ParticipantRepository participantRepository;
+    private final FcmService fcmService;
 
     @Transactional
     public void verifyPayment(PaymentVerifyRequest request, String userId) {
@@ -157,12 +162,25 @@ public class PaymentService {
         User host = participantRepository.findBySomoimAndRole(somoim, Role.ORGANIZER);
 
         if (host != null) {
+            // 1. 알림 저장
+            Notification notification = Notification.builder()
+                    .user(host)
+                    .title("결제 완료")
+                    .body(payer.getUsername() + "님이 결제를 완료했습니다.")
+                    .type(NotificationType.PAYMENT_COMPLETED)
+                    .read(false)
+                    .createdAt(LocalDateTime.now())
+                    .build();
+
+            notificationRepository.save(notification);
+
+            // 2. FCM 전송
             fcmService.sendNotification(
                     NotificationRequestDTO.builder()
                             .receiverId(host.getId())
                             .title("결제 완료")
                             .body(payer.getUsername() + "님이 결제를 완료했습니다.")
-                            .notificationType(PAYMENT_COMPLETED)
+                            .notificationType(NotificationType.PAYMENT_COMPLETED)
                             .build()
             );
         }

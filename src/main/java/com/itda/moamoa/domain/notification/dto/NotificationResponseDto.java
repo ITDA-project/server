@@ -8,12 +8,12 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 public class NotificationResponseDto {
-    private Long id;
+    private Long id;                    // 수신자
     private String title;
     private String body;
     private NotificationType type;
-    private String redirectUrl;
-    private boolean isRead;
+    // private String redirectUrl;         // 사용자 이동 페이지
+    private boolean read;                  // 알림 읽음 여부
     private LocalDateTime createdAt;
 }
 
