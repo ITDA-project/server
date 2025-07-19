@@ -1,6 +1,5 @@
 package com.itda.moamoa.domain.payment.service;
 
-import com.itda.moamoa.domain.notification.repository.NotificationRepository;
 import com.itda.moamoa.domain.notification.service.NotificationService;
 import com.itda.moamoa.domain.participant.entity.Role;
 import com.itda.moamoa.domain.participant.repository.ParticipantRepository;
@@ -14,7 +13,6 @@ import com.itda.moamoa.domain.somoim.entity.Somoim;
 import com.itda.moamoa.domain.somoim.repository.SomoimRepository;
 import com.itda.moamoa.domain.user.entity.User;
 import com.itda.moamoa.domain.user.repository.UserRepository;
-import com.itda.moamoa.global.fcm.FcmService;
 import com.itda.moamoa.global.fcm.dto.NotificationRequestDTO;
 import com.itda.moamoa.global.fcm.dto.NotificationType;
 import lombok.RequiredArgsConstructor;
