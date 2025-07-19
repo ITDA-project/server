@@ -2,6 +2,7 @@ package com.itda.moamoa.domain.payment.service;
 
 import com.itda.moamoa.domain.notification.entity.Notification;
 import com.itda.moamoa.domain.notification.repository.NotificationRepository;
+import com.itda.moamoa.domain.notification.service.NotificationService;
 import com.itda.moamoa.domain.participant.entity.Role;
 import com.itda.moamoa.domain.participant.repository.ParticipantRepository;
 import com.itda.moamoa.domain.payment.dto.PaymentRefundRequest;
@@ -37,6 +38,7 @@ public class PaymentService {
     private final NotificationRepository notificationRepository;
     private final ParticipantRepository participantRepository;
     private final FcmService fcmService;
+    private final NotificationService notificationService;
 
     @Transactional
     public void verifyPayment(PaymentVerifyRequest request, String userId) {
@@ -160,26 +162,13 @@ public class PaymentService {
         User host = participantRepository.findBySomoimAndRole(somoim, Role.ORGANIZER);
 
         if (host != null) {
-            // 1. 알림 저장
-            Notification notification = Notification.builder()
-                    .user(host)
-                    .title("결제 완료")
-                    .body(payer.getUsername() + "님이 결제를 완료했습니다.")
-                    .type(NotificationType.PAYMENT_COMPLETED)
-                    .read(false)
-                    .createdAt(LocalDateTime.now())
-                    .build();
-
-            notificationRepository.save(notification);
-
-            // 2. FCM 전송
-            fcmService.sendNotification(
-                    NotificationRequestDTO.builder()
-                            .receiverId(host.getId())
-                            .title("결제 완료")
-                            .body(payer.getUsername() + "님이 결제를 완료했습니다.")
-                            .notificationType(NotificationType.PAYMENT_COMPLETED)
-                            .build()
+            notificationService.saveAndSendNotification(
+                    new NotificationRequestDTO(
+                            host.getId(),
+                            "결제 완료",
+                            payer.getUsername() + "님이 결제를 완료했습니다.",
+                            NotificationType.PAYMENT_COMPLETED
+                    )
             );
         }
     }
