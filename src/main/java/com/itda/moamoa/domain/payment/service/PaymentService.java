@@ -25,8 +25,6 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.itda.moamoa.global.fcm.dto.NotificationType.PAYMENT_COMPLETED;
-
 @Service
 @RequiredArgsConstructor
 public class PaymentService {

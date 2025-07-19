@@ -14,7 +14,6 @@ import com.itda.moamoa.domain.post.repository.PostRepository;
 import com.itda.moamoa.domain.user.entity.User;
 import com.itda.moamoa.domain.user.repository.UserRepository;
 import com.itda.moamoa.domain.participant.entity.*;
-import com.itda.moamoa.global.fcm.FcmService;
 import com.itda.moamoa.global.fcm.dto.NotificationRequestDTO;
 import com.itda.moamoa.global.fcm.dto.NotificationType;
 import jakarta.transaction.Transactional;
