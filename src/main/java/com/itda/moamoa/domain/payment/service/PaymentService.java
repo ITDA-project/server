@@ -32,9 +32,7 @@ public class PaymentService {
     private final UserRepository userRepository;
     private final SomoimRepository somoimRepository;
     private final SessionRepository sessionRepository;
-    private final NotificationRepository notificationRepository;
     private final ParticipantRepository participantRepository;
-    private final FcmService fcmService;
     private final NotificationService notificationService;
 
     @Transactional
