@@ -1,6 +1,5 @@
 package com.itda.moamoa.domain.payment.service;
 
-import com.itda.moamoa.domain.notification.entity.Notification;
 import com.itda.moamoa.domain.notification.repository.NotificationRepository;
 import com.itda.moamoa.domain.notification.service.NotificationService;
 import com.itda.moamoa.domain.participant.entity.Role;
@@ -21,8 +20,6 @@ import com.itda.moamoa.global.fcm.dto.NotificationType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 
