@@ -4,6 +4,7 @@ import com.itda.moamoa.domain.chat.repository.ChatRoomUserRepository;
 import com.itda.moamoa.global.security.jwt.util.JWTUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Component;
 
 import java.security.Principal;
 
-
+@Slf4j
 @Component
 @AllArgsConstructor
 public class JwtChannelInterceptor implements ChannelInterceptor {
@@ -35,7 +36,7 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
 
         if(command == null) return message;
 
-        switch(command){
+        switch(command) {
             case CONNECT:
                 System.out.println("connect");
                 authenticateUser(accessor);
@@ -43,18 +44,26 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
             case SUBSCRIBE:
                 //채팅방 접근 권한 확인
                 String destination = accessor.getDestination();
-                Long roomId = extractRoomId(destination);
+
                 Principal user = accessor.getUser();
                 if (user == null) {
                     throw new IllegalArgumentException("인증되지 않은 사용자입니다.");
                 }
                 String currentUser = user.getName();
 
-                if(roomId == null) break;
+                if (destination != null && destination.startsWith("/topic/chat/room/")) {
+                    try {
+                        Long roomId = extractRoomId(destination);
 
-                if(!hasAccessToRoom(currentUser,roomId)){
-                    throw new IllegalArgumentException("채팅방 접근 권한이 존재하지 않습니다.");
+                        if (!hasAccessToRoom(currentUser, roomId)) {
+                            throw new IllegalArgumentException("채팅방 접근 근훤이 존재하지 않습니다.");
+                        }
+                    } catch (NumberFormatException e) {
+                        log.warn("잘못된 roomId 형식 : {}", destination);
+                        throw new IllegalArgumentException("올바르지 않은 채팅방 경로입니다.");
+                    }
                 }
+
                 break;
             default:
                 break;
