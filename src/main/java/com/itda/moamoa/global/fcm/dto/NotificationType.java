@@ -8,7 +8,7 @@ public enum NotificationType {
 
     // Payment
     PAYMENT_REQUESTED,
-    PAYMENT_COMPLETED;
+    PAYMENT_COMPLETED
 
 //    public String getRedirectUrl(Long relatedId) {
 //        return switch (this) {
