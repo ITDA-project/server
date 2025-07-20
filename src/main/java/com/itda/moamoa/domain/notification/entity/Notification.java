@@ -27,12 +27,12 @@ public class Notification {
     // private String redirectUrl;         // 클릭 시 이동 경로
 
     @Builder.Default
-    private boolean read = false;     // 알림 읽음 여부
+    private boolean isRead = false;     // 알림 읽음 여부
 
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 
     public void Read() {          // 알림 읽음
-        this.read = true;
+        this.isRead = true;
     }
 }

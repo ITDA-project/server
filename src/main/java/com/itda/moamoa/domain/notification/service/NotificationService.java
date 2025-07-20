@@ -35,7 +35,7 @@ public class NotificationService {
                 .title(dto.getTitle())
                 .body(dto.getBody())
                 .type((NotificationType) dto.getNotificationType())
-                .read(false)
+                .isRead(false)
                 .createdAt(LocalDateTime.now())
                 .build();
 
@@ -65,7 +65,7 @@ public class NotificationService {
                         .body(notification.getBody())
                         .type(notification.getType())
                         //.redirectUrl(notification.getRedirectUrl())
-                        .read(notification.isRead())
+                        .isRaed(notification.isRead())
                         .createdAt(notification.getCreatedAt())
                         .build())
                 .toList();
@@ -88,7 +88,7 @@ public class NotificationService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        List<Notification> notifications = notificationRepository.findByUserAndReadFalse(user);
+        List<Notification> notifications = notificationRepository.findByUserAndIsReadFalse(user);
 
         for (Notification notification : notifications) {
             notification.Read();

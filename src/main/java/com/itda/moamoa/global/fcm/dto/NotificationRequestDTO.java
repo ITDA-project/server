@@ -14,4 +14,5 @@ public class NotificationRequestDTO {
     private String title;
     private String body;
     private Enum notificationType;
+    // private Long relatedId;
 }

@@ -13,7 +13,7 @@ public class NotificationResponseDto {
     private String body;
     private NotificationType type;
     // private String redirectUrl;         // 사용자 이동 페이지
-    private boolean read;                  // 알림 읽음 여부
+    private boolean isRaed;                // 알림 읽음 여부
     private LocalDateTime createdAt;
 }
 
