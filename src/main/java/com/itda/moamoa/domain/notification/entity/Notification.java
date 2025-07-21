@@ -24,7 +24,6 @@ public class Notification {
     private String body;                // 알림 세부 내용
 
     private NotificationType type;      // 알림 유형 ex. 결제, 신청서 등
-    // private String redirectUrl;         // 클릭 시 이동 경로
 
     @Builder.Default
     private boolean isRead = false;     // 알림 읽음 여부
