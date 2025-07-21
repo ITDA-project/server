@@ -153,17 +153,19 @@ public class PaymentService {
     }
 
     private void notifyHost(Somoim somoim) {
-        if (somoim == null) return;
-
+        // 주최자
         User host = participantRepository.findBySomoimAndRole(somoim, Role.ORGANIZER);
+        // 주최자가 생성한 소모임 직전에 게시한 게시글
         Post post = postRepository.findTopByUserAndCreatedAtBeforeOrderByCreatedAtDesc(host, somoim.getCreatedAt());
+
+        if (somoim == null || post == null) return;
 
         if (host != null && post != null) {
             notificationService.saveAndSendNotification(
                     new NotificationRequestDTO(
                             host.getId(),
                             post.getTitle(),
-                            "새로운 결제 요청이 있어요ㅂ! 참여하시겠어요?",
+                            post.getUser().getUsername() + "님의 결제가 완료되었습니다.",
                             NotificationType.PAYMENT_COMPLETED
                     )
             );

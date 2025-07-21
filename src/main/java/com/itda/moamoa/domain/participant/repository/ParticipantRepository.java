@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -20,4 +21,7 @@ public interface ParticipantRepository extends JpaRepository<Participant, Long> 
 
     @Query("SELECT p.user FROM Participant p WHERE p.somoim = :somoim AND p.role = :role")
     User findBySomoimAndRole(@Param("somoim") Somoim somoim, @Param("role") Role role);
+
+    @Query("SELECT p.user FROM Participant p WHERE p.somoim = :somoim AND p.role = :role")
+    List<User> findAllBySomoimAndRole(@Param("somoim") Somoim somoim, @Param("role") Role role);
 }

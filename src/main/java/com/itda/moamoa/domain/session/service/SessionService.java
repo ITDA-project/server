@@ -1,11 +1,21 @@
 package com.itda.moamoa.domain.session.service;
 
+import com.itda.moamoa.domain.notification.service.NotificationService;
+import com.itda.moamoa.domain.participant.entity.Role;
+import com.itda.moamoa.domain.participant.repository.ParticipantRepository;
+import com.itda.moamoa.domain.post.entity.Post;
+import com.itda.moamoa.domain.post.repository.PostRepository;
 import com.itda.moamoa.domain.session.dto.SessionRequestDTO;
 import com.itda.moamoa.domain.session.dto.SessionResponseDTO;
 import com.itda.moamoa.domain.session.entity.Session;
 import com.itda.moamoa.domain.session.repository.SessionRepository;
 import com.itda.moamoa.domain.somoim.entity.Somoim;
 import com.itda.moamoa.domain.somoim.repository.SomoimRepository;
+import com.itda.moamoa.domain.user.entity.User;
+import com.itda.moamoa.domain.user.repository.UserRepository;
+import com.itda.moamoa.domain.user.service.UserService;
+import com.itda.moamoa.global.fcm.dto.NotificationRequestDTO;
+import com.itda.moamoa.global.fcm.dto.NotificationType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +29,9 @@ public class SessionService {
 
     private final SessionRepository sessionRepository;
     private final SomoimRepository somoimRepository;
+    private final NotificationService notificationService;
+    private final PostRepository postRepository;
+    private final ParticipantRepository participantRepository;
 
     // 회차 생성
     @Transactional
@@ -37,6 +50,9 @@ public class SessionService {
                 .build();
         
         sessionRepository.save(session);
+
+        // 알림 전송
+        notifyParticipant(somoim);
         
         return SessionResponseDTO.from(session);
     }
@@ -72,5 +88,31 @@ public class SessionService {
         sessionRepository.save(session);
         
         return SessionResponseDTO.from(session);
+    }
+
+    // 알림 전송
+    private void notifyParticipant(Somoim somoim) {
+        // 주최자 제외 소모임 참가자 목록
+        List<User> users = participantRepository.findAllBySomoimAndRole(somoim, Role.PARTICIPANT);
+
+        // 주최자
+        User host = participantRepository.findBySomoimAndRole(somoim, Role.ORGANIZER);
+        // 주최자가 소모임 생성 직전 게시한 게시글
+        Post post = postRepository.findTopByUserAndCreatedAtBeforeOrderByCreatedAtDesc(host, somoim.getCreatedAt());
+
+        if (somoim == null || post == null) return;
+
+        if (host != null && post != null) {
+            for (User user : users) {
+                notificationService.saveAndSendNotification(
+                        NotificationRequestDTO.builder()
+                                .receiverId(user.getId())
+                                .title(post.getTitle())
+                                .body("새로운 결제 요청이 있어요! 참여하시겠어요?")
+                                .notificationType(NotificationType.PAYMENT_REQUESTED)
+                                .build()
+                );
+            }
+        }
     }
 } 
