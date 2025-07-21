@@ -4,7 +4,6 @@ import com.itda.moamoa.domain.user.entity.User;
 import com.itda.moamoa.global.fcm.dto.NotificationType;
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.LocalDateTime;
 
 @Entity
