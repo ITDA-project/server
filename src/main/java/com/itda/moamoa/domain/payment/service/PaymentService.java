@@ -158,7 +158,7 @@ public class PaymentService {
         // 주최자가 생성한 소모임 직전에 게시한 게시글
         Post post = postRepository.findTopByUserAndCreatedAtBeforeOrderByCreatedAtDesc(host, somoim.getCreatedAt());
 
-        if (somoim == null || post == null) return;
+        if (somoim == null) return;
 
         if (host != null && post != null) {
             notificationService.saveAndSendNotification(

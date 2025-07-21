@@ -12,8 +12,6 @@ import com.itda.moamoa.domain.session.repository.SessionRepository;
 import com.itda.moamoa.domain.somoim.entity.Somoim;
 import com.itda.moamoa.domain.somoim.repository.SomoimRepository;
 import com.itda.moamoa.domain.user.entity.User;
-import com.itda.moamoa.domain.user.repository.UserRepository;
-import com.itda.moamoa.domain.user.service.UserService;
 import com.itda.moamoa.global.fcm.dto.NotificationRequestDTO;
 import com.itda.moamoa.global.fcm.dto.NotificationType;
 import lombok.RequiredArgsConstructor;
