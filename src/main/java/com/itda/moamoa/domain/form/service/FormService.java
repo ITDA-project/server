@@ -120,9 +120,9 @@ public class FormService {
         // 알림 전송
         notificationService.saveAndSendNotification(
                 new NotificationRequestDTO(
-                    form.getUser().getId(),
-                    "모임 신청서가 도착했습니다.",
-                    "모임에 함께 하고자 하는 사람이 있어요 !!",
+                    post.getUser().getId(),
+                    post.getTitle(),
+                    "새로운 신청자가 있어요. 확인해보세요!",
                     NotificationType.FORM_APPLY
                 )
         );
@@ -170,8 +170,8 @@ public class FormService {
         notificationService.saveAndSendNotification(
                 new NotificationRequestDTO(
                         form.getUser().getId(),
-                        "모임 신청이 승인되었습니다.",
-                        "함께하게 되어 기뻐요 !!",
+                        post.getTitle(),
+                        "모임 신청이 수락 되었습니다. 함께 모임에 참여해요!",
                         NotificationType.FORM_APPROVED
                 )
         );
@@ -199,8 +199,8 @@ public class FormService {
         notificationService.saveAndSendNotification(
                 new NotificationRequestDTO(
                         form.getUser().getId(),
-                        "모임 신청이 거절되었습니다.",
-                        "다음 기회에 함께 해요 ㅠㅠ",
+                        post.getTitle(),
+                        "모임 신청이 거절 되었습니다. 다른 모임에 신청해보세요!",
                         NotificationType.FORM_REJECTED
                 )
         );
