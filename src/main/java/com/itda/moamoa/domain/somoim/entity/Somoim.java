@@ -3,6 +3,8 @@ package com.itda.moamoa.domain.somoim.entity;
 import com.itda.moamoa.domain.participant.entity.Participant;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +23,8 @@ public class Somoim {
 
     @OneToMany(mappedBy = "somoim") // Participant:Somoim = 1:n
     List<Participant> participant = new ArrayList<>();
+
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     public void setSomoim(SomoimStatus status) { this.status = status; }
 }

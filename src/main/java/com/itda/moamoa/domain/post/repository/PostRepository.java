@@ -6,9 +6,9 @@ import com.itda.moamoa.domain.user.entity.User;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -48,7 +48,11 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     
     // 특정 사용자가 작성한 삭제되지 않은 게시글 모두 조회 - MyPageService에서 사용 중
     List<Post> findByUserAndDeleteFlagFalse(User user);
-    
+
+    // 주최자가 개설한 소모임 생성 시간과 가장 유사한 게시글 조회
+    Post findTopByUserAndCreatedAtBeforeOrderByCreatedAtDesc(User user, LocalDateTime createdAt);
+
+
     // 사용자가 좋아요한 글 조회 (가정)
     //findByLikesUserIdAndPostIdLessThanOrderByCreatedAtDesc
 }

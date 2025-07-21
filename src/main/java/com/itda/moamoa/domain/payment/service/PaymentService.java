@@ -7,6 +7,8 @@ import com.itda.moamoa.domain.payment.dto.PaymentRefundRequest;
 import com.itda.moamoa.domain.payment.dto.PaymentVerifyRequest;
 import com.itda.moamoa.domain.payment.entity.Payment;
 import com.itda.moamoa.domain.payment.repository.PaymentRepository;
+import com.itda.moamoa.domain.post.entity.Post;
+import com.itda.moamoa.domain.post.repository.PostRepository;
 import com.itda.moamoa.domain.session.entity.Session;
 import com.itda.moamoa.domain.session.repository.SessionRepository;
 import com.itda.moamoa.domain.somoim.entity.Somoim;
@@ -32,6 +34,7 @@ public class PaymentService {
     private final SessionRepository sessionRepository;
     private final ParticipantRepository participantRepository;
     private final NotificationService notificationService;
+    private final PostRepository postRepository;
 
     @Transactional
     public void verifyPayment(PaymentVerifyRequest request, String userId) {
@@ -80,7 +83,7 @@ public class PaymentService {
             payment.markPaid();
             paymentRepository.save(payment);
 
-            notifyHost(payment.getSomoim(), user);
+            notifyHost(payment.getSomoim());
 
         } else {
             // 결제 정보가 없는 경우, 새로 생성
@@ -112,7 +115,7 @@ public class PaymentService {
             newPayment.markPaid();
             paymentRepository.save(newPayment);
 
-            notifyHost(somoim, user);
+            notifyHost(somoim);
         }
     }
 
@@ -149,17 +152,18 @@ public class PaymentService {
         paymentRepository.save(payment);
     }
 
-    private void notifyHost(Somoim somoim, User payer) {
+    private void notifyHost(Somoim somoim) {
         if (somoim == null) return;
 
         User host = participantRepository.findBySomoimAndRole(somoim, Role.ORGANIZER);
+        Post post = postRepository.findTopByUserAndCreatedAtBeforeOrderByCreatedAtDesc(host, somoim.getCreatedAt());
 
-        if (host != null) {
+        if (host != null && post != null) {
             notificationService.saveAndSendNotification(
                     new NotificationRequestDTO(
                             host.getId(),
-                            "결제 완료",
-                            payer.getUsername() + "님이 결제를 완료했습니다.",
+                            post.getTitle(),
+                            "새로운 결제 요청이 있어요ㅂ! 참여하시겠어요?",
                             NotificationType.PAYMENT_COMPLETED
                     )
             );
