@@ -56,7 +56,7 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
                         Long roomId = extractRoomId(destination);
 
                         if (!hasAccessToRoom(currentUser, roomId)) {
-                            throw new IllegalArgumentException("채팅방 접근 근훤이 존재하지 않습니다.");
+                            throw new IllegalArgumentException("채팅방 접근 권한이 존재하지 않습니다.");
                         }
                     } catch (NumberFormatException e) {
                         log.warn("잘못된 roomId 형식 : {}", destination);
