@@ -98,7 +98,7 @@ public class SessionService {
         // 주최자가 소모임 생성 직전 게시한 게시글
         Post post = postRepository.findTopByUserAndCreatedAtBeforeOrderByCreatedAtDesc(host, somoim.getCreatedAt());
 
-        if (somoim == null || post == null) return;
+        if (somoim == null) return;
 
         if (host != null && post != null) {
             for (User user : users) {
