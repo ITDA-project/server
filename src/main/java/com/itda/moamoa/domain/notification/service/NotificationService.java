@@ -8,6 +8,7 @@ import com.itda.moamoa.domain.user.repository.UserRepository;
 import com.itda.moamoa.global.common.ErrorCode;
 import com.itda.moamoa.global.exception.CustomException;
 import com.itda.moamoa.global.fcm.FcmService;
+import com.itda.moamoa.global.fcm.dto.NotificationListRequestDto;
 import com.itda.moamoa.global.fcm.dto.NotificationRequestDTO;
 import com.itda.moamoa.global.fcm.dto.NotificationType;
 import lombok.RequiredArgsConstructor;
@@ -29,21 +30,53 @@ public class NotificationService {
         User user = userRepository.findById(dto.getReceiverId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다."));
 
-        // 2. 알림 저장
+        // 2. 알림 생성
         Notification notification = Notification.builder()
                 .user(user)
                 .title(dto.getTitle())
                 .body(dto.getBody())
-                .type((NotificationType) dto.getNotificationType())
+                .type(dto.getNotificationType())
                 .isRead(false)
                 .createdAt(LocalDateTime.now())
+                .postId(dto.getPostId())
+                .roomId(dto.getRoomId())
                 .build();
 
+        // 3. 알림 저장
         notificationRepository.save(notification);
 
-        // 3. FCM 전송
+        // 4. FCM 전송
         fcmService.sendNotification(dto);
     }
+
+//    public void saveAndSendPaymentRequestToParticipants(NotificationListRequestDto dto) {
+//        User user = userRepository.findById(dto.getReceiverId())
+//                .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
+//
+//        Notification notification = Notification.builder()
+//                .user(user)
+//                .title(dto.getTitle())
+//                .body(dto.getBody())
+//                .type(NotificationType.PAYMENT_REQUESTED)
+//                .isRead(false)
+//                .createdAt(LocalDateTime.now())
+//                .postId(dto.getPostId())
+//                .roomId(dto.getRoomId())
+//                .build();
+//
+//        notificationRepository.save(notification);
+//
+//        fcmService.sendNotification(
+//                NotificationRequestDTO.builder()
+//                        .receiverId(dto.getReceiverId())
+//                        .title(dto.getTitle())
+//                        .body(dto.getBody())
+//                        .notificationType(NotificationType.PAYMENT_REQUESTED)
+//                        .postId(dto.getPostId())
+//                        .roomId(dto.getRoomId())
+//                        .build()
+//        );
+//    }
 
     // 커서 기반 알림 조회
     public List<NotificationResponseDto> getNotificationByCursor(Long cursor, int size, String username) {
@@ -64,9 +97,10 @@ public class NotificationService {
                         .title(notification.getTitle())
                         .body(notification.getBody())
                         .type(notification.getType())
-                        //.redirectUrl(notification.getRedirectUrl())
                         .isRaed(notification.isRead())
                         .createdAt(notification.getCreatedAt())
+                        .postId(notification.getPostId())
+                        .roomId(notification.getRoomId())
                         .build())
                 .toList();
     }

@@ -30,6 +30,10 @@ public class Notification {
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    // 페이지 이동 관련 정보
+    private Long postId;        // 신청서 거절
+    private Long roomId;        // 신청서 수락
+
     public void Read() {          // 알림 읽음
         this.isRead = true;
     }

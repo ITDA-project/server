@@ -123,7 +123,9 @@ public class FormService {
                     post.getUser().getId(),
                     post.getTitle(),
                     "새로운 신청자가 있어요. 확인해보세요!",
-                    NotificationType.FORM_APPLY
+                    NotificationType.FORM_APPLY,
+                    null,
+                    null
                 )
         );
     }
@@ -172,7 +174,9 @@ public class FormService {
                         form.getUser().getId(),
                         post.getTitle(),
                         "모임 신청이 수락 되었습니다. 함께 모임에 참여해요!",
-                        NotificationType.FORM_APPROVED
+                        NotificationType.FORM_APPROVED,
+                        null,
+                        formCreatorParticipant.getSomoim().getId()
                 )
         );
     }
@@ -201,7 +205,9 @@ public class FormService {
                         form.getUser().getId(),
                         post.getTitle(),
                         "모임 신청이 거절 되었습니다. 다른 모임에 신청해보세요!",
-                        NotificationType.FORM_REJECTED
+                        NotificationType.FORM_REJECTED,
+                        post.getPostId(),
+                        null
                 )
         );
     }

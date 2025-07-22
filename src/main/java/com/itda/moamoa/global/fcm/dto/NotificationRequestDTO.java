@@ -13,5 +13,9 @@ public class NotificationRequestDTO {
     private Long receiverId;
     private String title;
     private String body;
-    private Enum notificationType;
+    private NotificationType notificationType;
+
+    // 페이지 이동 관련 정보
+    private Long postId;        // 신청서 거절
+    private Long roomId;        // 신청서 수락
 }
