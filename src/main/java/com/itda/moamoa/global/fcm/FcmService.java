@@ -6,12 +6,9 @@ import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
 import com.itda.moamoa.domain.user.service.UserService;
 import com.itda.moamoa.global.fcm.dto.NotificationRequestDTO;
-import com.itda.moamoa.global.fcm.dto.NotificationType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -40,17 +37,6 @@ public class FcmService {
             log.info("알림 전송 성공 to userId={} ({})", dto.getReceiverId(), dto.getNotificationType());
         } catch (FirebaseMessagingException e) {
             log.error("알림 전송 실패", e);
-        }
-    }
-
-    public void sendPaymentRequestToParticipants(List<Long> receiverIds, String title, String body) {
-        for (Long id : receiverIds) {
-            sendNotification(new NotificationRequestDTO(
-                    id,
-                    title,
-                    body,
-                    NotificationType.PAYMENT_REQUESTED
-            ));
         }
     }
 }

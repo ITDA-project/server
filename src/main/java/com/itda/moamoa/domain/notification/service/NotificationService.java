@@ -49,34 +49,12 @@ public class NotificationService {
         fcmService.sendNotification(dto);
     }
 
-//    public void saveAndSendPaymentRequestToParticipants(NotificationListRequestDto dto) {
-//        User user = userRepository.findById(dto.getReceiverId())
-//                .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
-//
-//        Notification notification = Notification.builder()
-//                .user(user)
-//                .title(dto.getTitle())
-//                .body(dto.getBody())
-//                .type(NotificationType.PAYMENT_REQUESTED)
-//                .isRead(false)
-//                .createdAt(LocalDateTime.now())
-//                .postId(dto.getPostId())
-//                .roomId(dto.getRoomId())
-//                .build();
-//
-//        notificationRepository.save(notification);
-//
-//        fcmService.sendNotification(
-//                NotificationRequestDTO.builder()
-//                        .receiverId(dto.getReceiverId())
-//                        .title(dto.getTitle())
-//                        .body(dto.getBody())
-//                        .notificationType(NotificationType.PAYMENT_REQUESTED)
-//                        .postId(dto.getPostId())
-//                        .roomId(dto.getRoomId())
-//                        .build()
-//        );
-//    }
+    public void saveAndSendPaymentRequestToParticipants(List<NotificationRequestDTO> dtos) {
+        for (NotificationRequestDTO dto : dtos) {
+            saveAndSendNotification(dto);
+        }
+    }
+
 
     // 커서 기반 알림 조회
     public List<NotificationResponseDto> getNotificationByCursor(Long cursor, int size, String username) {

@@ -100,17 +100,19 @@ public class SessionService {
 
         if (somoim == null) return;
 
-        if (host != null && post != null) {
-            for (User user : users) {
-                notificationService.saveAndSendNotification(
-                        NotificationRequestDTO.builder()
-                                .receiverId(user.getId())
-                                .title(post.getTitle())
-                                .body("새로운 결제 요청이 있어요! 참여하시겠어요?")
-                                .notificationType(NotificationType.PAYMENT_REQUESTED)
-                                .build()
-                );
-            }
+        if (host != null && post != null)  {
+            List<NotificationRequestDTO> dtoList = users.stream()
+                    .map(user -> NotificationRequestDTO.builder()
+                            .receiverId(user.getId())
+                            .title(post.getTitle())
+                            .body("새로운 결제 요청이 있어요! 참여하시겠어요?")
+                            .notificationType(NotificationType.PAYMENT_REQUESTED)
+                            .postId(post.getPostId())
+                            .roomId(null) // 필요 시
+                            .build())
+                    .collect(Collectors.toList());
+
+            notificationService.saveAndSendPaymentRequestToParticipants(dtoList);
         }
     }
 } 
