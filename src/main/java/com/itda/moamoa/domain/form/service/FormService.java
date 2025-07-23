@@ -124,7 +124,7 @@ public class FormService {
                     post.getTitle(),
                     "새로운 신청자가 있어요. 확인해보세요!",
                     NotificationType.FORM_APPLY,
-                    null,
+                    post.getPostId(),
                     null
                 )
         );
@@ -206,7 +206,7 @@ public class FormService {
                         post.getTitle(),
                         "모임 신청이 거절 되었습니다. 다른 모임에 신청해보세요!",
                         NotificationType.FORM_REJECTED,
-                        post.getPostId(),
+                        null,
                         null
                 )
         );
