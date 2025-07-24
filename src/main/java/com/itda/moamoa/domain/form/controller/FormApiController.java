@@ -3,7 +3,7 @@ package com.itda.moamoa.domain.form.controller;
 import com.itda.moamoa.domain.form.dto.FormListResponseDTO;
 import com.itda.moamoa.domain.form.dto.FormRequestDTO;
 import com.itda.moamoa.domain.form.dto.FormResponseDTO;
-import com.itda.moamoa.domain.form.service.FormService;
+import com.itda.moamoa.domain.form.service.FormApiService;
 import com.itda.moamoa.domain.participant.entity.Participant;
 import com.itda.moamoa.global.common.ApiResponse;
 import com.itda.moamoa.global.common.SuccessCode;
@@ -13,13 +13,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/posts/{postId}/form")
 public class FormApiController {
-    private final FormService formApiService;
+    private final FormApiService formApiService;
 
     // 커서 기반 폼 목록 조회
     @GetMapping("/list")

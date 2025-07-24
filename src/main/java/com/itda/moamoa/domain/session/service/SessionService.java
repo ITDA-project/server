@@ -35,6 +35,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -47,8 +48,6 @@ public class SessionService {
     private final PostRepository postRepository;
     private final ParticipantRepository participantRepository;
     private final ChatRoomRepository chatRoomRepository;
-    private final PostRepository postRepository;
-    private final ParticipantRepository participantRepository;
     private final UserRepository userRepository;
 
     // 모임 시작 - 세션 생성

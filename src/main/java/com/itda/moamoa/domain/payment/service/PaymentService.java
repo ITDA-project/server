@@ -48,8 +48,6 @@ public class PaymentService {
     private final NotificationService notificationService;
     private final PostRepository postRepository;
     private final ChatRoomRepository chatRoomRepository;
-    private final PostRepository postRepository;
-    private final ParticipantRepository participantRepository;
 
     @Transactional
     public void verifyPayment(PaymentVerifyRequest request, String userId) {
