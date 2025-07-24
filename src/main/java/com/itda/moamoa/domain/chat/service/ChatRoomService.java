@@ -1,5 +1,6 @@
 package com.itda.moamoa.domain.chat.service;
 
+import com.itda.moamoa.domain.chat.dto.ChatRoomDto;
 import com.itda.moamoa.domain.chat.dto.ChatRoomInviteRequestDto;
 import com.itda.moamoa.domain.chat.dto.ChatRoomListDto;
 import com.itda.moamoa.domain.chat.dto.ChatRoomMessageResponseDto;
@@ -107,11 +108,13 @@ public class ChatRoomService {
         return chatRoomRepository.findChatRoomList(user.getId());
     }
 
-    public Boolean isDeleted(Long roomId){
-        return chatRoomRepository
+    public ChatRoomDto isDeleted(Long roomId){
+        ChatRoom chatRoom = chatRoomRepository
                 .findById(roomId)
-                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 채팅방입니다."))
-                .isDeleted();
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 채팅방입니다."));
+        return new ChatRoomDto(chatRoom.getRoomName(),chatRoom.isDeleted());
     }
+
+
 
 }
