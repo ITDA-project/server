@@ -1,6 +1,7 @@
 package com.itda.moamoa.domain.post.controller;
 
 import com.itda.moamoa.domain.post.dto.PostCreateResponseDTO;
+//import com.itda.moamoa.domain.post.dto.PostRecreateDTO;
 import com.itda.moamoa.domain.post.dto.PostRequestDTO;
 import com.itda.moamoa.domain.post.dto.PostResponseDTO;
 import com.itda.moamoa.domain.post.dto.PostListResponseDTO;
@@ -25,10 +26,10 @@ public class PostApiController {
     // 게시글 전체 조회
     @GetMapping("/list")
     public ResponseEntity<ApiResponse<PostListResponseDTO>> getPostList(
-            @RequestParam(name="cursor", required = false) Long cursor,
-            @RequestParam(name="category", required = false) Category category,
-            @RequestParam(name="sort", defaultValue = "createdAt") String sort,
-            @RequestParam(name="size", defaultValue = "10") int size) {
+            @RequestParam(required = false) Long cursor,
+            @RequestParam(required = false) Category category,
+            @RequestParam(defaultValue = "createdAt") String sort,
+            @RequestParam(defaultValue = "10") int size) {
         
         List<PostListResponseDTO> posts = postApiService.getPostsByCursor(cursor, category, sort, size);
         
@@ -65,15 +66,8 @@ public class PostApiController {
 
     // 게시글 개별 조회
     @GetMapping("/{postId}")
-    public ResponseEntity<ApiResponse<PostResponseDTO>> getPostById(
-            @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable("postId") long postId) {
-        
-        // 로그인한 사용자면 username 전달, 아니면 null 전달
-        String username = userDetails != null ? userDetails.getUsername() : null;
-        
-        // 서비스에 username 전달하여 좋아요 여부 확인
-        PostResponseDTO got = postApiService.getPostById(postId, username);
+    public ResponseEntity<ApiResponse<PostResponseDTO>> getPostById(@PathVariable long postId){
+        PostResponseDTO got = postApiService.getPostById(postId);
 
         ApiResponse<PostResponseDTO> gotPost = ApiResponse.success(
                 SuccessCode.OK,
@@ -110,11 +104,37 @@ public class PostApiController {
                 .body(createdResponse);
     }
 
+//    // 게시글 재생성 요청
+//    @PostMapping("/{postId}/create")
+//    public ResponseEntity<ApiResponse<Object>> Recreate(
+//            @AuthenticationPrincipal CustomUserDetails userDetails,
+//            @PathVariable long postId,
+//            @RequestBody PostRecreateDTO recreateDto){
+//
+//        if (userDetails == null) {
+//            throw new IllegalArgumentException("로그인이 필요합니다.");
+//        }
+//
+//        String username = userDetails.getUsername();
+//
+//        Long newPostId = postApiService.recreatePost(username, postId, recreateDto);
+//
+//        ApiResponse<Object> createdResponse = ApiResponse.success(
+//                SuccessCode.CREATED,
+//                "게시글을 성공적으로 등록하였습니다.",
+//                null);
+//
+//        return ResponseEntity
+//                .status(HttpStatus.CREATED)
+//                .header("Location", "/api/posts/" + newPostId)
+//                .body(createdResponse);
+//    }
+
     // 게시글 수정 요청
     @PatchMapping("/{postId}")
     public ResponseEntity<ApiResponse<Object>> update(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable("postId") long postId,
+            @PathVariable long postId,
             @RequestBody PostRequestDTO requestDto) {
 
         String username = userDetails != null ? userDetails.getUsername() : null;
@@ -135,7 +155,7 @@ public class PostApiController {
     @DeleteMapping("/{postId}")
     public ResponseEntity<ApiResponse<Object>> delete(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable("postId") long postId) {
+            @PathVariable long postId) {
 
         String username = userDetails != null ? userDetails.getUsername() : null;
         postApiService.delete(username, postId);
