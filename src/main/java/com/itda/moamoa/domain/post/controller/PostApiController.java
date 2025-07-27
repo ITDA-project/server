@@ -66,8 +66,12 @@ public class PostApiController {
 
     // 게시글 개별 조회
     @GetMapping("/{postId}")
-    public ResponseEntity<ApiResponse<PostResponseDTO>> getPostById(@PathVariable long postId){
-        PostResponseDTO got = postApiService.getPostById(postId);
+    public ResponseEntity<ApiResponse<PostResponseDTO>> getPostById(@PathVariable long postId,
+                                                                    @AuthenticationPrincipal CustomUserDetails userDetails){
+        String username = userDetails != null ? userDetails. getUsername() : null;
+
+
+        PostResponseDTO got = postApiService.getPostById(postId, username);
 
         ApiResponse<PostResponseDTO> gotPost = ApiResponse.success(
                 SuccessCode.OK,
