@@ -39,4 +39,8 @@ public class ChatRoomUser {
         this.lastReadAt = LocalDateTime.now();
     }
 
+    public void updateLastReadAt(){
+        this.lastReadAt = LocalDateTime.now();
+    }
+
 }
