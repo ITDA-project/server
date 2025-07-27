@@ -2,6 +2,7 @@ package com.itda.moamoa.domain.post.service;
 
 import com.itda.moamoa.domain.chat.entity.ChatRoom;
 import com.itda.moamoa.domain.chat.service.ChatRoomService;
+import com.itda.moamoa.domain.form.repository.FormRepository;
 import com.itda.moamoa.domain.participant.repository.ParticipantRepository;
 import com.itda.moamoa.domain.post.dto.PostCreateResponseDTO;
 import com.itda.moamoa.domain.post.dto.PostListResponseDTO;
@@ -40,6 +41,7 @@ public class PostApiService {
     private final SpecRepository specRepository;
     private final LikeRepository likeRepository;
     private final ChatRoomService chatRoomService;
+    private final FormRepository formRepository;
 
     @PostConstruct
     public void setupMapper() { //response에 postId 받아오도록
@@ -249,6 +251,10 @@ public class PostApiService {
             // LikeRepository를 통해 좋아요 여부 확인
             boolean isLiked = likeRepository.existsByUserAndPost(user, post);
             postResponseDTO.setLiked(isLiked);
+
+            // 신청서 ID 반환
+            formRepository.findByUserAndPost(user, post)
+                    .ifPresent(form -> postResponseDTO.setFormId(form.getFormId()));
         } else {
             // 로그인하지 않은 사용자는 항상 false
             postResponseDTO.setLiked(false);

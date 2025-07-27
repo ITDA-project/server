@@ -32,4 +32,5 @@ public class PostResponseDTO {
     private String userImage; //작성자 이미지
     private String userCareer; //작성자 경력
     private Boolean liked = false; // 현재 사용자가 좋아요했는지 여부
+    private Long formId;    // 신청서 ID
 }
