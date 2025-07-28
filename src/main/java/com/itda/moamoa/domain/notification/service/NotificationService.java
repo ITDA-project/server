@@ -73,7 +73,7 @@ public class NotificationService {
                         .title(notification.getTitle())
                         .body(notification.getBody())
                         .type(notification.getType())
-                        .isRaed(notification.isRead())
+                        .isRead(notification.isRead())
                         .createdAt(notification.getCreatedAt())
                         .postId(notification.getPostId())
                         .roomId(notification.getRoomId())

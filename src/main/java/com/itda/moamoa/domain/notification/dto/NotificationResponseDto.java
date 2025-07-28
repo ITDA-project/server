@@ -12,7 +12,7 @@ public class NotificationResponseDto {
     private String title;
     private String body;
     private NotificationType type;
-    private boolean isRaed;             // 알림 읽음 여부
+    private boolean isRead;             // 알림 읽음 여부
     private LocalDateTime createdAt;
                                 // 페이지 이동 관련 정보
     private Long postId;        // 신청서 거절
