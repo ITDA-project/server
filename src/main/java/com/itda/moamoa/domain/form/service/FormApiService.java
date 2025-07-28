@@ -91,6 +91,7 @@ public class FormApiService {
 
         return FormResponseDTO.builder()
                 .content(form.getContent())
+                .username(form.getUser().getUsername())
                 .userName(form.getUser().getName())
                 .userImage(form.getUser().getImage())
                 .build();
