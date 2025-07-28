@@ -110,4 +110,12 @@ public class ChatRoomController {
                 participants.size());
         return ResponseEntity.ok(response);
     }
+
+    @PostMapping("/{roomId}/read")
+    public ResponseEntity<ApiResponse<Object>> updateLastRead(@PathVariable(name = "roomId")Long roomId,
+                                                              @AuthenticationPrincipal CustomUserDetails userDetails){
+        chatRoomUserService.updateLastRead(roomId, userDetails.getUsername());
+        ApiResponse<Object> response = ApiResponse.success(SuccessCode.OK,"읽음 처리 완료",null);
+        return ResponseEntity.ok(response);
+    }
 }
