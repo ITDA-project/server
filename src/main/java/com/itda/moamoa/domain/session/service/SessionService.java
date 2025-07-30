@@ -197,7 +197,7 @@ public class SessionService {
     // 알림 전송
     private void notifyParticipant(Somoim somoim) {
         // 주최자 제외 소모임 참가자 목록
-        List<User> users = participantRepository.findAllBySomoimAndRole(somoim, Role.PARTICIPANT);
+        List<User> users = participantRepository.findAllBySomoimAndRole(somoim);
 
         // 주최자
         User host = participantRepository.findBySomoimAndRole(somoim, Role.ORGANIZER);
