@@ -2,6 +2,7 @@ package com.itda.moamoa.domain.post.service;
 
 import com.itda.moamoa.domain.chat.entity.ChatRoom;
 import com.itda.moamoa.domain.chat.service.ChatRoomService;
+import com.itda.moamoa.domain.form.repository.FormRepository;
 import com.itda.moamoa.domain.participant.repository.ParticipantRepository;
 import com.itda.moamoa.domain.post.dto.PostCreateResponseDTO;
 import com.itda.moamoa.domain.post.dto.PostListResponseDTO;
@@ -22,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import jakarta.annotation.PostConstruct;
 import com.itda.moamoa.domain.spec.repository.SpecRepository;
@@ -39,6 +41,7 @@ public class PostApiService {
     private final SpecRepository specRepository;
     private final LikeRepository likeRepository;
     private final ChatRoomService chatRoomService;
+    private final FormRepository formRepository;
 
     @PostConstruct
     public void setupMapper() { //response에 postId 받아오도록
@@ -77,6 +80,50 @@ public class PostApiService {
 
         return new PostCreateResponseDTO(createdPost.getPostId(),createdChatRoom.getId());
     }
+
+//    // 게시글 재생성
+//    @Transactional
+//    public Long recreatePost(String username, Long oldPostId, PostRecreateDTO requsestDto) {
+//        User user = userRepository.findByUsername(username)
+//                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+//
+//        Post oldPost = postRepository.findById(oldPostId)
+//                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
+//
+//        Post newPost = Post.builder()
+//                .user(user)
+//                .title(oldPost.getTitle())
+//                .content(oldPost.getContent())
+//                .category(oldPost.getCategory())
+//                .membersMax(oldPost.getMembersMax())
+//                .location(oldPost.getLocation())
+//                .dueDate(requsestDto.getDueDate())
+//                .warranty(oldPost.getWarranty())
+//                .activityStartDate(requsestDto.getActivityStartDate())
+//                .activityEndDate(requsestDto.getActivityEndDate())
+//                .likesCount(oldPost.getLikesCount())
+//                .participantCount(oldPost.getParticipantCount())
+//                .build();
+//
+//        newPost.incrementParticipantCount();
+//        Post savedPost = postRepository.save(newPost);
+//
+//        Somoim somoim = somoimRepository.findSomoimByPostId(oldPost.getPostId())
+//                .orElseThrow(() -> new IllegalArgumentException("해당 게시글에 연결된 소모임이 없습니다."));
+//
+//
+//        // 주최자 참가자로 등록
+//        Participant newParticipant = Participant.builder()
+//                .user(user)
+//                .somoim(somoim)
+//                .post(savedPost)
+//                .role(Role.ORGANIZER)
+//                .participantStatus(ParticipantStatus.ENTER)
+//                .build();
+//        participantRepository.save(newParticipant);
+//
+//        return savedPost.getPostId();
+//    }
 
     // 게시글 수정
     @Transactional
@@ -204,6 +251,10 @@ public class PostApiService {
             // LikeRepository를 통해 좋아요 여부 확인
             boolean isLiked = likeRepository.existsByUserAndPost(user, post);
             postResponseDTO.setLiked(isLiked);
+
+            // 신청서 ID 반환
+            formRepository.findByUserAndPost(user, post)
+                    .ifPresent(form -> postResponseDTO.setFormId(form.getFormId()));
         } else {
             // 로그인하지 않은 사용자는 항상 false
             postResponseDTO.setLiked(false);

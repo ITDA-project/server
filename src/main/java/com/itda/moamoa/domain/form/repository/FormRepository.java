@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface FormRepository extends JpaRepository<Form, Long> {
@@ -17,4 +18,7 @@ public interface FormRepository extends JpaRepository<Form, Long> {
     
     // 특정 사용자가 신청한 모든 form 조회
     List<Form> findByUser(User user);
+
+    // 사용자 신청서 조회
+    Optional<Form> findByUserAndPost(User user, Post post);
 }

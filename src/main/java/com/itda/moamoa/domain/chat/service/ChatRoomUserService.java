@@ -1,6 +1,7 @@
 package com.itda.moamoa.domain.chat.service;
 
 import com.itda.moamoa.domain.chat.dto.ChatRoomParticipantsDto;
+import com.itda.moamoa.domain.chat.entity.ChatRoomUser;
 import com.itda.moamoa.domain.chat.entity.RoomRole;
 import com.itda.moamoa.domain.chat.repository.ChatRoomUserRepository;
 import com.itda.moamoa.domain.user.entity.User;
@@ -31,5 +32,14 @@ public class ChatRoomUserService {
 
     public List<ChatRoomParticipantsDto> getParticipants(Long roomId){
         return chatRoomUserRepository.findByRoomId(roomId);
+    }
+
+    //채팅방 읽음 처리
+    public void updateLastRead(Long roomId,String username){
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 회원입니다."));
+
+        ChatRoomUser crUser = chatRoomUserRepository.findByUserIdAndRoomId(user.getId(),roomId).orElseThrow(() -> new EntityNotFoundException("찾을 수 없는 유저입니다"));
+
+        crUser.updateLastReadAt();
     }
 }
