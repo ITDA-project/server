@@ -221,17 +221,17 @@ public class PaymentService {
 
     // 결제 완료 알림
     private void notifyHost(Somoim somoim, User payer) {
-        if (somoim == null || payer == null) return;
+        if (somoim == null) return;
 
         // 주최자
         User host = participantRepository.findBySomoimAndRole(somoim, Role.ORGANIZER);
         // 주최자가 생성한 소모임 직전에 게시한 게시글
         Post post = postRepository.findTopByUserAndCreatedAtBeforeOrderByCreatedAtDesc(host, somoim.getCreatedAt());
 
-        if (host != null && post != null) {
+        if (host != null && post != null && payer != null) {
             notificationService.saveAndSendNotification(
                     new NotificationRequestDTO(
-                            host.getId(),
+                            payer.getId(),
                             post.getTitle(),
                             payer.getName() + "님의 결제가 완료되었습니다.",
                             NotificationType.PAYMENT_COMPLETED,
