@@ -96,7 +96,8 @@ public class PaymentService {
             payment.markPaid();
             paymentRepository.save(payment);
 
-            notifyHost(payment.getSomoim(), user);
+            // 결제 완료 알림
+            notifyHost(payment.getSomoim(), user, false);
 
         } else {
             // 결제 정보가 없는 경우, 새로 생성
@@ -128,7 +129,8 @@ public class PaymentService {
             newPayment.markPaid();
             paymentRepository.save(newPayment);
 
-            notifyHost(somoim, user);
+            // 결제 완료 알림
+            notifyHost(somoim, user, false);
         }
     }
 
@@ -163,6 +165,12 @@ public class PaymentService {
 
         payment.markCancelled();
         paymentRepository.save(payment);
+
+        // 소모임
+        Somoim somoim = payment.getSession().getSomoim();
+
+        // 환불 완료 알림
+        notifyHost(somoim, user, true);
     }
 
     @Transactional(readOnly = true)
@@ -215,7 +223,7 @@ public class PaymentService {
         return new PaymentStatusResponseDto(activeSession.getId(), userPaymentStatuses);
     }
 
-    private void notifyHost(Somoim somoim, User payer) {
+    private void notifyHost(Somoim somoim, User payer, boolean isRefund) {
         if (somoim == null || payer == null) return;
 
         // 주최자
@@ -223,12 +231,27 @@ public class PaymentService {
         // 주최자가 생성한 소모임 직전에 게시한 게시글
         Post post = postRepository.findTopByUserAndCreatedAtBeforeOrderByCreatedAtDesc(host, somoim.getCreatedAt());
 
+        // 결제 완료 알림
         if (host != null && post != null) {
             notificationService.saveAndSendNotification(
                     new NotificationRequestDTO(
                             host.getId(),
                             post.getTitle(),
                             payer.getName() + "님의 결제가 완료되었습니다.",
+                            NotificationType.PAYMENT_COMPLETED,
+                            null,
+                            null
+                    )
+            );
+        }
+
+        // 환불 완료 알림
+        if (isRefund) {
+            notificationService.saveAndSendNotification(
+                    new NotificationRequestDTO(
+                            payer.getId(),
+                            post.getTitle(),
+                            payer.getName() + "님의 환불이 완료되었습니다.",
                             NotificationType.PAYMENT_COMPLETED,
                             null,
                             null
