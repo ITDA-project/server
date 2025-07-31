@@ -93,7 +93,7 @@ public class PaymentService {
             paymentRepository.save(payment);
 
             // 결제 완료 알림
-            notifyHost(payment.getSomoim(), user, false);
+            notifyHost(payment.getSomoim(), user);
 
         } else {
             // 결제 정보가 없는 경우, 새로 생성
@@ -126,7 +126,7 @@ public class PaymentService {
             paymentRepository.save(newPayment);
 
             // 결제 완료 알림
-            notifyHost(somoim, user, false);
+            notifyHost(somoim, user);
         }
     }
 
@@ -218,7 +218,9 @@ public class PaymentService {
 
         return new PaymentStatusResponseDto(activeSession.getId(), userPaymentStatuses);
     }
-    private void notifyHost(Somoim somoim, User payer, boolean isRefund) {
+
+    // 결제 완료 알림
+    private void notifyHost(Somoim somoim, User payer) {
         if (somoim == null || payer == null) return;
 
         // 주최자
@@ -226,8 +228,7 @@ public class PaymentService {
         // 주최자가 생성한 소모임 직전에 게시한 게시글
         Post post = postRepository.findTopByUserAndCreatedAtBeforeOrderByCreatedAtDesc(host, somoim.getCreatedAt());
 
-        // 결제 완료 알림
-        if (!isRefund && host != null && post != null) {
+        if (host != null && post != null) {
             notificationService.saveAndSendNotification(
                     new NotificationRequestDTO(
                             host.getId(),
@@ -241,6 +242,7 @@ public class PaymentService {
         }
     }
 
+    // 환불 완료 알림
     private void notifyRefund(Somoim somoim, User payer, Payment payment, boolean isRefund) {
         if (somoim == null || payer == null) return;
 
@@ -249,13 +251,15 @@ public class PaymentService {
         // 주최자가 생성한 소모임 직전에 게시한 게시글
         Post post = postRepository.findTopByUserAndCreatedAtBeforeOrderByCreatedAtDesc(host, somoim.getCreatedAt());
 
+        Session session = payment.getSession();
+
         // 환불 완료 알림
-        if (isRefund && post != null) {
+        if (isRefund && post != null && session != null) {
             notificationService.saveAndSendNotification(
                     new NotificationRequestDTO(
                             payer.getId(),
                             post.getTitle(),
-                            payment.getSession().getLocation() + "에서 진행된" + payment.getSession().getSessionNumber()+ "번째 모임의 환불이 완료되었습니다.",
+                            session.getLocation() + "에서 진행된" + session.getSessionNumber()+ "번째 모임의 환불이 완료되었습니다.",
                             NotificationType.REFUND_COMPLETED,
                             null,
                             null
