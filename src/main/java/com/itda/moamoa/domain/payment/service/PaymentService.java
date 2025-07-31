@@ -93,7 +93,7 @@ public class PaymentService {
             paymentRepository.save(payment);
 
             // 결제 완료 알림
-            notifyHost(payment.getSomoim(), user);
+            notifyPayment(payment.getSomoim(), user, payment, false);
 
         } else {
             // 결제 정보가 없는 경우, 새로 생성
@@ -126,7 +126,7 @@ public class PaymentService {
             paymentRepository.save(newPayment);
 
             // 결제 완료 알림
-            notifyHost(somoim, user);
+            notifyPayment(somoim, user, newPayment, false);
         }
     }
 
@@ -166,7 +166,7 @@ public class PaymentService {
         Somoim somoim = payment.getSession().getSomoim();
 
         // 환불 완료 알림
-        notifyRefund(somoim, user, payment);
+        notifyPayment(somoim, user, payment, true);
     }
 
     @Transactional(readOnly = true)
@@ -219,8 +219,8 @@ public class PaymentService {
         return new PaymentStatusResponseDto(activeSession.getId(), userPaymentStatuses);
     }
 
-    // 결제 완료 알림
-    private void notifyHost(Somoim somoim, User payer) {
+    // 결제 알림
+    private void notifyPayment(Somoim somoim, User payer, Payment payment, boolean isRefund) {
         if (somoim == null) return;
 
         // 주최자
@@ -228,33 +228,25 @@ public class PaymentService {
         // 주최자가 생성한 소모임 직전에 게시한 게시글
         Post post = postRepository.findTopByUserAndCreatedAtBeforeOrderByCreatedAtDesc(host, somoim.getCreatedAt());
 
-        if (host != null && post != null && payer != null) {
+        // 세션 정보
+        Session session = payment.getSession();
+
+        // 결제 완료
+        if (post != null && payer != null && session != null && !isRefund) {
             notificationService.saveAndSendNotification(
                     new NotificationRequestDTO(
                             payer.getId(),
                             post.getTitle(),
-                            payer.getName() + "님의 결제가 완료되었습니다.",
+                            payer.getName() + " 님의 " + session.getSessionNumber() + "회차 모임 결제가 완료되었습니다.",
                             NotificationType.PAYMENT_COMPLETED,
                             null,
                             null
                     )
             );
         }
-    }
 
-    // 환불 완료 알림
-    private void notifyRefund(Somoim somoim, User payer, Payment payment) {
-        if (somoim == null || payer == null) return;
-
-        // 주최자
-        User host = participantRepository.findBySomoimAndRole(somoim, Role.ORGANIZER);
-        // 주최자가 생성한 소모임 직전에 게시한 게시글
-        Post post = postRepository.findTopByUserAndCreatedAtBeforeOrderByCreatedAtDesc(host, somoim.getCreatedAt());
-
-        Session session = payment.getSession();
-
-        // 환불 완료 알림
-        if (post != null && session != null) {
+        // 환불 완료
+        if (post != null && payer != null && session != null && isRefund) {
             notificationService.saveAndSendNotification(
                     new NotificationRequestDTO(
                             payer.getId(),
@@ -267,4 +259,30 @@ public class PaymentService {
             );
         }
     }
+
+//    // 환불 완료 알림
+//    private void notifyRefund(Somoim somoim, User payer, Payment payment) {
+//        if (somoim == null || payer == null) return;
+//
+//        // 주최자
+//        User host = participantRepository.findBySomoimAndRole(somoim, Role.ORGANIZER);
+//        // 주최자가 생성한 소모임 직전에 게시한 게시글
+//        Post post = postRepository.findTopByUserAndCreatedAtBeforeOrderByCreatedAtDesc(host, somoim.getCreatedAt());
+//
+//        Session session = payment.getSession();
+//
+//        // 환불 완료 알림
+//        if (post != null && session != null) {
+//            notificationService.saveAndSendNotification(
+//                    new NotificationRequestDTO(
+//                            payer.getId(),
+//                            post.getTitle(),
+//                            session.getLocation() + "에서 진행된 " + session.getSessionNumber()+ "번째 모임의 환불이 완료되었습니다.",
+//                            NotificationType.REFUND_COMPLETED,
+//                            null,
+//                            null
+//                    )
+//            );
+//        }
+//    }
 }
