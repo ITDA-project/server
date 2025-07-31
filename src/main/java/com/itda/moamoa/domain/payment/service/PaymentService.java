@@ -96,7 +96,7 @@ public class PaymentService {
             payment.markPaid();
             paymentRepository.save(payment);
 
-            notifyHost(payment.getSomoim());
+            notifyHost(payment.getSomoim(), user);
 
         } else {
             // 결제 정보가 없는 경우, 새로 생성
@@ -128,7 +128,7 @@ public class PaymentService {
             newPayment.markPaid();
             paymentRepository.save(newPayment);
 
-            notifyHost(somoim);
+            notifyHost(somoim, user);
         }
     }
 
@@ -215,20 +215,20 @@ public class PaymentService {
         return new PaymentStatusResponseDto(activeSession.getId(), userPaymentStatuses);
     }
 
-    private void notifyHost(Somoim somoim) {
+    private void notifyHost(Somoim somoim, User payer) {
+        if (somoim == null || payer == null) return;
+
         // 주최자
         User host = participantRepository.findBySomoimAndRole(somoim, Role.ORGANIZER);
         // 주최자가 생성한 소모임 직전에 게시한 게시글
         Post post = postRepository.findTopByUserAndCreatedAtBeforeOrderByCreatedAtDesc(host, somoim.getCreatedAt());
-
-        if (somoim == null) return;
 
         if (host != null && post != null) {
             notificationService.saveAndSendNotification(
                     new NotificationRequestDTO(
                             host.getId(),
                             post.getTitle(),
-                            post.getUser().getName() + "님의 결제가 완료되었습니다.",
+                            payer.getName() + "님의 결제가 완료되었습니다.",
                             NotificationType.PAYMENT_COMPLETED,
                             null,
                             null
