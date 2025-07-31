@@ -259,7 +259,7 @@ public class PaymentService {
                     new NotificationRequestDTO(
                             payer.getId(),
                             post.getTitle(),
-                            session.getLocation() + "에서 진행된" + session.getSessionNumber()+ "번째 모임의 환불이 완료되었습니다.",
+                            session.getLocation() + "에서 진행된 " + session.getSessionNumber()+ "번째 모임의 환불이 완료되었습니다.",
                             NotificationType.REFUND_COMPLETED,
                             null,
                             null
