@@ -246,7 +246,7 @@ public class PaymentService {
         }
 
         // 환불 완료 알림
-        if (isRefund) {
+        if (isRefund && post != null) {
             notificationService.saveAndSendNotification(
                     new NotificationRequestDTO(
                             payer.getId(),
