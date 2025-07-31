@@ -166,7 +166,7 @@ public class PaymentService {
         Somoim somoim = payment.getSession().getSomoim();
 
         // 환불 완료 알림
-        notifyRefund(somoim, user, payment, true);
+        notifyRefund(somoim, user, payment);
     }
 
     @Transactional(readOnly = true)
@@ -243,7 +243,7 @@ public class PaymentService {
     }
 
     // 환불 완료 알림
-    private void notifyRefund(Somoim somoim, User payer, Payment payment, boolean isRefund) {
+    private void notifyRefund(Somoim somoim, User payer, Payment payment) {
         if (somoim == null || payer == null) return;
 
         // 주최자
@@ -254,7 +254,7 @@ public class PaymentService {
         Session session = payment.getSession();
 
         // 환불 완료 알림
-        if (isRefund && post != null && session != null) {
+        if (post != null && session != null) {
             notificationService.saveAndSendNotification(
                     new NotificationRequestDTO(
                             payer.getId(),
