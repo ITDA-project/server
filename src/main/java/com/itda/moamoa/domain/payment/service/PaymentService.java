@@ -18,11 +18,7 @@ import com.itda.moamoa.domain.user.entity.User;
 import com.itda.moamoa.domain.user.repository.UserRepository;
 import com.itda.moamoa.domain.chat.entity.ChatRoom;
 import com.itda.moamoa.domain.chat.repository.ChatRoomRepository;
-import com.itda.moamoa.domain.post.entity.Post;
-import com.itda.moamoa.domain.post.repository.PostRepository;
 import com.itda.moamoa.domain.participant.entity.Participant;
-import com.itda.moamoa.domain.participant.entity.Role;
-import com.itda.moamoa.domain.participant.repository.ParticipantRepository;
 import com.itda.moamoa.global.fcm.dto.NotificationRequestDTO;
 import com.itda.moamoa.global.fcm.dto.NotificationType;
 import lombok.RequiredArgsConstructor;
@@ -170,7 +166,7 @@ public class PaymentService {
         Somoim somoim = payment.getSession().getSomoim();
 
         // 환불 완료 알림
-        notifyHost(somoim, user, true);
+        notifyRefund(somoim, user, payment, true);
     }
 
     @Transactional(readOnly = true)
@@ -222,7 +218,6 @@ public class PaymentService {
 
         return new PaymentStatusResponseDto(activeSession.getId(), userPaymentStatuses);
     }
-
     private void notifyHost(Somoim somoim, User payer, boolean isRefund) {
         if (somoim == null || payer == null) return;
 
@@ -244,6 +239,15 @@ public class PaymentService {
                     )
             );
         }
+    }
+
+    private void notifyRefund(Somoim somoim, User payer, Payment payment, boolean isRefund) {
+        if (somoim == null || payer == null) return;
+
+        // 주최자
+        User host = participantRepository.findBySomoimAndRole(somoim, Role.ORGANIZER);
+        // 주최자가 생성한 소모임 직전에 게시한 게시글
+        Post post = postRepository.findTopByUserAndCreatedAtBeforeOrderByCreatedAtDesc(host, somoim.getCreatedAt());
 
         // 환불 완료 알림
         if (isRefund && post != null) {
@@ -251,7 +255,7 @@ public class PaymentService {
                     new NotificationRequestDTO(
                             payer.getId(),
                             post.getTitle(),
-                            payer.getName() + "님의 환불이 완료되었습니다.",
+                            payment.getSession().getLocation() + "에서 진행된" + payment.getSession().getSessionNumber()+ "번째 모임의 환불이 완료되었습니다.",
                             NotificationType.REFUND_COMPLETED,
                             null,
                             null
