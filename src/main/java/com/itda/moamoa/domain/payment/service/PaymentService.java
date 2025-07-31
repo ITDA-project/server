@@ -228,7 +228,7 @@ public class PaymentService {
                     new NotificationRequestDTO(
                             host.getId(),
                             post.getTitle(),
-                            post.getUser().getUsername() + "님의 결제가 완료되었습니다.",
+                            post.getUser().getName() + "님의 결제가 완료되었습니다.",
                             NotificationType.PAYMENT_COMPLETED,
                             null,
                             null
