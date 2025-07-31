@@ -232,7 +232,7 @@ public class PaymentService {
         Post post = postRepository.findTopByUserAndCreatedAtBeforeOrderByCreatedAtDesc(host, somoim.getCreatedAt());
 
         // 결제 완료 알림
-        if (host != null && post != null) {
+        if (!isRefund && host != null && post != null) {
             notificationService.saveAndSendNotification(
                     new NotificationRequestDTO(
                             host.getId(),
@@ -252,7 +252,7 @@ public class PaymentService {
                             payer.getId(),
                             post.getTitle(),
                             payer.getName() + "님의 환불이 완료되었습니다.",
-                            NotificationType.PAYMENT_COMPLETED,
+                            NotificationType.REFUND_COMPLETED,
                             null,
                             null
                     )
