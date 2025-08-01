@@ -42,7 +42,7 @@ public class PaymentController {
     public ResponseEntity<ApiResponse<PaymentStatusResponseDto>> getPaymentStatus(
             @RequestBody PaymentStatusRequestDto request
     ) {
-        PaymentStatusResponseDto response = paymentService.getPaymentStatus(request.getRoomId(), request.getUserIds());
+        PaymentStatusResponseDto response = paymentService.getPaymentStatus(request.getRoomId(), request.getSessionId());
         
         ApiResponse<PaymentStatusResponseDto> apiResponse = ApiResponse.success(
             SuccessCode.OK,

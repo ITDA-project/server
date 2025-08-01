@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import com.itda.moamoa.domain.chat.repository.ChatRoomUserRepository;
+import com.itda.moamoa.domain.chat.entity.ChatRoomUser;
 
 @Service
 @RequiredArgsConstructor
@@ -44,6 +46,7 @@ public class PaymentService {
     private final NotificationService notificationService;
     private final PostRepository postRepository;
     private final ChatRoomRepository chatRoomRepository;
+    private final ChatRoomUserRepository chatRoomUserRepository;
 
     @Transactional
     public void verifyPayment(PaymentVerifyRequest request, String userId) {
@@ -170,53 +173,52 @@ public class PaymentService {
     }
 
     @Transactional(readOnly = true)
-    public PaymentStatusResponseDto getPaymentStatus(Long roomId, List<Long> userIds) {
+    public PaymentStatusResponseDto getPaymentStatus(Long roomId, Long sessionId) {
         // 1. 채팅방 조회
         ChatRoom chatRoom = chatRoomRepository.findById(roomId)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 채팅방입니다."));
 
-        // 2. 채팅방 → 게시글 조회
+        // 2. 세션 조회
+        Session session = sessionRepository.findById(sessionId)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 세션입니다."));
+
+        // 3. 채팅방 → 게시글 → 소모임 조회
         Post post = postRepository.findAll().stream()
                 .filter(p -> p.getChatRoom() != null && p.getChatRoom().getId().equals(roomId))
                 .findFirst()
                 .orElseThrow(() -> new EntityNotFoundException("채팅방에 연결된 게시글이 없습니다."));
 
-        // 3. 게시글 → 소모임 조회
         Participant organizer = participantRepository.findByPostAndRole(post, Role.ORGANIZER)
                 .orElseThrow(() -> new EntityNotFoundException("소모임 주최자 정보를 찾을 수 없습니다."));
 
         Somoim somoim = organizer.getSomoim();
 
-        // 4. 현재 진행 중인 세션 조회
-        Session activeSession = sessionRepository.findBySomoimAndStatus(somoim, Session.SessionStatus.IN_PROGRESS)
-                .orElseThrow(() -> new EntityNotFoundException("진행 중인 세션이 없습니다."));
+        // 4. 채팅방 참여자들 조회
+        List<ChatRoomUser> chatRoomUsers = chatRoomUserRepository.findAllByRoomId(roomId);
+        List<User> users = chatRoomUsers.stream()
+                .map(ChatRoomUser::getUser)
+                .collect(Collectors.toList());
 
-        // 5. 사용자 정보 조회
-        List<User> users = userRepository.findAllById(userIds);
-
-        // 6. 결제 정보 조회 (sessionId와 userIds로 직접 조회)
-        List<Payment> paidPayments = paymentRepository.findPaidPaymentsBySessionAndUsers(activeSession.getId(), userIds);
-        Map<Long, Payment> paymentMap = paidPayments.stream()
+        // 5. 해당 소모임과 세션에 대한 결제 정보 조회
+        List<Payment> payments = paymentRepository.findBySession(session);
+        Map<Long, Payment> paymentMap = payments.stream()
+                .filter(payment -> payment.getSomoim().getId().equals(somoim.getId()))
                 .collect(Collectors.toMap(p -> p.getUser().getId(), p -> p));
 
-        // 7. 응답 데이터 구성
+        // 6. 응답 데이터 구성
         List<PaymentStatusResponseDto.UserPaymentStatus> userPaymentStatuses = users.stream()
                 .map(user -> {
                     Payment payment = paymentMap.get(user.getId());
-                    boolean isPaid = payment != null;
-                    int paymentAmount = isPaid ? payment.getAmount() : 0;
+                    boolean isPaid = payment != null && payment.getStatus() == Payment.PaymentStatus.PAID;
 
                     return new PaymentStatusResponseDto.UserPaymentStatus(
                             user.getId(),
-                            user.getUsername(),
-                            user.getName(),
-                            isPaid,
-                            paymentAmount
+                            isPaid
                     );
                 })
                 .collect(Collectors.toList());
 
-        return new PaymentStatusResponseDto(activeSession.getId(), userPaymentStatuses);
+        return new PaymentStatusResponseDto(session.getId(), userPaymentStatuses);
     }
 
     // 결제 알림
