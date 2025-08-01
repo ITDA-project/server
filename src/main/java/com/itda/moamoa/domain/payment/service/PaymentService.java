@@ -6,6 +6,8 @@ import com.itda.moamoa.domain.participant.repository.ParticipantRepository;
 import com.itda.moamoa.domain.payment.dto.PaymentRefundRequest;
 import com.itda.moamoa.domain.payment.dto.PaymentStatusResponseDto;
 import com.itda.moamoa.domain.payment.dto.PaymentVerifyRequest;
+import com.itda.moamoa.domain.payment.dto.ReviewEligibilityRequestDto;
+import com.itda.moamoa.domain.payment.dto.ReviewEligibilityResponseDto;
 import com.itda.moamoa.domain.payment.entity.Payment;
 import com.itda.moamoa.domain.payment.repository.PaymentRepository;
 import com.itda.moamoa.domain.post.entity.Post;
@@ -219,6 +221,23 @@ public class PaymentService {
                 .collect(Collectors.toList());
 
         return new PaymentStatusResponseDto(session.getId(), userPaymentStatuses);
+    }
+
+    /**
+     * 두 사용자가 함께 참여한 회차 개수를 조회하여 리뷰 작성 권한을 확인합니다.
+     * 
+     * @param request 두 사용자의 ID가 담긴 요청 DTO
+     * @return 함께 참여한 회차 개수와 메시지를 담은 응답 DTO
+     */
+    @Transactional(readOnly = true)
+    public ReviewEligibilityResponseDto checkReviewEligibility(ReviewEligibilityRequestDto request) {
+        // 두 사용자가 함께 참여한 완료된 회차 개수 조회
+        Long participationCount = paymentRepository.countSharedParticipation(
+            request.getUserId1(), 
+            request.getUserId2()
+        );
+        
+        return ReviewEligibilityResponseDto.of(participationCount.intValue());
     }
 
     // 결제 알림
