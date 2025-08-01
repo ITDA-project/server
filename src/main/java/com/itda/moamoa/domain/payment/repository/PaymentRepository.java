@@ -39,8 +39,8 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
            "AND p2.user.id = :userId2 " +
            "AND p1.session.id = p2.session.id " +
            "AND p1.somoim.id = p2.somoim.id " +
-           "AND p1.status = 'PAID' " +
-           "AND p2.status = 'PAID' " +
+           "AND p1.status = 'CANCELLED' " +
+           "AND p2.status = 'CANCELLED' " +
            "AND p1.session.status = 'COMPLETED'")
     Long countSharedParticipation(@Param("userId1") Long userId1, @Param("userId2") Long userId2);
 }
