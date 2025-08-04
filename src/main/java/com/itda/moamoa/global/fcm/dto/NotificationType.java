@@ -8,5 +8,8 @@ public enum NotificationType {
 
     // Payment
     PAYMENT_REQUESTED,
-    PAYMENT_COMPLETED
+    PAYMENT_COMPLETED,
+
+    // refund
+    REFUND_COMPLETED
 }

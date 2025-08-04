@@ -22,6 +22,6 @@ public interface ParticipantRepository extends JpaRepository<Participant, Long> 
     @Query("SELECT p.user FROM Participant p WHERE p.somoim = :somoim AND p.role = :role")
     User findBySomoimAndRole(@Param("somoim") Somoim somoim, @Param("role") Role role);
 
-    @Query("SELECT p.user FROM Participant p WHERE p.somoim = :somoim AND p.role = :role")
-    List<User> findAllBySomoimAndRole(@Param("somoim") Somoim somoim, @Param("role") Role role);
+    @Query("SELECT p.user FROM Participant p WHERE p.somoim = :somoim")
+    List<User> findAllBySomoimAndRole(@Param("somoim") Somoim somoim);
 }

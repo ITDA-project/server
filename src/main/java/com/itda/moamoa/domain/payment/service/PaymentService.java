@@ -18,11 +18,7 @@ import com.itda.moamoa.domain.user.entity.User;
 import com.itda.moamoa.domain.user.repository.UserRepository;
 import com.itda.moamoa.domain.chat.entity.ChatRoom;
 import com.itda.moamoa.domain.chat.repository.ChatRoomRepository;
-import com.itda.moamoa.domain.post.entity.Post;
-import com.itda.moamoa.domain.post.repository.PostRepository;
 import com.itda.moamoa.domain.participant.entity.Participant;
-import com.itda.moamoa.domain.participant.entity.Role;
-import com.itda.moamoa.domain.participant.repository.ParticipantRepository;
 import com.itda.moamoa.global.fcm.dto.NotificationRequestDTO;
 import com.itda.moamoa.global.fcm.dto.NotificationType;
 import lombok.RequiredArgsConstructor;
@@ -96,7 +92,8 @@ public class PaymentService {
             payment.markPaid();
             paymentRepository.save(payment);
 
-            notifyHost(payment.getSomoim());
+            // 결제 완료 알림
+            notifyPayment(payment.getSomoim(), user, payment, false);
 
         } else {
             // 결제 정보가 없는 경우, 새로 생성
@@ -128,7 +125,8 @@ public class PaymentService {
             newPayment.markPaid();
             paymentRepository.save(newPayment);
 
-            notifyHost(somoim);
+            // 결제 완료 알림
+            notifyPayment(somoim, user, newPayment, false);
         }
     }
 
@@ -163,6 +161,12 @@ public class PaymentService {
 
         payment.markCancelled();
         paymentRepository.save(payment);
+
+        // 소모임
+        Somoim somoim = payment.getSession().getSomoim();
+
+        // 환불 완료 알림
+        notifyPayment(somoim, user, payment, true);
     }
 
     @Transactional(readOnly = true)
@@ -215,25 +219,70 @@ public class PaymentService {
         return new PaymentStatusResponseDto(activeSession.getId(), userPaymentStatuses);
     }
 
-    private void notifyHost(Somoim somoim) {
+    // 결제 알림
+    private void notifyPayment(Somoim somoim, User payer, Payment payment, boolean isRefund) {
+        if (somoim == null) return;
+
         // 주최자
         User host = participantRepository.findBySomoimAndRole(somoim, Role.ORGANIZER);
         // 주최자가 생성한 소모임 직전에 게시한 게시글
         Post post = postRepository.findTopByUserAndCreatedAtBeforeOrderByCreatedAtDesc(host, somoim.getCreatedAt());
 
-        if (somoim == null) return;
+        // 세션 정보
+        Session session = payment.getSession();
 
-        if (host != null && post != null) {
+        // 결제 완료
+        if (post != null && payer != null && session != null && !isRefund) {
             notificationService.saveAndSendNotification(
                     new NotificationRequestDTO(
-                            host.getId(),
+                            payer.getId(),
                             post.getTitle(),
-                            post.getUser().getUsername() + "님의 결제가 완료되었습니다.",
+                            payer.getName() + " 님의 " + session.getSessionNumber() + "회차 모임 결제가 완료되었습니다.",
                             NotificationType.PAYMENT_COMPLETED,
                             null,
                             null
                     )
             );
         }
+
+        // 환불 완료
+        if (post != null && payer != null && session != null && isRefund) {
+            notificationService.saveAndSendNotification(
+                    new NotificationRequestDTO(
+                            payer.getId(),
+                            post.getTitle(),
+                            session.getLocation() + "에서 진행된 " + session.getSessionNumber()+ "번째 모임의 환불이 완료되었습니다.",
+                            NotificationType.REFUND_COMPLETED,
+                            null,
+                            null
+                    )
+            );
+        }
     }
+
+//    // 환불 완료 알림
+//    private void notifyRefund(Somoim somoim, User payer, Payment payment) {
+//        if (somoim == null || payer == null) return;
+//
+//        // 주최자
+//        User host = participantRepository.findBySomoimAndRole(somoim, Role.ORGANIZER);
+//        // 주최자가 생성한 소모임 직전에 게시한 게시글
+//        Post post = postRepository.findTopByUserAndCreatedAtBeforeOrderByCreatedAtDesc(host, somoim.getCreatedAt());
+//
+//        Session session = payment.getSession();
+//
+//        // 환불 완료 알림
+//        if (post != null && session != null) {
+//            notificationService.saveAndSendNotification(
+//                    new NotificationRequestDTO(
+//                            payer.getId(),
+//                            post.getTitle(),
+//                            session.getLocation() + "에서 진행된 " + session.getSessionNumber()+ "번째 모임의 환불이 완료되었습니다.",
+//                            NotificationType.REFUND_COMPLETED,
+//                            null,
+//                            null
+//                    )
+//            );
+//        }
+//    }
 }
