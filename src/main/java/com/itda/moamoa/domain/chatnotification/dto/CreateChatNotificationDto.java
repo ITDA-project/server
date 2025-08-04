@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class CreateChatNotificationDto {
-    private Long chatRoomId;
+    private String chatRoomName;
     private Long chatMessageId;
     private ChatNotificationType chatNotificationType;
     private String sender;

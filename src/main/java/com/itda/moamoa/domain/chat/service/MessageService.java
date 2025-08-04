@@ -44,7 +44,7 @@ public class MessageService {
 
         chatNotificationService.notifyChatToUser(
                 CreateChatNotificationDto.builder()
-                        .chatRoomId(chatRoom.getId())
+                        .chatRoomName(chatRoom.getRoomName())
                         .chatMessageId(message.getId())
                         .chatNotificationType(ChatNotificationType.CHAT)
                         .sender(user.getUsername())
