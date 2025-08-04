@@ -16,7 +16,7 @@ public class CreateChatNotificationDto {
     private Long chatMessageId;
     private ChatNotificationType chatNotificationType;
     private String sender;
-    private String message;
+    private String content;
     private List<String> receivers;
 }
 

@@ -63,15 +63,13 @@ public class ChatNotificationService {
                     .chatMessageId(createChatNotificationDto.getChatMessageId())
                     //entity와 매핑되는 필드 아닌 경우 바로 dto의 값 적용
                     .chatNotificationType(createChatNotificationDto.getChatNotificationType())
-                    .content(createChatNotificationDto.getMessage())
+                    .content(createChatNotificationDto.getContent())
                     .createdAt(LocalDateTime.now())
                     .read(false)
                     .build();
 
             //전달받은 dto 바탕의 entity 생성 후 저장
             savedNotifications.add(chatNotificationRepository.save(chatNotification));
-
-
         }
         return savedNotifications;
     }
@@ -83,6 +81,7 @@ public class ChatNotificationService {
         .chatNotificationType(chatNotification.getChatNotificationType())
         .chatMessageId(chatNotification.getChatMessageId())
         .chatRoomName(chatNotification.getChatRoomName())
+        .content(chatNotification.getContent())
         .sender(chatNotification.getSender().getUsername())
         .receiver(receiver)
         .build();
