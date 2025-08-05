@@ -8,6 +8,8 @@ import com.itda.moamoa.domain.payment.dto.PaymentStatusResponseDto;
 import com.itda.moamoa.domain.payment.dto.PaymentVerifyRequest;
 import com.itda.moamoa.domain.payment.dto.ReviewEligibilityRequestDto;
 import com.itda.moamoa.domain.payment.dto.ReviewEligibilityResponseDto;
+import com.itda.moamoa.domain.payment.dto.PaymentInfoRequestDto;
+import com.itda.moamoa.domain.payment.dto.PaymentInfoResponseDto;
 import com.itda.moamoa.domain.payment.entity.Payment;
 import com.itda.moamoa.domain.payment.repository.PaymentRepository;
 import com.itda.moamoa.domain.post.entity.Post;
@@ -238,6 +240,39 @@ public class PaymentService {
         );
         
         return ReviewEligibilityResponseDto.of(participationCount.intValue());
+    }
+
+    
+    @Transactional(readOnly = true)
+    public PaymentInfoResponseDto getPaymentInfo(PaymentInfoRequestDto request) {
+        // 1. 사용자 조회
+        User user = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 사용자입니다."));
+
+        // 2. 세션 조회
+        Session session = sessionRepository.findById(request.getSessionId())
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 세션입니다."));
+
+        // 3. 소모임 조회
+        Somoim somoim = somoimRepository.findById(request.getSomoimId())
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 소모임입니다."));
+
+        // 4. 해당 사용자의 결제 정보 조회 (PAID 상태만)
+        Optional<Payment> paymentOpt = paymentRepository.findByUserAndSessionAndStatus(
+                user, session, Payment.PaymentStatus.PAID);
+
+        if (paymentOpt.isEmpty()) {
+            throw new EntityNotFoundException("해당 사용자의 결제 정보를 찾을 수 없습니다.");
+        }
+
+        Payment payment = paymentOpt.get();
+
+        // 5. 소모임 검증 (결제된 소모임과 요청된 소모임이 같은지 확인)
+        if (!payment.getSomoim().getId().equals(somoim.getId())) {
+            throw new IllegalArgumentException("결제 정보와 소모임 정보가 일치하지 않습니다.");
+        }
+
+        return PaymentInfoResponseDto.of(payment.getImpUid(), payment.getAmount());
     }
 
     // 결제 알림

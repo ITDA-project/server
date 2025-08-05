@@ -6,6 +6,8 @@ import com.itda.moamoa.domain.payment.dto.PaymentStatusResponseDto;
 import com.itda.moamoa.domain.payment.dto.PaymentVerifyRequest;
 import com.itda.moamoa.domain.payment.dto.ReviewEligibilityRequestDto;
 import com.itda.moamoa.domain.payment.dto.ReviewEligibilityResponseDto;
+import com.itda.moamoa.domain.payment.dto.PaymentInfoRequestDto;
+import com.itda.moamoa.domain.payment.dto.PaymentInfoResponseDto;
 import com.itda.moamoa.domain.payment.service.PaymentService;
 import com.itda.moamoa.global.common.ApiResponse;
 import com.itda.moamoa.global.common.SuccessCode;
@@ -66,6 +68,23 @@ public class PaymentController {
         ApiResponse<ReviewEligibilityResponseDto> apiResponse = ApiResponse.success(
             SuccessCode.OK,
             "리뷰 권한 확인 완료",
+            response
+        );
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    /**
+     * 특정 사용자의 소모임 회차에 대한 결제 정보를 조회합니다.
+     */
+    @PostMapping("/info")
+    public ResponseEntity<ApiResponse<PaymentInfoResponseDto>> getPaymentInfo(
+            @RequestBody PaymentInfoRequestDto request
+    ) {
+        PaymentInfoResponseDto response = paymentService.getPaymentInfo(request);
+        
+        ApiResponse<PaymentInfoResponseDto> apiResponse = ApiResponse.success(
+            SuccessCode.OK,
+            "결제 정보 조회 완료",
             response
         );
         return ResponseEntity.ok(apiResponse);
