@@ -59,19 +59,17 @@ public class ChatNotificationService {
                     //실제 entity에 담아주기 위해서는 실제 repository의 매핑된 entity를 가져와야함
                     .sender(sender)
                     .receiver(receiver)
-                    .chatRoomId(createChatNotificationDto.getChatRoomId())
+                    .chatRoomName(createChatNotificationDto.getChatRoomName())
                     .chatMessageId(createChatNotificationDto.getChatMessageId())
                     //entity와 매핑되는 필드 아닌 경우 바로 dto의 값 적용
                     .chatNotificationType(createChatNotificationDto.getChatNotificationType())
-                    .content(createChatNotificationDto.getMessage())
+                    .content(createChatNotificationDto.getContent())
                     .createdAt(LocalDateTime.now())
                     .read(false)
                     .build();
 
             //전달받은 dto 바탕의 entity 생성 후 저장
             savedNotifications.add(chatNotificationRepository.save(chatNotification));
-
-
         }
         return savedNotifications;
     }
@@ -82,7 +80,8 @@ public class ChatNotificationService {
         .createdAt(chatNotification.getCreatedAt())
         .chatNotificationType(chatNotification.getChatNotificationType())
         .chatMessageId(chatNotification.getChatMessageId())
-        .chatRoomId(chatNotification.getChatRoomId())
+        .chatRoomName(chatNotification.getChatRoomName())
+        .content(chatNotification.getContent())
         .sender(chatNotification.getSender().getUsername())
         .receiver(receiver)
         .build();

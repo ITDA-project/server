@@ -38,7 +38,7 @@ public class ChatNotification {
     //@ManyToOne(fetch = FetchType.LAZY)
     //private ChatRoom chatRoom;
 
-    private Long chatRoomId;
+    private String chatRoomName;
 
     private Long chatMessageId;
 
