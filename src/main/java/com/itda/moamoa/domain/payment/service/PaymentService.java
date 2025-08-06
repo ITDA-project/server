@@ -142,28 +142,9 @@ public class PaymentService {
         Payment payment = paymentRepository.findByImpUid(request.impUid())
                 .orElseThrow(() -> new IllegalArgumentException("결제 내역 없음"));
 
-        User user;
-        if (userId.contains("@")) {
-            // 이메일 형식의 username으로 조회
-            user = userRepository.findByUsername(userId)
-                    .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다"));
-        } else {
-            try {
-                // 숫자 형식의 ID로 조회 시도
-                Long userIdLong = Long.parseLong(userId);
-                user = userRepository.findById(userIdLong)
-                        .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다"));
-            } catch (NumberFormatException e) {
-                // ID가 숫자 형식이 아닌 경우 username으로 조회
-                user = userRepository.findByUsername(userId)
-                        .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다"));
-            }
-        }
+        // 주최자만 환불 요청을 할 수 있으므로, 별도의 본인 확인 로직이 필요 없음
 
-        if (!payment.getUser().getId().toString().equals(user.getId().toString())) {
-            throw new SecurityException("본인 결제만 환불 가능");
-        }
-
+        // 포트원 API를 통해 환불 요청
         portOneApiClient.requestRefund(request.impUid(), request.amount());
 
         payment.markCancelled();
@@ -171,6 +152,8 @@ public class PaymentService {
 
         // 소모임
         Somoim somoim = payment.getSession().getSomoim();
+        // 환불 요청한 사용자 (주최자)
+        User user = payment.getUser();
 
         // 환불 완료 알림
         notifyPayment(somoim, user, payment, true);
@@ -227,7 +210,7 @@ public class PaymentService {
 
     /**
      * 두 사용자가 함께 참여한 회차 개수를 조회하여 리뷰 작성 권한을 확인합니다.
-     * 
+     *
      * @param request 두 사용자의 ID가 담긴 요청 DTO
      * @return 함께 참여한 회차 개수와 메시지를 담은 응답 DTO
      */
@@ -235,14 +218,14 @@ public class PaymentService {
     public ReviewEligibilityResponseDto checkReviewEligibility(ReviewEligibilityRequestDto request) {
         // 두 사용자가 함께 참여한 완료된 회차 개수 조회
         Long participationCount = paymentRepository.countSharedParticipation(
-            request.getUserId1(), 
-            request.getUserId2()
+                request.getUserId1(),
+                request.getUserId2()
         );
-        
+
         return ReviewEligibilityResponseDto.of(participationCount.intValue());
     }
 
-    
+
     @Transactional(readOnly = true)
     public PaymentInfoResponseDto getPaymentInfo(PaymentInfoRequestDto request) {
         // 1. 사용자 조회
