@@ -6,6 +6,10 @@ import com.itda.moamoa.domain.participant.repository.ParticipantRepository;
 import com.itda.moamoa.domain.payment.dto.PaymentRefundRequest;
 import com.itda.moamoa.domain.payment.dto.PaymentStatusResponseDto;
 import com.itda.moamoa.domain.payment.dto.PaymentVerifyRequest;
+import com.itda.moamoa.domain.payment.dto.ReviewEligibilityRequestDto;
+import com.itda.moamoa.domain.payment.dto.ReviewEligibilityResponseDto;
+import com.itda.moamoa.domain.payment.dto.PaymentInfoRequestDto;
+import com.itda.moamoa.domain.payment.dto.PaymentInfoResponseDto;
 import com.itda.moamoa.domain.payment.entity.Payment;
 import com.itda.moamoa.domain.payment.repository.PaymentRepository;
 import com.itda.moamoa.domain.post.entity.Post;
@@ -30,6 +34,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import com.itda.moamoa.domain.chat.repository.ChatRoomUserRepository;
+import com.itda.moamoa.domain.chat.entity.ChatRoomUser;
 
 @Service
 @RequiredArgsConstructor
@@ -44,6 +50,7 @@ public class PaymentService {
     private final NotificationService notificationService;
     private final PostRepository postRepository;
     private final ChatRoomRepository chatRoomRepository;
+    private final ChatRoomUserRepository chatRoomUserRepository;
 
     @Transactional
     public void verifyPayment(PaymentVerifyRequest request, String userId) {
@@ -135,28 +142,9 @@ public class PaymentService {
         Payment payment = paymentRepository.findByImpUid(request.impUid())
                 .orElseThrow(() -> new IllegalArgumentException("결제 내역 없음"));
 
-        User user;
-        if (userId.contains("@")) {
-            // 이메일 형식의 username으로 조회
-            user = userRepository.findByUsername(userId)
-                    .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다"));
-        } else {
-            try {
-                // 숫자 형식의 ID로 조회 시도
-                Long userIdLong = Long.parseLong(userId);
-                user = userRepository.findById(userIdLong)
-                        .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다"));
-            } catch (NumberFormatException e) {
-                // ID가 숫자 형식이 아닌 경우 username으로 조회
-                user = userRepository.findByUsername(userId)
-                        .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다"));
-            }
-        }
+        // 주최자만 환불 요청을 할 수 있으므로, 별도의 본인 확인 로직이 필요 없음
 
-        if (!payment.getUser().getId().toString().equals(user.getId().toString())) {
-            throw new SecurityException("본인 결제만 환불 가능");
-        }
-
+        // 포트원 API를 통해 환불 요청
         portOneApiClient.requestRefund(request.impUid(), request.amount());
 
         payment.markCancelled();
@@ -164,59 +152,110 @@ public class PaymentService {
 
         // 소모임
         Somoim somoim = payment.getSession().getSomoim();
+        // 환불 요청한 사용자 (주최자)
+        User user = payment.getUser();
 
         // 환불 완료 알림
         notifyPayment(somoim, user, payment, true);
     }
 
     @Transactional(readOnly = true)
-    public PaymentStatusResponseDto getPaymentStatus(Long roomId, List<Long> userIds) {
+    public PaymentStatusResponseDto getPaymentStatus(Long roomId, Long sessionId) {
         // 1. 채팅방 조회
         ChatRoom chatRoom = chatRoomRepository.findById(roomId)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 채팅방입니다."));
 
-        // 2. 채팅방 → 게시글 조회
+        // 2. 세션 조회
+        Session session = sessionRepository.findById(sessionId)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 세션입니다."));
+
+        // 3. 채팅방 → 게시글 → 소모임 조회
         Post post = postRepository.findAll().stream()
                 .filter(p -> p.getChatRoom() != null && p.getChatRoom().getId().equals(roomId))
                 .findFirst()
                 .orElseThrow(() -> new EntityNotFoundException("채팅방에 연결된 게시글이 없습니다."));
 
-        // 3. 게시글 → 소모임 조회
         Participant organizer = participantRepository.findByPostAndRole(post, Role.ORGANIZER)
                 .orElseThrow(() -> new EntityNotFoundException("소모임 주최자 정보를 찾을 수 없습니다."));
 
         Somoim somoim = organizer.getSomoim();
 
-        // 4. 현재 진행 중인 세션 조회
-        Session activeSession = sessionRepository.findBySomoimAndStatus(somoim, Session.SessionStatus.IN_PROGRESS)
-                .orElseThrow(() -> new EntityNotFoundException("진행 중인 세션이 없습니다."));
+        // 4. 채팅방 참여자들 조회
+        List<ChatRoomUser> chatRoomUsers = chatRoomUserRepository.findAllByRoomId(roomId);
+        List<User> users = chatRoomUsers.stream()
+                .map(ChatRoomUser::getUser)
+                .collect(Collectors.toList());
 
-        // 5. 사용자 정보 조회
-        List<User> users = userRepository.findAllById(userIds);
-
-        // 6. 결제 정보 조회 (sessionId와 userIds로 직접 조회)
-        List<Payment> paidPayments = paymentRepository.findPaidPaymentsBySessionAndUsers(activeSession.getId(), userIds);
-        Map<Long, Payment> paymentMap = paidPayments.stream()
+        // 5. 해당 소모임과 세션에 대한 결제 정보 조회
+        List<Payment> payments = paymentRepository.findBySession(session);
+        Map<Long, Payment> paymentMap = payments.stream()
+                .filter(payment -> payment.getSomoim().getId().equals(somoim.getId()))
                 .collect(Collectors.toMap(p -> p.getUser().getId(), p -> p));
 
-        // 7. 응답 데이터 구성
+        // 6. 응답 데이터 구성
         List<PaymentStatusResponseDto.UserPaymentStatus> userPaymentStatuses = users.stream()
                 .map(user -> {
                     Payment payment = paymentMap.get(user.getId());
-                    boolean isPaid = payment != null;
-                    int paymentAmount = isPaid ? payment.getAmount() : 0;
+                    boolean isPaid = payment != null && payment.getStatus() == Payment.PaymentStatus.PAID;
 
                     return new PaymentStatusResponseDto.UserPaymentStatus(
                             user.getId(),
-                            user.getUsername(),
-                            user.getName(),
-                            isPaid,
-                            paymentAmount
+                            isPaid
                     );
                 })
                 .collect(Collectors.toList());
 
-        return new PaymentStatusResponseDto(activeSession.getId(), userPaymentStatuses);
+        return new PaymentStatusResponseDto(session.getId(), userPaymentStatuses);
+    }
+
+    /**
+     * 두 사용자가 함께 참여한 회차 개수를 조회하여 리뷰 작성 권한을 확인합니다.
+     *
+     * @param request 두 사용자의 ID가 담긴 요청 DTO
+     * @return 함께 참여한 회차 개수와 메시지를 담은 응답 DTO
+     */
+    @Transactional(readOnly = true)
+    public ReviewEligibilityResponseDto checkReviewEligibility(ReviewEligibilityRequestDto request) {
+        // 두 사용자가 함께 참여한 완료된 회차 개수 조회
+        Long participationCount = paymentRepository.countSharedParticipation(
+                request.getUserId1(),
+                request.getUserId2()
+        );
+
+        return ReviewEligibilityResponseDto.of(participationCount.intValue());
+    }
+
+
+    @Transactional(readOnly = true)
+    public PaymentInfoResponseDto getPaymentInfo(PaymentInfoRequestDto request) {
+        // 1. 사용자 조회
+        User user = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 사용자입니다."));
+
+        // 2. 세션 조회
+        Session session = sessionRepository.findById(request.getSessionId())
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 세션입니다."));
+
+        // 3. 소모임 조회
+        Somoim somoim = somoimRepository.findById(request.getSomoimId())
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 소모임입니다."));
+
+        // 4. 해당 사용자의 결제 정보 조회 (PAID 상태만)
+        Optional<Payment> paymentOpt = paymentRepository.findByUserAndSessionAndStatus(
+                user, session, Payment.PaymentStatus.PAID);
+
+        if (paymentOpt.isEmpty()) {
+            throw new EntityNotFoundException("해당 사용자의 결제 정보를 찾을 수 없습니다.");
+        }
+
+        Payment payment = paymentOpt.get();
+
+        // 5. 소모임 검증 (결제된 소모임과 요청된 소모임이 같은지 확인)
+        if (!payment.getSomoim().getId().equals(somoim.getId())) {
+            throw new IllegalArgumentException("결제 정보와 소모임 정보가 일치하지 않습니다.");
+        }
+
+        return PaymentInfoResponseDto.of(payment.getImpUid(), payment.getAmount());
     }
 
     // 결제 알림

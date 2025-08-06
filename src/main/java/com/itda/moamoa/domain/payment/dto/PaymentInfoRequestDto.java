@@ -7,7 +7,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PaymentStatusRequestDto {
-    private Long roomId;
+public class PaymentInfoRequestDto {
+    private Long somoimId; 
     private Long sessionId;
+    private Long userId;
 } 
