@@ -82,7 +82,7 @@ public class ChatNotificationService {
         .chatMessageId(chatNotification.getChatMessageId())
         .chatRoomName(chatNotification.getChatRoomName())
         .content(chatNotification.getContent())
-        .sender(chatNotification.getSender().getUsername())
+        .sender(chatNotification.getSender().getName())
         .receiver(receiver)
         .build();
     }
