@@ -18,9 +18,6 @@ public class PaymentStatusResponseDto {
     @AllArgsConstructor
     public static class UserPaymentStatus {
         private Long userId;
-        private String username;
-        private String name;
         private boolean isPaid;
-        private int paymentAmount;
     }
 } 
