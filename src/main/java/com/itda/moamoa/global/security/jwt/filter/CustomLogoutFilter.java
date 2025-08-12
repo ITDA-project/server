@@ -38,7 +38,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         //모든 요청이 거쳐가는 필터 - 로그아웃 요청인지 확인
         //path 값을 확인
         String requestUri = request.getRequestURI();
-        if(!requestUri.matches("^\\/auth\\/logout$")){
+        if(!requestUri.matches("^\\/api\\/auth\\/logout$")){
             //로그아웃 요청 아닌 경우 -> 다음 필터로
             filterChain.doFilter(request, response);
             return;
