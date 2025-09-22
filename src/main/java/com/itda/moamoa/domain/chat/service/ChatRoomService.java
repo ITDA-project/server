@@ -57,7 +57,7 @@ public class ChatRoomService {
 
     public void leaveChatRoom(Long roomId,CustomUserDetails userDetails){
         //userId 가져오기
-        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new EntityNotFoundException("찾을 수 없는 유저입니다"));;
+        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new EntityNotFoundException("찾을 수 없는 유저입니다"));
 
         //OWNER 라면 채팅방 deleteFlag 수정
         ChatRoomUser leaveRoomUser = chatRoomUserRepository.findByUserIdAndRoomId(user.getId(),roomId).orElseThrow(() -> new EntityNotFoundException("찾을 수 없는 유저입니다"));
@@ -86,7 +86,6 @@ public class ChatRoomService {
 
     public ChatRoom inviteUser(ChatRoomInviteRequestDto chatRoomInviteRequestDto){
         //초대한 유저가 탈퇴한 경우
-        System.out.println("username: "+chatRoomInviteRequestDto.getUsername());
         User user = userRepository.findByUsername(chatRoomInviteRequestDto.getUsername()).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 회원입니다."));
         if(user.isDeleted()){
             throw new UserException("이미 탈퇴한 회원입니다.");
