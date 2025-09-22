@@ -13,6 +13,7 @@ import com.itda.moamoa.domain.chatnotification.dto.CreateChatNotificationDto;
 import com.itda.moamoa.domain.chatnotification.service.ChatNotificationService;
 import com.itda.moamoa.domain.user.entity.User;
 import com.itda.moamoa.domain.user.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,8 +32,10 @@ public class MessageService {
     private final ChatNotificationService chatNotificationService;
 
     public MessageResponseDto saveMessage(MessageRequestDto messageRequestDto){
-        ChatRoom chatRoom = chatRoomRepository.findById(messageRequestDto.getRoomId()).orElseThrow();
-        User user = userRepository.findByUsername(messageRequestDto.getUsername()).orElseThrow();
+        ChatRoom chatRoom = chatRoomRepository.findById(messageRequestDto.getRoomId())
+                .orElseThrow(()->new EntityNotFoundException("존재하지 않는 채팅방입니다."));
+        User user = userRepository.findByUsername(messageRequestDto.getUsername())
+                .orElseThrow(()->new EntityNotFoundException("존재하지 않는 유저입니다."));
 
         ChatMessage message = ChatMessage.builder()
                 .room(chatRoom)
