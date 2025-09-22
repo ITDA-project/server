@@ -86,6 +86,7 @@ public class ChatRoomService {
 
     public ChatRoom inviteUser(ChatRoomInviteRequestDto chatRoomInviteRequestDto){
         //초대한 유저가 탈퇴한 경우
+        System.out.println("username: "+chatRoomInviteRequestDto.getUsername());
         User user = userRepository.findByUsername(chatRoomInviteRequestDto.getUsername()).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 회원입니다."));
         if(user.isDeleted()){
             throw new UserException("이미 탈퇴한 회원입니다.");

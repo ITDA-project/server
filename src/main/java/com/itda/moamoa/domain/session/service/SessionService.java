@@ -214,7 +214,7 @@ public class SessionService {
                             .body("새로운 결제 요청이 있어요! 참여하시겠어요?")
                             .notificationType(NotificationType.PAYMENT_REQUESTED)
                             .postId(post.getPostId())
-                            .roomId(null) // 필요 시
+                            .roomId(post.getChatRoom().getId()) // 필요 시
                             .build())
                     .collect(Collectors.toList());
 
